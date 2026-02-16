@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Execute the command with a timeout
     const { stdout, stderr } = await execAsync(command, {
-      timeout: 10000, // 10 second timeout
+      timeout: 15000, // 15 second timeout (allows sleep commands for automation)
       maxBuffer: 1024 * 512, // 512KB max output
       shell: "/bin/zsh",
     });
