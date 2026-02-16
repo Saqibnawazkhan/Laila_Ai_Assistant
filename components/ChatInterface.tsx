@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
 import TypingIndicator from "./TypingIndicator";
 import { LAILA_GREETING } from "@/lib/laila-persona";
+import { speakText, stopSpeaking } from "@/lib/speech";
 
 interface Message {
   role: "user" | "assistant";
@@ -19,6 +20,7 @@ export default function ChatInterface() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [avatarStatus, setAvatarStatus] = useState<"idle" | "thinking" | "talking">("idle");
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -29,12 +31,30 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages, isLoading]);
 
+  // Load voices on mount (needed for some browsers)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
+
+  const handleToggleVoice = useCallback(() => {
+    setVoiceEnabled((prev) => {
+      if (prev) stopSpeaking();
+      return !prev;
+    });
+  }, []);
+
   const sendMessage = async (content: string) => {
     const userMessage: Message = { role: "user", content };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
     setAvatarStatus("thinking");
+    stopSpeaking();
 
     try {
       const response = await fetch("/api/chat", {
@@ -49,14 +69,23 @@ export default function ChatInterface() {
         throw new Error(data.error || "Failed to get response");
       }
 
-      setAvatarStatus("talking");
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.reply },
       ]);
 
-      // Keep talking animation for a bit, then return to idle
-      setTimeout(() => setAvatarStatus("idle"), 3000);
+      // Speak Laila's response if voice is enabled
+      if (voiceEnabled) {
+        setAvatarStatus("talking");
+        speakText(
+          data.reply,
+          () => setAvatarStatus("talking"),
+          () => setAvatarStatus("idle")
+        );
+      } else {
+        setAvatarStatus("talking");
+        setTimeout(() => setAvatarStatus("idle"), 2000);
+      }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Something went wrong";
@@ -99,7 +128,12 @@ export default function ChatInterface() {
       </div>
 
       {/* Input */}
-      <InputBar onSend={sendMessage} disabled={isLoading} />
+      <InputBar
+        onSend={sendMessage}
+        disabled={isLoading}
+        voiceEnabled={voiceEnabled}
+        onToggleVoice={handleToggleVoice}
+      />
     </div>
   );
 }
