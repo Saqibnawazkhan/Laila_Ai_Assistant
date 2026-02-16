@@ -20,6 +20,23 @@ interface Message {
   content: string;
 }
 
+// Load saved permissions from localStorage
+function loadPermissions(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const saved = localStorage.getItem("laila_permissions");
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+// Save permissions to localStorage
+function savePermissions(permissions: Set<string>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("laila_permissions", JSON.stringify([...permissions]));
+}
+
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: LAILA_GREETING },
@@ -28,7 +45,13 @@ export default function ChatInterface() {
   const [avatarStatus, setAvatarStatus] = useState<"idle" | "thinking" | "talking">("idle");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [pendingCommand, setPendingCommand] = useState<SystemCommand | null>(null);
+  const [allowedTypes, setAllowedTypes] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Load permissions on mount
+  useEffect(() => {
+    setAllowedTypes(loadPermissions());
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,7 +95,7 @@ export default function ChatInterface() {
     [voiceEnabled]
   );
 
-  const executeCommand = async (command: SystemCommand) => {
+  const executeCommand = useCallback(async (command: SystemCommand) => {
     try {
       const response = await fetch("/api/system", {
         method: "POST",
@@ -105,10 +128,23 @@ export default function ChatInterface() {
       ]);
       setAvatarStatus("idle");
     }
-  };
+  }, [speakAndAnimate]);
 
   const handleAllowCommand = () => {
     if (pendingCommand) {
+      executeCommand(pendingCommand);
+    }
+    setPendingCommand(null);
+  };
+
+  const handleAlwaysAllowCommand = () => {
+    if (pendingCommand) {
+      // Save this type as permanently allowed
+      const newPermissions = new Set(allowedTypes);
+      newPermissions.add(pendingCommand.type);
+      setAllowedTypes(newPermissions);
+      savePermissions(newPermissions);
+
       executeCommand(pendingCommand);
     }
     setPendingCommand(null);
@@ -154,10 +190,16 @@ export default function ChatInterface() {
         { role: "assistant", content: cleanText },
       ]);
 
-      // If there's a command, show permission modal
       if (command) {
-        setPendingCommand(command);
-        speakAndAnimate(cleanText);
+        // If this command type is already allowed, execute immediately
+        if (allowedTypes.has(command.type)) {
+          speakAndAnimate(cleanText);
+          executeCommand(command);
+        } else {
+          // First time - show permission modal
+          setPendingCommand(command);
+          speakAndAnimate(cleanText);
+        }
       } else {
         speakAndAnimate(cleanText);
       }
@@ -183,6 +225,7 @@ export default function ChatInterface() {
       <PermissionModal
         command={pendingCommand}
         onAllow={handleAllowCommand}
+        onAlwaysAllow={handleAlwaysAllowCommand}
         onDeny={handleDenyCommand}
       />
 

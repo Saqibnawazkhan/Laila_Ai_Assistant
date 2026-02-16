@@ -7,10 +7,11 @@ import { SystemCommand } from "@/lib/command-parser";
 interface PermissionModalProps {
   command: SystemCommand | null;
   onAllow: () => void;
+  onAlwaysAllow: () => void;
   onDeny: () => void;
 }
 
-export default function PermissionModal({ command, onAllow, onDeny }: PermissionModalProps) {
+export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDeny }: PermissionModalProps) {
   if (!command) return null;
 
   const riskConfig = {
@@ -32,6 +33,13 @@ export default function PermissionModal({ command, onAllow, onDeny }: Permission
       bg: "bg-red-500/10 border-red-500/30",
       label: "High Risk",
     },
+  };
+
+  const typeLabels = {
+    open_app: "opening apps",
+    file_op: "file operations",
+    terminal: "terminal commands",
+    system_info: "system info",
   };
 
   const config = riskConfig[command.risk];
@@ -100,22 +108,30 @@ export default function PermissionModal({ command, onAllow, onDeny }: Permission
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 px-6 pb-5">
+          <div className="flex flex-col gap-2 px-6 pb-5">
+            <div className="flex gap-3">
+              <button
+                onClick={onDeny}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm font-medium hover:bg-white/10 transition-colors"
+              >
+                Deny
+              </button>
+              <button
+                onClick={onAllow}
+                className={`flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-medium transition-colors ${
+                  command.risk === "high"
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-purple-600 hover:bg-purple-500"
+                }`}
+              >
+                Allow Once
+              </button>
+            </div>
             <button
-              onClick={onDeny}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm font-medium hover:bg-white/10 transition-colors"
+              onClick={onAlwaysAllow}
+              className="w-full px-4 py-2.5 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm font-medium hover:bg-purple-600/30 transition-colors"
             >
-              Deny
-            </button>
-            <button
-              onClick={onAllow}
-              className={`flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-medium transition-colors ${
-                command.risk === "high"
-                  ? "bg-red-600 hover:bg-red-500"
-                  : "bg-purple-600 hover:bg-purple-500"
-              }`}
-            >
-              Allow
+              Always Allow {typeLabels[command.type]}
             </button>
           </div>
         </motion.div>
