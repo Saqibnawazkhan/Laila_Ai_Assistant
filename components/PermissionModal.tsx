@@ -40,6 +40,7 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
     file_op: "file operations",
     terminal: "terminal commands",
     system_info: "system info",
+    play_youtube: "playing YouTube videos",
   };
 
   const config = riskConfig[command.risk];

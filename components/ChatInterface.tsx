@@ -95,7 +95,51 @@ export default function ChatInterface() {
     [voiceEnabled]
   );
 
+  const playYouTube = useCallback(async (query: string) => {
+    try {
+      // Step 1: Search YouTube and get the direct video URL
+      const searchRes = await fetch("/api/youtube", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const searchData = await searchRes.json();
+      const videoUrl = searchData.url;
+
+      if (!videoUrl) throw new Error("Couldn't find the video");
+
+      // Step 2: Open the direct video URL via system command
+      const execRes = await fetch("/api/system", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: `open "${videoUrl}"`, type: "open_app" }),
+      });
+      const execData = await execRes.json();
+
+      if (execData.success) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: `Now playing! Opened the video for you.` },
+        ]);
+        speakAndAnimate("Now playing! Enjoy!");
+      } else {
+        throw new Error(execData.output);
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Sorry, I couldn't play that. Please try again." },
+      ]);
+      setAvatarStatus("idle");
+    }
+  }, [speakAndAnimate]);
+
   const executeCommand = useCallback(async (command: SystemCommand) => {
+    // Handle YouTube play commands specially
+    if (command.type === "play_youtube") {
+      return playYouTube(command.command);
+    }
+
     try {
       const response = await fetch("/api/system", {
         method: "POST",
@@ -128,7 +172,7 @@ export default function ChatInterface() {
       ]);
       setAvatarStatus("idle");
     }
-  }, [speakAndAnimate]);
+  }, [speakAndAnimate, playYouTube]);
 
   const handleAllowCommand = () => {
     if (pendingCommand) {

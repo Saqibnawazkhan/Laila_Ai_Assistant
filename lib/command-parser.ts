@@ -1,5 +1,5 @@
 export interface SystemCommand {
-  type: "open_app" | "file_op" | "terminal" | "system_info";
+  type: "open_app" | "file_op" | "terminal" | "system_info" | "play_youtube";
   command: string;
   description: string;
   risk: "low" | "medium" | "high";
@@ -10,7 +10,7 @@ export function parseCommandFromResponse(response: string): SystemCommand | null
   // Look for command blocks in the AI response
   // Format: [COMMAND: <type> | <command> | <description>]
   const commandMatch = response.match(
-    /\[COMMAND:\s*(open_app|file_op|terminal|system_info)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\]/
+    /\[COMMAND:\s*(open_app|file_op|terminal|system_info|play_youtube)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\]/
   );
 
   if (!commandMatch) return null;
@@ -64,6 +64,7 @@ Command format: [COMMAND: type | shell_command | description]
 
 Types:
 - open_app: Open applications. Example: [COMMAND: open_app | open -a "Google Chrome" | Open Google Chrome]
+- play_youtube: Play songs/videos on YouTube. The command value should be ONLY the search query (not a URL). Example: [COMMAND: play_youtube | Channa Mereya | Play Channa Mereya on YouTube]
 - file_op: File operations. Example: [COMMAND: file_op | ls ~/Desktop | List files on Desktop]
 - terminal: Terminal commands. Example: [COMMAND: terminal | echo "Hello" | Print Hello to terminal]
 - system_info: System info. Example: [COMMAND: system_info | top -l 1 | head -n 12 | Show system processes]
@@ -72,9 +73,7 @@ Rules for commands:
 - Always use macOS-compatible commands
 - For opening apps, use: open -a "App Name"
 - For opening websites, use: open "https://url.com"
-- For playing songs/videos on YouTube: Use this exact pattern to auto-play the first result:
-  open "https://www.youtube.com/results?search_query=SONG+NAME" && sleep 4 && osascript -e 'tell application "System Events" to key code 36'
-  This opens the search, waits, then presses Enter to play the first result.
+- For playing songs/videos/music on YouTube, ALWAYS use type play_youtube with just the song/video name as the command. Do NOT use open_app for YouTube videos.
 - For searching Google: open "https://www.google.com/search?q=QUERY"
 - For file listing, use: ls with appropriate path
 - For system info, use: system_profiler, df, top, etc.
@@ -87,8 +86,11 @@ Example conversation:
 User: "Open Chrome for me"
 Assistant: "Sure! Let me open Google Chrome for you. [COMMAND: open_app | open -a "Google Chrome" | Open Google Chrome]"
 
-User: "Play Channa Mereya on YouTube"
-Assistant: "Let me play Channa Mereya for you! [COMMAND: open_app | open "https://www.youtube.com/results?search_query=Channa+Mereya" && sleep 4 && osascript -e 'tell application "System Events" to key code 36' | Play Channa Mereya on YouTube]"
+User: "Play Channa Mereya"
+Assistant: "Let me play Channa Mereya for you on YouTube! [COMMAND: play_youtube | Channa Mereya | Play Channa Mereya on YouTube]"
+
+User: "Play some Arijit Singh songs"
+Assistant: "Great choice! Let me play Arijit Singh for you! [COMMAND: play_youtube | Arijit Singh best songs | Play Arijit Singh songs on YouTube]"
 
 User: "What's on my desktop?"
 Assistant: "Let me check your Desktop for you! [COMMAND: file_op | ls -la ~/Desktop | List all files on Desktop]"
