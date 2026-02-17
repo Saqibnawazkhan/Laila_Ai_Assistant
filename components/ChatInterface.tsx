@@ -364,14 +364,43 @@ export default function ChatInterface() {
       const data = await response.json();
 
       if (data.success) {
-        const resultMsg = data.output
-          ? `Done! Here's the result:\n\`\`\`\n${data.output}\n\`\`\``
-          : "Done! Command executed successfully.";
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: resultMsg },
-        ]);
-        speakAndAnimate("Done! The command was executed successfully.");
+        if (command.type === "system_info" && data.output) {
+          // For system info, send the result back to AI for natural interpretation
+          try {
+            const interpretRes = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                messages: [
+                  { role: "user", content: `I asked: "${command.description}". The system returned: "${data.output}". Please give me a brief, natural, friendly answer based on this result. Do NOT include any [COMMAND:] tags in your response.` },
+                ],
+              }),
+            });
+            const interpretData = await interpretRes.json();
+            const naturalResponse = cleanResponseText(interpretData.reply || data.output);
+            setMessages((prev) => [
+              ...prev,
+              { role: "assistant", content: naturalResponse },
+            ]);
+            speakAndAnimate(naturalResponse);
+          } catch {
+            // Fallback: show raw output
+            setMessages((prev) => [
+              ...prev,
+              { role: "assistant", content: `Here's what I found:\n\`\`\`\n${data.output}\n\`\`\`` },
+            ]);
+            speakAndAnimate(data.output.slice(0, 200));
+          }
+        } else {
+          const resultMsg = data.output
+            ? `Done! Here's the result:\n\`\`\`\n${data.output}\n\`\`\``
+            : "Done! Command executed successfully.";
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: resultMsg },
+          ]);
+          speakAndAnimate(data.output ? `Done! Here's the result: ${data.output.slice(0, 150)}` : "Done! The command was executed successfully.");
+        }
       } else {
         setMessages((prev) => [
           ...prev,

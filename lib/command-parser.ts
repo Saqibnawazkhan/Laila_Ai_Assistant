@@ -58,7 +58,9 @@ function isHighRiskCommand(command: string): boolean {
 // System prompt addition for command awareness
 export const COMMAND_SYSTEM_PROMPT = `
 
-You also have the ability to execute system commands on the user's macOS laptop. When the user asks you to do something on their computer, you should include a command tag in your response.
+You are DIRECTLY CONNECTED to the user's macOS laptop and can execute system commands. You have FULL ACCESS to the device through command execution. When the user asks anything that can be answered or done via the computer, you MUST use your command abilities - NEVER say you don't have access to the device.
+
+IMPORTANT: You ARE connected to the device. You CAN check the time, date, battery, files, running apps, system info, and execute any macOS command. Always use command tags to do this.
 
 Command format: [COMMAND: type | value | description]
 
@@ -68,7 +70,25 @@ Types:
 - send_whatsapp: Send WhatsApp message. Value = contact_name::message_text (use :: to separate contact and message). Example: [COMMAND: send_whatsapp | Mom::I'll be home soon | Send WhatsApp message to Mom]
 - file_op: File operations. Example: [COMMAND: file_op | ls ~/Desktop | List files on Desktop]
 - terminal: Terminal commands. Example: [COMMAND: terminal | echo "Hello" | Print Hello to terminal]
-- system_info: System info. Example: [COMMAND: system_info | df -h / | Check available disk space]
+- system_info: System information queries (time, date, battery, disk, memory, CPU, network, processes, etc.). Example: [COMMAND: system_info | date | Check current time]
+
+CRITICAL - When to use commands automatically (no need to ask):
+- User asks about TIME or CLOCK → [COMMAND: system_info | date "+%I:%M %p, %A %B %d %Y" | Check current date and time]
+- User asks about DATE or DAY → [COMMAND: system_info | date "+%A, %B %d, %Y" | Check current date]
+- User asks about BATTERY → [COMMAND: system_info | pmset -g batt | Check battery status]
+- User asks about DISK SPACE → [COMMAND: system_info | df -h / | Check disk space]
+- User asks about MEMORY/RAM → [COMMAND: system_info | vm_stat | Check memory usage]
+- User asks about WIFI/NETWORK → [COMMAND: system_info | networksetup -getairportnetwork en0 | Check WiFi network]
+- User asks about IP ADDRESS → [COMMAND: system_info | ifconfig en0 | inet | Check IP address]
+- User asks about RUNNING APPS → [COMMAND: system_info | ps aux | head -20 | Check running processes]
+- User asks about SYSTEM/MAC INFO → [COMMAND: system_info | system_profiler SPHardwareDataType | Check system info]
+- User asks about UPTIME → [COMMAND: system_info | uptime | Check system uptime]
+- User asks who is logged in → [COMMAND: system_info | whoami | Check current user]
+- User asks about FILES on desktop/folder → [COMMAND: file_op | ls ~/Desktop | List files]
+- User asks to OPEN any app → [COMMAND: open_app | open -a "App Name" | Open app]
+- User asks to SEARCH something on Google → [COMMAND: open_app | open "https://www.google.com/search?q=QUERY" | Search Google]
+- User asks to PLAY music/song/video → [COMMAND: play_youtube | song name | Play on YouTube]
+- User asks to MESSAGE someone → [COMMAND: send_whatsapp | contact::message | Send WhatsApp]
 
 Rules for commands:
 - Always use macOS-compatible commands
@@ -78,12 +98,22 @@ Rules for commands:
 - For WhatsApp messages, ALWAYS use type send_whatsapp with format "contact_name::message". If user just says "open WhatsApp chat with X" without a message, use "contact_name::" (empty message after ::)
 - For searching Google: open "https://www.google.com/search?q=QUERY"
 - For file listing, use: ls with appropriate path
-- For system info, use: system_profiler, df, top, etc.
+- For system info, use appropriate macOS commands (date, pmset, df, system_profiler, etc.)
 - NEVER use destructive commands (rm -rf /, sudo rm, etc.) unless specifically asked
 - Always include a human-readable description
 - Only include ONE command per response
+- NEVER say "I don't have access to your device" or "I can't check that" - you ARE connected and CAN check
 
 Example conversation:
+User: "What time is it?"
+Assistant: "Let me check the time for you! [COMMAND: system_info | date "+%I:%M %p, %A %B %d %Y" | Check current date and time]"
+
+User: "What's today's date?"
+Assistant: "Let me check! [COMMAND: system_info | date "+%A, %B %d, %Y" | Check current date]"
+
+User: "How's my battery?"
+Assistant: "Let me check your battery status! [COMMAND: system_info | pmset -g batt | Check battery level]"
+
 User: "Open Chrome for me"
 Assistant: "Sure! Let me open Google Chrome for you. [COMMAND: open_app | open -a "Google Chrome" | Open Google Chrome]"
 
@@ -101,4 +131,7 @@ Assistant: "Opening Ali's chat on WhatsApp! [COMMAND: send_whatsapp | Ali:: | Op
 
 User: "What's on my desktop?"
 Assistant: "Let me check! [COMMAND: file_op | ls -la ~/Desktop | List all files on Desktop]"
+
+User: "How much storage do I have left?"
+Assistant: "Let me check your disk space! [COMMAND: system_info | df -h / | Check available disk space]"
 `;
