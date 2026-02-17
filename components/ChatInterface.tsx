@@ -2,11 +2,13 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ListTodo } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
 import TypingIndicator from "./TypingIndicator";
 import PermissionModal from "./PermissionModal";
+import TaskPanel from "./TaskPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking } from "@/lib/speech";
 import {
@@ -14,6 +16,16 @@ import {
   cleanResponseText,
   SystemCommand,
 } from "@/lib/command-parser";
+import {
+  Task,
+  loadTasks,
+  addTask,
+  toggleTask,
+  deleteTask,
+  getTasksSummary,
+  parseTaskFromResponse,
+  cleanTaskTags,
+} from "@/lib/tasks";
 
 interface Message {
   role: "user" | "assistant";
@@ -46,11 +58,14 @@ export default function ChatInterface() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [pendingCommand, setPendingCommand] = useState<SystemCommand | null>(null);
   const [allowedTypes, setAllowedTypes] = useState<Set<string>>(new Set());
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load permissions on mount
+  // Load permissions and tasks on mount
   useEffect(() => {
     setAllowedTypes(loadPermissions());
+    setTasks(loadTasks());
   }, []);
 
   const scrollToBottom = () => {
@@ -246,6 +261,65 @@ export default function ChatInterface() {
     setPendingCommand(null);
   };
 
+  // Task handlers
+  const handleTaskAction = useCallback(
+    (response: string) => {
+      const taskCommand = parseTaskFromResponse(response);
+      if (!taskCommand) return;
+
+      switch (taskCommand.action) {
+        case "add":
+          if (taskCommand.title) {
+            const updated = addTask(tasks, taskCommand.title, taskCommand.priority, taskCommand.dueDate);
+            setTasks(updated);
+          }
+          break;
+        case "complete":
+          if (taskCommand.title) {
+            const match = tasks.find(
+              (t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase() && !t.completed
+            );
+            if (match) {
+              const updated = toggleTask(tasks, match.id);
+              setTasks(updated);
+            }
+          }
+          break;
+        case "delete":
+          if (taskCommand.title) {
+            const match = tasks.find(
+              (t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase()
+            );
+            if (match) {
+              const updated = deleteTask(tasks, match.id);
+              setTasks(updated);
+            }
+          }
+          break;
+        case "list":
+          setIsTaskPanelOpen(true);
+          break;
+      }
+    },
+    [tasks]
+  );
+
+  const handleToggleTask = useCallback(
+    (id: string) => {
+      const updated = toggleTask(tasks, id);
+      setTasks(updated);
+    },
+    [tasks]
+  );
+
+  const handleDeleteTask = useCallback(
+    (id: string) => {
+      const updated = deleteTask(tasks, id);
+      setTasks(updated);
+    },
+    [tasks]
+  );
+
   const sendMessage = async (content: string) => {
     const userMessage: Message = { role: "user", content };
     const updatedMessages = [...messages, userMessage];
@@ -267,15 +341,30 @@ export default function ChatInterface() {
         throw new Error(data.error || "Failed to get response");
       }
 
-      // Check if response contains a system command
+      // Check if response contains a system command or task command
       const command = parseCommandFromResponse(data.reply);
-      const cleanText = cleanResponseText(data.reply);
+      const taskCommand = parseTaskFromResponse(data.reply);
 
-      // Add the clean message (without command tags)
+      // Clean both command and task tags from display text
+      let cleanText = cleanResponseText(data.reply);
+      cleanText = cleanTaskTags(cleanText);
+
+      // Inject task summary if it's a list command
+      if (taskCommand?.action === "list") {
+        const summary = getTasksSummary(tasks);
+        cleanText = cleanText ? `${cleanText}\n\n${summary}` : summary;
+      }
+
+      // Add the clean message (without command/task tags)
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: cleanText },
       ]);
+
+      // Handle task commands
+      if (taskCommand) {
+        handleTaskAction(data.reply);
+      }
 
       if (command) {
         // If this command type is already allowed, execute immediately
@@ -316,14 +405,36 @@ export default function ChatInterface() {
         onDeny={handleDenyCommand}
       />
 
+      {/* Task Panel */}
+      <TaskPanel
+        isOpen={isTaskPanelOpen}
+        onClose={() => setIsTaskPanelOpen(false)}
+        tasks={tasks}
+        onToggle={handleToggleTask}
+        onDelete={handleDeleteTask}
+      />
+
       {/* Avatar Section */}
       <motion.div
-        className="flex-shrink-0 flex justify-center pt-8 pb-4 border-b border-white/5 bg-black/20"
+        className="flex-shrink-0 flex justify-center pt-8 pb-4 border-b border-white/5 bg-black/20 relative"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <Avatar status={avatarStatus} />
+
+        {/* Task Button */}
+        <button
+          onClick={() => setIsTaskPanelOpen(true)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all"
+        >
+          <ListTodo size={18} />
+          {tasks.filter((t) => !t.completed).length > 0 && (
+            <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+              {tasks.filter((t) => !t.completed).length}
+            </span>
+          )}
+        </button>
       </motion.div>
 
       {/* Messages Area */}
