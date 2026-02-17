@@ -1,13 +1,15 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare } from "lucide-react";
+import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear, EarOff } from "lucide-react";
 
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
   voiceEnabled: boolean;
   onToggleVoice: () => void;
+  wakeWordEnabled: boolean;
+  onToggleWakeWord: () => void;
   allowedTypes: Set<string>;
   onResetPermissions: () => void;
   onClearChats: () => void;
@@ -27,6 +29,8 @@ export default function SettingsPanel({
   onClose,
   voiceEnabled,
   onToggleVoice,
+  wakeWordEnabled,
+  onToggleWakeWord,
   allowedTypes,
   onResetPermissions,
   onClearChats,
@@ -90,6 +94,44 @@ export default function SettingsPanel({
                   <div
                     className={`w-10 h-6 rounded-full flex items-center transition-colors ${
                       voiceEnabled ? "bg-purple-600 justify-end" : "bg-gray-700 justify-start"
+                    }`}
+                  >
+                    <motion.div
+                      className="w-4 h-4 bg-white rounded-full mx-1"
+                      layout
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  </div>
+                </button>
+              </div>
+
+              {/* Wake Word Section */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Wake Word
+                </h3>
+                <button
+                  onClick={onToggleWakeWord}
+                  className="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    {wakeWordEnabled ? (
+                      <Ear size={18} className="text-purple-400" />
+                    ) : (
+                      <EarOff size={18} className="text-gray-500" />
+                    )}
+                    <div className="text-left">
+                      <p className="text-sm text-gray-200">Say &quot;Laila&quot;</p>
+                      <p className="text-xs text-gray-500">
+                        {wakeWordEnabled
+                          ? "Laila is always listening for her name"
+                          : "Enable to activate Laila by saying her name"}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-10 h-6 rounded-full flex items-center transition-colors ${
+                      wakeWordEnabled ? "bg-purple-600 justify-end" : "bg-gray-700 justify-start"
                     }`}
                   >
                     <motion.div

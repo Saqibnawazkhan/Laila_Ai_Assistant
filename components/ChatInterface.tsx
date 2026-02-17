@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock } from "lucide-react";
+import { ListTodo, Settings, Clock, Ear, EarOff } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -13,7 +13,7 @@ import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
-import { speakText, stopSpeaking } from "@/lib/speech";
+import { speakText, stopSpeaking, createWakeWordListener } from "@/lib/speech";
 import {
   parseCommandFromResponse,
   cleanResponseText,
@@ -78,7 +78,11 @@ export default function ChatInterface() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSession] = useState<string | null>(null);
+  const [wakeWordEnabled, setWakeWordEnabled] = useState(false);
+  const [wakeWordListening, setWakeWordListening] = useState(false);
+  const wakeWordRef = useRef<{ start: () => void; stop: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sendMessageRef = useRef<(content: string) => void>(undefined);
 
   // Load everything on mount
   useEffect(() => {
@@ -174,6 +178,68 @@ export default function ChatInterface() {
     },
     [voiceEnabled]
   );
+
+  // Wake word greetings (randomized)
+  const wakeGreetings = useRef([
+    "Hello Saqib! How can I assist you today?",
+    "Hey Saqib! What can I do for you?",
+    "Hi Saqib! I'm here, what do you need?",
+    "Yes Saqib! I'm listening, go ahead!",
+    "Hey! What's up Saqib? How can I help?",
+  ]);
+
+  // Handle wake word detection
+  const handleWakeWord = useCallback(
+    (remainingText: string) => {
+      if (remainingText && remainingText.length > 2) {
+        // User said "Laila, do something" - process the command directly
+        sendMessageRef.current?.(remainingText);
+      } else {
+        // User just said "Laila" - greet and wait for command
+        const greetings = wakeGreetings.current;
+        const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: greeting },
+        ]);
+        speakAndAnimate(greeting);
+      }
+
+      // Restart wake word listener after a delay
+      setTimeout(() => {
+        if (wakeWordRef.current && wakeWordEnabled) {
+          wakeWordRef.current.start();
+        }
+      }, 3000);
+    },
+    [speakAndAnimate, wakeWordEnabled]
+  );
+
+  // Initialize wake word listener
+  useEffect(() => {
+    if (wakeWordEnabled) {
+      const listener = createWakeWordListener(
+        handleWakeWord,
+        setWakeWordListening
+      );
+      wakeWordRef.current = listener;
+      listener.start();
+
+      return () => {
+        listener.stop();
+        wakeWordRef.current = null;
+      };
+    } else {
+      if (wakeWordRef.current) {
+        wakeWordRef.current.stop();
+        wakeWordRef.current = null;
+      }
+    }
+  }, [wakeWordEnabled, handleWakeWord]);
+
+  const toggleWakeWord = useCallback(() => {
+    setWakeWordEnabled((prev) => !prev);
+  }, []);
 
   const playYouTube = useCallback(async (query: string) => {
     try {
@@ -503,6 +569,11 @@ export default function ChatInterface() {
     }
   };
 
+  // Keep sendMessage ref updated for wake word handler
+  useEffect(() => {
+    sendMessageRef.current = sendMessage;
+  });
+
   // Show onboarding for first-time users
   if (showOnboarding) {
     return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
@@ -535,6 +606,8 @@ export default function ChatInterface() {
         onClose={() => setIsSettingsOpen(false)}
         voiceEnabled={voiceEnabled}
         onToggleVoice={handleToggleVoice}
+        wakeWordEnabled={wakeWordEnabled}
+        onToggleWakeWord={toggleWakeWord}
         allowedTypes={allowedTypes}
         onResetPermissions={handleResetPermissions}
         onClearChats={handleClearChats}
@@ -572,9 +645,28 @@ export default function ChatInterface() {
           </button>
         </div>
 
-        <p className="text-xs text-gray-600 hidden sm:block">
-          Ctrl+K New Chat · Ctrl+H History · Ctrl+, Settings
-        </p>
+        {/* Wake Word Toggle + Shortcuts */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleWakeWord}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border text-xs sm:text-sm transition-all ${
+              wakeWordEnabled
+                ? wakeWordListening
+                  ? "bg-purple-600/20 border-purple-500/30 text-purple-400 animate-pulse"
+                  : "bg-purple-600/20 border-purple-500/30 text-purple-400"
+                : "bg-white/5 border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10"
+            }`}
+            title={wakeWordEnabled ? 'Say "Laila" to activate (listening...)' : 'Enable wake word "Laila"'}
+          >
+            {wakeWordEnabled ? <Ear size={16} /> : <EarOff size={16} />}
+            <span className="hidden sm:inline">
+              {wakeWordEnabled ? (wakeWordListening ? "Listening..." : "Wake On") : "Wake Off"}
+            </span>
+          </button>
+          <p className="text-xs text-gray-600 hidden lg:block">
+            Ctrl+K New Chat · Ctrl+H History
+          </p>
+        </div>
 
         <button
           onClick={() => setIsTaskPanelOpen(true)}
