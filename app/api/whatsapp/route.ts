@@ -12,39 +12,88 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No contact provided" }, { status: 400 });
     }
 
-    // AppleScript to open WhatsApp, search contact, paste message, and send
-    // Uses clipboard paste instead of keystroke to avoid typos
-    // Escapes special characters for AppleScript string
+    // Escape special characters for AppleScript strings
     const safeContact = contact.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     const safeMessage = message ? message.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : "";
 
+    // AppleScript for native macOS WhatsApp app
+    // Clicks directly on the Search field instead of using Cmd+N
+    // Uses clipboard paste to avoid typos
     const script = `
       tell application "WhatsApp" to activate
       delay 2
 
       tell application "System Events"
         tell process "WhatsApp"
-          -- First press Escape to close any open dialogs/panels
+          -- Press Escape to close any open panels
           key code 53
           delay 0.5
 
-          -- Open new chat search using Cmd+N
-          keystroke "n" using command down
-          delay 2
+          -- Try to find and click the Search field in the native WhatsApp Mac app
+          -- Method 1: Look for the search text field by placeholder text
+          set searchClicked to false
+          try
+            set allTextFields to every text field of window 1
+            repeat with aField in allTextFields
+              set pVal to ""
+              try
+                set pVal to value of attribute "AXPlaceholderValue" of aField
+              end try
+              if pVal contains "Search" or pVal contains "search" then
+                click aField
+                set searchClicked to true
+                exit repeat
+              end if
+            end repeat
+          end try
 
-          -- Use clipboard to paste contact name (avoids typos)
+          -- Method 2: If search field not found directly, try searching in groups/scroll areas
+          if not searchClicked then
+            try
+              set allGroups to every group of window 1
+              repeat with aGroup in allGroups
+                try
+                  set groupFields to every text field of aGroup
+                  repeat with gField in groupFields
+                    set pVal2 to ""
+                    try
+                      set pVal2 to value of attribute "AXPlaceholderValue" of gField
+                    end try
+                    if pVal2 contains "Search" or pVal2 contains "search" then
+                      click gField
+                      set searchClicked to true
+                      exit repeat
+                    end if
+                  end repeat
+                end try
+                if searchClicked then exit repeat
+              end repeat
+            end try
+          end if
+
+          -- Method 3: Fallback - try Cmd+F for search
+          if not searchClicked then
+            keystroke "f" using command down
+            delay 0.5
+          end if
+
+          delay 1
+
+          -- Clear any existing text and paste the contact name
+          keystroke "a" using command down
+          delay 0.2
           set the clipboard to "${safeContact}"
           keystroke "v" using command down
           delay 3
 
-          -- Press down arrow to select first search result, then Enter to open chat
+          -- Select first search result
           key code 125
           delay 0.5
           key code 36
           delay 2
 
           ${message ? `
-          -- Use clipboard to paste message (avoids typos like "How areyu")
+          -- Paste message using clipboard (avoids typos)
           set the clipboard to "${safeMessage}"
           keystroke "v" using command down
           delay 0.5
@@ -58,7 +107,7 @@ export async function POST(request: NextRequest) {
     `;
 
     await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, {
-      timeout: 25000,
+      timeout: 30000,
       shell: "/bin/zsh",
     });
 

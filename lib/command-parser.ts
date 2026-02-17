@@ -97,6 +97,7 @@ Rules for commands:
 - For playing songs/videos/music on YouTube, ALWAYS use type play_youtube with just the song/video name as the command
 - For WhatsApp messages, ALWAYS use type send_whatsapp with format "contact_name::message". If user just says "open WhatsApp chat with X" without a message, use "contact_name::" (empty message after ::)
 - IMPORTANT for WhatsApp: Use the EXACT name the user says for the contact. Spell names carefully - e.g., "Saqib" not "Sakib", use proper spelling. The contact name must match exactly how it's saved in the user's WhatsApp contacts
+- For WhatsApp: Understand informal/natural speech like "open WhatsApp and Saqib and msg him how are you" → this means send "how are you" to Saqib. If the user mentions a contact but no clear message, ask them what message to send. If they mention both contact AND message, send it directly
 - For searching Google: open "https://www.google.com/search?q=QUERY"
 - For file listing, use: ls with appropriate path
 - For system info, use appropriate macOS commands (date, pmset, df, system_profiler, etc.)
@@ -129,6 +130,18 @@ Assistant: "Let me text Ahmed on WhatsApp! [COMMAND: send_whatsapp | Ahmed::hell
 
 User: "Open my WhatsApp chat with Ali"
 Assistant: "Opening Ali's chat on WhatsApp! [COMMAND: send_whatsapp | Ali:: | Open WhatsApp chat with Ali]"
+
+User: "open WhatsApp and Saqib and do a message to him"
+Assistant: "Sure! What message would you like me to send to Saqib on WhatsApp?"
+
+User: "send message to Saqib how are you"
+Assistant: "Let me send that to Saqib! [COMMAND: send_whatsapp | Saqib::how are you | Send how are you to Saqib on WhatsApp]"
+
+User: "message Saqib on WhatsApp saying I'll be there in 10 minutes"
+Assistant: "Sending that to Saqib now! [COMMAND: send_whatsapp | Saqib::I'll be there in 10 minutes | Send message to Saqib on WhatsApp]"
+
+User: "WhatsApp Saqib hello"
+Assistant: "Texting Saqib on WhatsApp! [COMMAND: send_whatsapp | Saqib::hello | Send hello to Saqib on WhatsApp]"
 
 User: "What's on my desktop?"
 Assistant: "Let me check! [COMMAND: file_op | ls -la ~/Desktop | List all files on Desktop]"
