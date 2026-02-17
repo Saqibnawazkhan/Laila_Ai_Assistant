@@ -134,10 +134,53 @@ export default function ChatInterface() {
     }
   }, [speakAndAnimate]);
 
+  const sendWhatsApp = useCallback(async (value: string) => {
+    try {
+      // Parse "contact::message" format
+      const parts = value.split("::");
+      const contact = parts[0]?.trim();
+      const message = parts[1]?.trim() || "";
+
+      if (!contact) throw new Error("No contact specified");
+
+      const res = await fetch("/api/whatsapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contact, message }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.output },
+        ]);
+        speakAndAnimate(message ? `Message sent to ${contact}!` : `Opened chat with ${contact}!`);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.output },
+        ]);
+        speakAndAnimate("Sorry, I had trouble with WhatsApp.");
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Sorry, I couldn't send the WhatsApp message. Make sure WhatsApp is installed." },
+      ]);
+      setAvatarStatus("idle");
+    }
+  }, [speakAndAnimate]);
+
   const executeCommand = useCallback(async (command: SystemCommand) => {
     // Handle YouTube play commands specially
     if (command.type === "play_youtube") {
       return playYouTube(command.command);
+    }
+
+    // Handle WhatsApp messages specially
+    if (command.type === "send_whatsapp") {
+      return sendWhatsApp(command.command);
     }
 
     try {
@@ -172,7 +215,7 @@ export default function ChatInterface() {
       ]);
       setAvatarStatus("idle");
     }
-  }, [speakAndAnimate, playYouTube]);
+  }, [speakAndAnimate, playYouTube, sendWhatsApp]);
 
   const handleAllowCommand = () => {
     if (pendingCommand) {

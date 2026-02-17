@@ -41,6 +41,7 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
     terminal: "terminal commands",
     system_info: "system info",
     play_youtube: "playing YouTube videos",
+    send_whatsapp: "sending WhatsApp messages",
   };
 
   const config = riskConfig[command.risk];
