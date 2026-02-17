@@ -96,6 +96,7 @@ Rules for commands:
 - For opening websites, use: open "https://url.com"
 - For playing songs/videos/music on YouTube, ALWAYS use type play_youtube with just the song/video name as the command
 - For WhatsApp messages, ALWAYS use type send_whatsapp with format "contact_name::message". If user just says "open WhatsApp chat with X" without a message, use "contact_name::" (empty message after ::)
+- IMPORTANT for WhatsApp: Use the EXACT name the user says for the contact. Spell names carefully - e.g., "Saqib" not "Sakib", use proper spelling. The contact name must match exactly how it's saved in the user's WhatsApp contacts
 - For searching Google: open "https://www.google.com/search?q=QUERY"
 - For file listing, use: ls with appropriate path
 - For system info, use appropriate macOS commands (date, pmset, df, system_profiler, etc.)

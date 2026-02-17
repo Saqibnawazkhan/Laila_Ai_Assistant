@@ -13,25 +13,29 @@ export async function POST(request: NextRequest) {
     }
 
     // AppleScript to open WhatsApp, search contact, type message, and send
+    // Uses Cmd+F for search (more reliable than Cmd+N in newer WhatsApp versions)
     const script = `
       tell application "WhatsApp" to activate
-      delay 2
+      delay 2.5
 
       tell application "System Events"
         tell process "WhatsApp"
-          -- Open new chat / search
+          -- Click on the search/new chat area (Cmd+N for new chat)
           keystroke "n" using command down
-          delay 1
-
-          -- Type contact name to search
-          keystroke "${contact.replace(/"/g, '\\"')}"
           delay 1.5
 
-          -- Press down arrow to select first result, then Enter
+          -- Clear any existing text and type contact name
+          keystroke "a" using command down
+          delay 0.2
+          keystroke "${contact.replace(/"/g, '\\"')}"
+          delay 2.5
+
+          -- Press down arrow to select first search result
           key code 125
-          delay 0.3
+          delay 0.5
+          -- Press Enter to open the chat
           key code 36
-          delay 1
+          delay 1.5
 
           ${message ? `
           -- Type the message
@@ -40,13 +44,14 @@ export async function POST(request: NextRequest) {
 
           -- Press Enter to send
           key code 36
+          delay 0.5
           ` : ""}
         end tell
       end tell
     `;
 
     await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, {
-      timeout: 15000,
+      timeout: 20000,
       shell: "/bin/zsh",
     });
 
