@@ -13,7 +13,7 @@ import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
-import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS } from "@/lib/speech";
+import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
 import {
   parseCommandFromResponse,
   cleanResponseText,
@@ -115,12 +115,8 @@ export default function ChatInterface() {
 
   // Load voices on mount and unlock TTS on first user interaction
   useEffect(() => {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
-    }
+    // Initialize voice loading early (Chrome loads asynchronously)
+    initVoices();
 
     // Chrome requires a user gesture before TTS works
     // Unlock on first click/touch anywhere on the page
@@ -261,13 +257,14 @@ export default function ChatInterface() {
     [speakAndAnimate]
   );
 
-  // Initialize wake word listener - always on
+  // Initialize wake word listener - starts after first user gesture
+  // Chrome requires a user gesture (click/tap) before allowing microphone access
+  const wakeWordInitialized = useRef(false);
+
   useEffect(() => {
     const onWake = (remaining: string) => {
       handleWakeWordRef.current(remaining);
       // Restart listener after a delay
-      // The listener's isActive stays true, so it will auto-restart via onend
-      // But as a safety net, explicitly restart after processing
       setTimeout(() => {
         if (wakeWordRef.current) {
           wakeWordRef.current.start();
@@ -275,13 +272,33 @@ export default function ChatInterface() {
       }, 2000);
     };
 
-    const listener = createWakeWordListener(onWake, setWakeWordListening);
-    wakeWordRef.current = listener;
-    listener.start();
+    const initWakeWord = () => {
+      if (wakeWordInitialized.current) return;
+      wakeWordInitialized.current = true;
+
+      const listener = createWakeWordListener(onWake, setWakeWordListening);
+      wakeWordRef.current = listener;
+      listener.start();
+
+      // Remove the gesture listeners once started
+      document.removeEventListener("click", initWakeWord);
+      document.removeEventListener("touchstart", initWakeWord);
+      document.removeEventListener("keydown", initWakeWord);
+    };
+
+    // Start on first user gesture (click, touch, or keypress)
+    document.addEventListener("click", initWakeWord);
+    document.addEventListener("touchstart", initWakeWord);
+    document.addEventListener("keydown", initWakeWord);
 
     return () => {
-      listener.stop();
-      wakeWordRef.current = null;
+      document.removeEventListener("click", initWakeWord);
+      document.removeEventListener("touchstart", initWakeWord);
+      document.removeEventListener("keydown", initWakeWord);
+      if (wakeWordRef.current) {
+        wakeWordRef.current.stop();
+        wakeWordRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

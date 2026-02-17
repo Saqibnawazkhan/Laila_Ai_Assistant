@@ -49,10 +49,53 @@ export function createSpeechRecognition(
 // Text-to-Speech using Web Speech API
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 let ttsUnlocked = false;
+let voicesLoaded = false;
+let cachedVoice: SpeechSynthesisVoice | null = null;
+
+// Load and cache the preferred voice
+function loadPreferredVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+
+  voicesLoaded = true;
+
+  // Try to pick a female English voice
+  const preferred = voices.find(
+    (v) =>
+      v.lang.startsWith("en") &&
+      (v.name.toLowerCase().includes("samantha") ||
+        v.name.toLowerCase().includes("karen") ||
+        v.name.toLowerCase().includes("female") ||
+        v.name.toLowerCase().includes("zira") ||
+        v.name.toLowerCase().includes("fiona"))
+  ) || voices.find((v) => v.lang.startsWith("en"));
+
+  cachedVoice = preferred || null;
+  return cachedVoice;
+}
+
+// Initialize voices - call this early
+export function initVoices(): void {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+  // Try loading immediately
+  loadPreferredVoice();
+
+  // Also listen for async voice loading (Chrome loads voices asynchronously)
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadPreferredVoice();
+  };
+}
 
 // Must be called from a user gesture (click/tap) to unlock TTS in Chrome
 export function unlockTTS(): void {
   if (ttsUnlocked || typeof window === "undefined" || !window.speechSynthesis) return;
+
+  // Load voices if not already loaded
+  if (!voicesLoaded) loadPreferredVoice();
+
   const u = new SpeechSynthesisUtterance("");
   u.volume = 0;
   window.speechSynthesis.speak(u);
@@ -77,49 +120,73 @@ export function speakText(
   // Chrome bug: need a small delay after cancel() before speak()
   // Otherwise the new utterance is silently dropped
   setTimeout(() => {
+    // Ensure voices are loaded
+    if (!voicesLoaded) loadPreferredVoice();
+
     const utterance = new SpeechSynthesisUtterance(text);
     currentUtterance = utterance;
 
-    // Try to pick a female English voice
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(
-      (v) =>
-        v.lang.startsWith("en") &&
-        (v.name.toLowerCase().includes("samantha") ||
-          v.name.toLowerCase().includes("karen") ||
-          v.name.toLowerCase().includes("female") ||
-          v.name.toLowerCase().includes("zira") ||
-          v.name.toLowerCase().includes("fiona"))
-    ) || voices.find((v) => v.lang.startsWith("en"));
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    if (cachedVoice) {
+      utterance.voice = cachedVoice;
     }
 
     utterance.rate = 1.0;
     utterance.pitch = 1.1;
     utterance.volume = 1;
 
-    utterance.onstart = () => onStart?.();
-    utterance.onend = () => {
+    let started = false;
+    let ended = false;
+
+    const fireEnd = () => {
+      if (ended) return;
+      ended = true;
       currentUtterance = null;
       onEnd?.();
     };
-    utterance.onerror = () => {
-      currentUtterance = null;
-      onEnd?.();
+
+    utterance.onstart = () => {
+      started = true;
+      onStart?.();
+    };
+    utterance.onend = fireEnd;
+    utterance.onerror = (e) => {
+      // "interrupted" happens when we cancel() to speak something new - not a real error
+      if (e.error !== "interrupted") {
+        console.warn("TTS error:", e.error);
+      }
+      fireEnd();
     };
 
     window.speechSynthesis.speak(utterance);
 
     // Chrome bug: speechSynthesis can get stuck, force a resume
-    // This handles cases where Chrome pauses synthesis in background tabs
     setTimeout(() => {
       if (window.speechSynthesis.paused) {
         window.speechSynthesis.resume();
       }
     }, 100);
-  }, 150);
+
+    // Safety net: if TTS didn't start after 2 seconds, fire onEnd
+    // This prevents the UI from getting stuck in "talking" state
+    setTimeout(() => {
+      if (!started && !ended) {
+        console.warn("TTS did not start, firing safety onEnd");
+        fireEnd();
+      }
+    }, 2000);
+
+    // Chrome bug: long utterances get cut off at ~15 seconds
+    // Workaround: periodically call resume() to keep it alive
+    const keepAlive = setInterval(() => {
+      if (ended || !window.speechSynthesis.speaking) {
+        clearInterval(keepAlive);
+        return;
+      }
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }, 10000);
+
+  }, 200);
 }
 
 export function stopSpeaking(): void {
@@ -151,7 +218,7 @@ export function createWakeWordListener(
       : null;
 
   // Word-boundary regex patterns for wake word detection
-  const wakeRegex = /\b(laila|layla|leila|leyla)\b/i;
+  const wakeRegex = /\b(laila|layla|leila|leyla|lila|lyla)\b/i;
 
   function startListening() {
     if (!SpeechRecognitionAPI || isRunning || isPaused || !isActive) return;
@@ -169,7 +236,7 @@ export function createWakeWordListener(
       recognition.lang = "en-US";
       recognition.interimResults = false;
       recognition.continuous = true;
-      recognition.maxAlternatives = 1;
+      recognition.maxAlternatives = 3;
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         if (isPaused || isSpeaking()) return;
@@ -177,27 +244,30 @@ export function createWakeWordListener(
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (!event.results[i].isFinal) continue;
 
-          const transcript = event.results[i][0].transcript.toLowerCase().trim();
-          const confidence = event.results[i][0].confidence;
+          // Check all alternatives for the wake word
+          for (let alt = 0; alt < event.results[i].length; alt++) {
+            const transcript = event.results[i][alt].transcript.toLowerCase().trim();
+            const confidence = event.results[i][alt].confidence;
 
-          if (confidence < 0.5) continue;
+            if (confidence < 0.3) continue;
 
-          const match = transcript.match(wakeRegex);
+            const match = transcript.match(wakeRegex);
 
-          if (match) {
-            const matchEnd = match.index! + match[0].length;
-            const remaining = transcript.slice(matchEnd).trim();
+            if (match) {
+              const matchEnd = match.index! + match[0].length;
+              const remaining = transcript.slice(matchEnd).trim();
 
-            // Stop recognition but keep isActive true so we can restart
-            if (recognition) {
-              try { recognition.stop(); } catch { /* ok */ }
-              recognition = null;
+              // Stop recognition but keep isActive true so we can restart
+              if (recognition) {
+                try { recognition.stop(); } catch { /* ok */ }
+                recognition = null;
+              }
+              isRunning = false;
+              onListeningChange(false);
+
+              onWake(remaining);
+              return;
             }
-            isRunning = false;
-            onListeningChange(false);
-
-            onWake(remaining);
-            return;
           }
         }
       };
@@ -209,7 +279,7 @@ export function createWakeWordListener(
         if (isActive && !isPaused) {
           setTimeout(() => {
             if (isActive && !isPaused) startListening();
-          }, 500);
+          }, 300);
         }
       };
 
@@ -219,9 +289,10 @@ export function createWakeWordListener(
           if (isActive && !isPaused) {
             setTimeout(() => {
               if (isActive && !isPaused) startListening();
-            }, 1000);
+            }, 500);
           }
         } else if (event.error === "not-allowed") {
+          console.warn("Microphone permission denied for wake word listener");
           isActive = false;
           onListeningChange(false);
         }
@@ -271,7 +342,7 @@ export function createWakeWordListener(
         // Still speaking, try again
         resumeListening();
       }
-    }, 800);
+    }, 600);
   }
 
   return {
