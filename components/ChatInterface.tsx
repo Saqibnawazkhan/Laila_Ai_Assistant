@@ -634,13 +634,20 @@ export default function ChatInterface() {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Something went wrong";
+      const isRateLimit = errorMessage.includes("overwhelmed") || errorMessage.includes("rate") || errorMessage.includes("429");
+      const displayMessage = isRateLimit
+        ? "Hold on, Saqib! I'm getting too many requests right now. Give me a few seconds and try again."
+        : `Sorry, I ran into an issue: ${errorMessage}. Please check your API key in .env.local and restart the server.`;
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `Sorry, I ran into an issue: ${errorMessage}. Please check your API key in .env.local and restart the server.`,
+          content: displayMessage,
         },
       ]);
+      if (isRateLimit) {
+        speakAndAnimate("Hold on Saqib, give me a few seconds and try again.");
+      }
       setAvatarStatus("idle");
     } finally {
       setIsLoading(false);
