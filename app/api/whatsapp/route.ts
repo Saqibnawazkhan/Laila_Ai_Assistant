@@ -12,34 +12,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No contact provided" }, { status: 400 });
     }
 
-    // AppleScript to open WhatsApp, search contact, type message, and send
-    // Uses Cmd+F for search (more reliable than Cmd+N in newer WhatsApp versions)
+    // AppleScript to open WhatsApp, search contact, paste message, and send
+    // Uses clipboard paste instead of keystroke to avoid typos
+    // Escapes special characters for AppleScript string
+    const safeContact = contact.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const safeMessage = message ? message.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : "";
+
     const script = `
       tell application "WhatsApp" to activate
-      delay 2.5
+      delay 2
 
       tell application "System Events"
         tell process "WhatsApp"
-          -- Click on the search/new chat area (Cmd+N for new chat)
+          -- First press Escape to close any open dialogs/panels
+          key code 53
+          delay 0.5
+
+          -- Open new chat search using Cmd+N
           keystroke "n" using command down
-          delay 1.5
+          delay 2
 
-          -- Clear any existing text and type contact name
-          keystroke "a" using command down
-          delay 0.2
-          keystroke "${contact.replace(/"/g, '\\"')}"
-          delay 2.5
+          -- Use clipboard to paste contact name (avoids typos)
+          set the clipboard to "${safeContact}"
+          keystroke "v" using command down
+          delay 3
 
-          -- Press down arrow to select first search result
+          -- Press down arrow to select first search result, then Enter to open chat
           key code 125
           delay 0.5
-          -- Press Enter to open the chat
           key code 36
-          delay 1.5
+          delay 2
 
           ${message ? `
-          -- Type the message
-          keystroke "${message.replace(/"/g, '\\"')}"
+          -- Use clipboard to paste message (avoids typos like "How areyu")
+          set the clipboard to "${safeMessage}"
+          keystroke "v" using command down
           delay 0.5
 
           -- Press Enter to send
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
     `;
 
     await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, {
-      timeout: 20000,
+      timeout: 25000,
       shell: "/bin/zsh",
     });
 
