@@ -61,26 +61,26 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
   };
 
   return (
-    <div className="border-t border-white/10 bg-black/40 backdrop-blur-xl p-4">
-      <div className="max-w-3xl mx-auto flex items-end gap-2">
+    <div className="border-t border-white/10 bg-black/40 backdrop-blur-xl p-2 sm:p-4 safe-area-bottom">
+      <div className="max-w-3xl mx-auto flex items-end gap-1.5 sm:gap-2">
         {/* Voice toggle button */}
         <button
           onClick={onToggleVoice}
-          className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+          className={`flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-colors ${
             voiceEnabled
               ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
               : "bg-white/5 text-gray-500 border border-white/10"
           }`}
           title={voiceEnabled ? "Mute Laila's voice" : "Enable Laila's voice"}
         >
-          {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
         </button>
 
         {/* Mic button */}
         <motion.button
           onClick={toggleListening}
           disabled={disabled}
-          className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 ${
+          className={`flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 ${
             isListening
               ? "bg-red-500 text-white"
               : "bg-white/5 text-gray-400 border border-white/10 hover:text-purple-400"
@@ -89,7 +89,7 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
           transition={{ duration: 1, repeat: Infinity }}
           title={isListening ? "Stop listening" : "Speak to Laila"}
         >
-          {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+          {isListening ? <MicOff size={16} /> : <Mic size={16} />}
         </motion.button>
 
         {/* Text input */}
@@ -101,8 +101,8 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
             placeholder={isListening ? "Listening..." : "Message Laila..."}
             disabled={disabled || isListening}
             rows={1}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 disabled:opacity-50"
-            style={{ minHeight: "44px", maxHeight: "120px" }}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 disabled:opacity-50"
+            style={{ minHeight: "40px", maxHeight: "120px" }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";
@@ -115,9 +115,9 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
         <button
           onClick={handleSend}
           disabled={disabled || !input.trim()}
-          className="flex-shrink-0 w-11 h-11 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:opacity-50 flex items-center justify-center transition-colors"
+          className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:opacity-50 flex items-center justify-center transition-colors"
         >
-          <Send size={18} className="text-white" />
+          <Send size={16} className="text-white" />
         </button>
       </div>
     </div>

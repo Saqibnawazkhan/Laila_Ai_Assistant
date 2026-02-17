@@ -41,3 +41,29 @@ body {
   transition-property: background-color, border-color;
   transition-duration: 150ms;
 }
+
+/* Mobile safe areas */
+.safe-area-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* Prevent text selection on buttons */
+button {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Mobile viewport fix */
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Improve touch scrolling */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}

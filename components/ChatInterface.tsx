@@ -2,13 +2,16 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo } from "lucide-react";
+import { ListTodo, Settings, Clock } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
 import TypingIndicator from "./TypingIndicator";
 import PermissionModal from "./PermissionModal";
 import TaskPanel from "./TaskPanel";
+import OnboardingScreen from "./OnboardingScreen";
+import SettingsPanel from "./SettingsPanel";
+import ChatHistoryPanel from "./ChatHistoryPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking } from "@/lib/speech";
 import {
@@ -26,6 +29,16 @@ import {
   parseTaskFromResponse,
   cleanTaskTags,
 } from "@/lib/tasks";
+import {
+  ChatSession,
+  loadSessions,
+  saveSessions,
+  getActiveSessionId,
+  setActiveSessionId,
+  createSession,
+  updateSession,
+  deleteSession as deleteChatSession,
+} from "@/lib/chat-history";
 
 interface Message {
   role: "user" | "assistant";
@@ -60,13 +73,34 @@ export default function ChatInterface() {
   const [allowedTypes, setAllowedTypes] = useState<Set<string>>(new Set());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [activeSessionId, setActiveSession] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load permissions and tasks on mount
+  // Load everything on mount
   useEffect(() => {
     setAllowedTypes(loadPermissions());
     setTasks(loadTasks());
+    setChatSessions(loadSessions());
+    setActiveSession(getActiveSessionId());
+
+    // Show onboarding if first time
+    const onboarded = localStorage.getItem("laila_onboarded");
+    if (!onboarded) {
+      setShowOnboarding(true);
+    }
   }, []);
+
+  // Auto-save messages to active session
+  useEffect(() => {
+    if (!activeSessionId || messages.length <= 1) return;
+    const updated = updateSession(chatSessions, activeSessionId, messages);
+    setChatSessions(updated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, activeSessionId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +118,37 @@ export default function ChatInterface() {
         window.speechSynthesis.getVoices();
       };
     }
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + K = New Chat
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        handleNewChat();
+      }
+      // Ctrl/Cmd + H = Toggle History
+      if ((e.metaKey || e.ctrlKey) && e.key === "h") {
+        e.preventDefault();
+        setIsHistoryOpen((prev) => !prev);
+      }
+      // Ctrl/Cmd + , = Settings
+      if ((e.metaKey || e.ctrlKey) && e.key === ",") {
+        e.preventDefault();
+        setIsSettingsOpen((prev) => !prev);
+      }
+      // Escape = Close panels
+      if (e.key === "Escape") {
+        setIsTaskPanelOpen(false);
+        setIsSettingsOpen(false);
+        setIsHistoryOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleToggleVoice = useCallback(() => {
@@ -112,7 +177,6 @@ export default function ChatInterface() {
 
   const playYouTube = useCallback(async (query: string) => {
     try {
-      // Step 1: Search YouTube and get the direct video URL
       const searchRes = await fetch("/api/youtube", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +187,6 @@ export default function ChatInterface() {
 
       if (!videoUrl) throw new Error("Couldn't find the video");
 
-      // Step 2: Open the direct video URL via system command
       const execRes = await fetch("/api/system", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -151,7 +214,6 @@ export default function ChatInterface() {
 
   const sendWhatsApp = useCallback(async (value: string) => {
     try {
-      // Parse "contact::message" format
       const parts = value.split("::");
       const contact = parts[0]?.trim();
       const message = parts[1]?.trim() || "";
@@ -188,12 +250,10 @@ export default function ChatInterface() {
   }, [speakAndAnimate]);
 
   const executeCommand = useCallback(async (command: SystemCommand) => {
-    // Handle YouTube play commands specially
     if (command.type === "play_youtube") {
       return playYouTube(command.command);
     }
 
-    // Handle WhatsApp messages specially
     if (command.type === "send_whatsapp") {
       return sendWhatsApp(command.command);
     }
@@ -241,12 +301,10 @@ export default function ChatInterface() {
 
   const handleAlwaysAllowCommand = () => {
     if (pendingCommand) {
-      // Save this type as permanently allowed
       const newPermissions = new Set(allowedTypes);
       newPermissions.add(pendingCommand.type);
       setAllowedTypes(newPermissions);
       savePermissions(newPermissions);
-
       executeCommand(pendingCommand);
     }
     setPendingCommand(null);
@@ -320,6 +378,47 @@ export default function ChatInterface() {
     [tasks]
   );
 
+  // Chat history handlers
+  const handleNewChat = useCallback(() => {
+    setMessages([{ role: "assistant", content: LAILA_GREETING }]);
+    setActiveSession(null);
+    setActiveSessionId(null);
+  }, []);
+
+  const handleSelectSession = useCallback((session: ChatSession) => {
+    setMessages(
+      session.messages.length > 0
+        ? session.messages
+        : [{ role: "assistant", content: LAILA_GREETING }]
+    );
+    setActiveSession(session.id);
+    setActiveSessionId(session.id);
+  }, []);
+
+  const handleDeleteSession = useCallback(
+    (id: string) => {
+      const updated = deleteChatSession(chatSessions, id);
+      setChatSessions(updated);
+      if (activeSessionId === id) {
+        handleNewChat();
+      }
+    },
+    [chatSessions, activeSessionId, handleNewChat]
+  );
+
+  const handleResetPermissions = useCallback(() => {
+    setAllowedTypes(new Set());
+    savePermissions(new Set());
+  }, []);
+
+  const handleClearChats = useCallback(() => {
+    setChatSessions([]);
+    saveSessions([]);
+    setActiveSession(null);
+    setActiveSessionId(null);
+    handleNewChat();
+  }, [handleNewChat]);
+
   const sendMessage = async (content: string) => {
     const userMessage: Message = { role: "user", content };
     const updatedMessages = [...messages, userMessage];
@@ -327,6 +426,17 @@ export default function ChatInterface() {
     setIsLoading(true);
     setAvatarStatus("thinking");
     stopSpeaking();
+
+    // Create a new session if we don't have one
+    if (!activeSessionId) {
+      const newSession = createSession(content);
+      newSession.messages = updatedMessages;
+      const updatedSessions = [newSession, ...chatSessions];
+      setChatSessions(updatedSessions);
+      saveSessions(updatedSessions);
+      setActiveSession(newSession.id);
+      setActiveSessionId(newSession.id);
+    }
 
     try {
       const response = await fetch("/api/chat", {
@@ -367,12 +477,10 @@ export default function ChatInterface() {
       }
 
       if (command) {
-        // If this command type is already allowed, execute immediately
         if (allowedTypes.has(command.type)) {
           speakAndAnimate(cleanText);
           executeCommand(command);
         } else {
-          // First time - show permission modal
           setPendingCommand(command);
           speakAndAnimate(cleanText);
         }
@@ -395,6 +503,13 @@ export default function ChatInterface() {
     }
   };
 
+  // Show onboarding for first-time users
+  if (showOnboarding) {
+    return <OnboardingScreen onComplete={() => setShowOnboarding(false)} />;
+  }
+
+  const pendingTaskCount = tasks.filter((t) => !t.completed).length;
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
       {/* Permission Modal */}
@@ -414,31 +529,80 @@ export default function ChatInterface() {
         onDelete={handleDeleteTask}
       />
 
+      {/* Settings Panel */}
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        voiceEnabled={voiceEnabled}
+        onToggleVoice={handleToggleVoice}
+        allowedTypes={allowedTypes}
+        onResetPermissions={handleResetPermissions}
+        onClearChats={handleClearChats}
+      />
+
+      {/* Chat History Panel */}
+      <ChatHistoryPanel
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        sessions={chatSessions}
+        activeSessionId={activeSessionId}
+        onSelectSession={handleSelectSession}
+        onDeleteSession={handleDeleteSession}
+        onNewChat={handleNewChat}
+      />
+
+      {/* Top Navigation Bar */}
+      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-5 py-2 border-b border-white/5 bg-black/30 backdrop-blur-sm">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button
+            onClick={() => setIsHistoryOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+            title="Chat History (Ctrl+H)"
+          >
+            <Clock size={16} />
+            <span className="hidden sm:inline">History</span>
+          </button>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+            title="Settings (Ctrl+,)"
+          >
+            <Settings size={16} />
+            <span className="hidden sm:inline">Settings</span>
+          </button>
+        </div>
+
+        <p className="text-xs text-gray-600 hidden sm:block">
+          Ctrl+K New Chat · Ctrl+H History · Ctrl+, Settings
+        </p>
+
+        <button
+          onClick={() => setIsTaskPanelOpen(true)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+          title="Tasks"
+        >
+          <ListTodo size={16} />
+          <span className="hidden sm:inline">Tasks</span>
+          {pendingTaskCount > 0 && (
+            <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+              {pendingTaskCount}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Avatar Section */}
       <motion.div
-        className="flex-shrink-0 flex justify-center pt-8 pb-4 border-b border-white/5 bg-black/20 relative"
+        className="flex-shrink-0 flex justify-center pt-4 sm:pt-8 pb-2 sm:pb-4 border-b border-white/5 bg-black/20"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <Avatar status={avatarStatus} />
-
-        {/* Task Button */}
-        <button
-          onClick={() => setIsTaskPanelOpen(true)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all"
-        >
-          <ListTodo size={18} />
-          {tasks.filter((t) => !t.completed).length > 0 && (
-            <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
-              {tasks.filter((t) => !t.completed).length}
-            </span>
-          )}
-        </button>
       </motion.div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence>
             {messages.map((msg, index) => (
