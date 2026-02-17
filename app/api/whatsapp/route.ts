@@ -86,13 +86,29 @@ export async function POST(request: NextRequest) {
           keystroke "v" using command down
           delay 3
 
-          -- Select first search result
+          -- Select the first search result
+          -- In native WhatsApp Mac, press Enter from search to open first result
+          key code 36
+          delay 1
+
+          -- If Enter didn't work, try down arrow then Enter
+          -- (this handles both old and new WhatsApp versions)
           key code 125
-          delay 0.5
+          delay 0.3
           key code 36
           delay 2
 
           ${message ? `
+          -- Click on the message input area to make sure we're typing there
+          -- Try to find the message text field
+          try
+            set msgFields to every text field of window 1
+            if (count of msgFields) > 1 then
+              click item (count of msgFields) of msgFields
+              delay 0.3
+            end if
+          end try
+
           -- Paste message using clipboard (avoids typos)
           set the clipboard to "${safeMessage}"
           keystroke "v" using command down
