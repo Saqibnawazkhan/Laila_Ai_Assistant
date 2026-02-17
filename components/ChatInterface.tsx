@@ -239,6 +239,8 @@ export default function ChatInterface() {
           ...prev,
           { role: "assistant", content: response },
         ]);
+        // Resume wake word listener so it keeps listening
+        setTimeout(() => wakeWordRef.current?.resume(), 500);
         return;
       }
 
@@ -776,6 +778,8 @@ export default function ChatInterface() {
         disabled={isLoading}
         voiceEnabled={voiceEnabled}
         onToggleVoice={handleToggleVoice}
+        onMicStart={() => wakeWordRef.current?.pause()}
+        onMicStop={() => wakeWordRef.current?.resume()}
       />
     </div>
   );

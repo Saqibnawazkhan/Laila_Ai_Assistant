@@ -10,9 +10,11 @@ interface InputBarProps {
   disabled: boolean;
   voiceEnabled: boolean;
   onToggleVoice: () => void;
+  onMicStart?: () => void;
+  onMicStop?: () => void;
 }
 
-export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice }: InputBarProps) {
+export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice, onMicStart, onMicStop }: InputBarProps) {
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -36,28 +38,40 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
+      onMicStop?.();
       return;
     }
 
-    const recognition = createSpeechRecognition(
-      (text) => {
-        // Auto-send the recognized text
-        onSend(text);
-      },
-      () => {
-        setIsListening(false);
-      },
-      (error) => {
-        console.error(error);
-        setIsListening(false);
-      }
-    );
+    // Pause wake word listener before starting mic (Chrome allows only one SpeechRecognition)
+    onMicStart?.();
 
-    if (recognition) {
-      recognitionRef.current = recognition;
-      recognition.start();
-      setIsListening(true);
-    }
+    // Small delay to let wake word listener fully stop
+    setTimeout(() => {
+      const recognition = createSpeechRecognition(
+        (text) => {
+          // Auto-send the recognized text
+          onSend(text);
+          onMicStop?.();
+        },
+        () => {
+          setIsListening(false);
+          onMicStop?.();
+        },
+        (error) => {
+          console.error(error);
+          setIsListening(false);
+          onMicStop?.();
+        }
+      );
+
+      if (recognition) {
+        recognitionRef.current = recognition;
+        recognition.start();
+        setIsListening(true);
+      } else {
+        onMicStop?.();
+      }
+    }, 300);
   };
 
   return (

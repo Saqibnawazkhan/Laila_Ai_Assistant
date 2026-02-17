@@ -29,7 +29,11 @@ export function createSpeechRecognition(
   };
 
   recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-    if (event.error === "no-speech") {
+    if (event.error === "aborted") {
+      // Normal - recognition was stopped programmatically, not an error
+      onEnd();
+      return;
+    } else if (event.error === "no-speech") {
       onError("I didn't hear anything. Try again?");
     } else if (event.error === "not-allowed") {
       onError("Microphone access denied. Please allow microphone in browser settings.");
