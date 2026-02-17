@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, Ear, EarOff } from "lucide-react";
+import { ListTodo, Settings, Clock } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -78,7 +78,6 @@ export default function ChatInterface() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSession] = useState<string | null>(null);
-  const [wakeWordEnabled, setWakeWordEnabled] = useState(false);
   const [wakeWordListening, setWakeWordListening] = useState(false);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -208,6 +207,26 @@ export default function ChatInterface() {
   // Handle wake word detection
   const handleWakeWord = useCallback(
     (remainingText: string) => {
+      const lower = remainingText.toLowerCase().trim();
+
+      // Check for "stop talking" / "stop" / "shut up" / "be quiet" commands
+      const stopPhrases = ["stop talking", "stop", "shut up", "be quiet", "quiet", "silence", "enough", "stop it", "chup"];
+      if (stopPhrases.some((phrase) => lower.includes(phrase))) {
+        stopSpeaking();
+        setAvatarStatus("idle");
+        const responses = [
+          "Okay, I'll be quiet!",
+          "Sure, stopping now!",
+          "Alright, I've stopped!",
+        ];
+        const response = responses[Math.floor(Math.random() * responses.length)];
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: response },
+        ]);
+        return;
+      }
+
       if (remainingText && remainingText.length > 2) {
         // User said "Laila, do something" - process the command directly
         sendMessageRef.current?.(remainingText);
@@ -225,51 +244,40 @@ export default function ChatInterface() {
     [speakAndAnimate]
   );
 
-  // Initialize wake word listener
+  // Initialize wake word listener - always on
   useEffect(() => {
-    if (wakeWordEnabled) {
-      // Use a wrapper that always calls the latest handleWakeWord via ref
-      const onWake = (remaining: string) => {
-        handleWakeWordRef.current(remaining);
-        // After handling, restart the listener (it was stopped by the wake detection)
-        // The speakAndAnimate will pause/resume it to avoid hearing Laila's own voice
-        setTimeout(() => {
-          if (wakeWordRef.current) {
-            wakeWordRef.current.start();
-            // Immediately pause if Laila is speaking
-            if (isSpeaking()) {
-              wakeWordRef.current.pause();
-            }
+    // Use a wrapper that always calls the latest handleWakeWord via ref
+    const onWake = (remaining: string) => {
+      handleWakeWordRef.current(remaining);
+      // After handling, restart the listener (it was stopped by the wake detection)
+      // The speakAndAnimate will pause/resume it to avoid hearing Laila's own voice
+      setTimeout(() => {
+        if (wakeWordRef.current) {
+          wakeWordRef.current.start();
+          // Immediately pause if Laila is speaking
+          if (isSpeaking()) {
+            wakeWordRef.current.pause();
           }
-        }, 500);
-      };
+        }
+      }, 500);
+    };
 
-      const listener = createWakeWordListener(onWake, setWakeWordListening);
-      wakeWordRef.current = listener;
-      listener.start();
+    const listener = createWakeWordListener(onWake, setWakeWordListening);
+    wakeWordRef.current = listener;
+    listener.start();
 
-      return () => {
-        listener.stop();
-        wakeWordRef.current = null;
-      };
-    } else {
-      if (wakeWordRef.current) {
-        wakeWordRef.current.stop();
-        wakeWordRef.current = null;
-      }
-    }
+    return () => {
+      listener.stop();
+      wakeWordRef.current = null;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wakeWordEnabled]);
+  }, []);
 
   // Keep handleWakeWord ref updated
   const handleWakeWordRef = useRef(handleWakeWord);
   useEffect(() => {
     handleWakeWordRef.current = handleWakeWord;
   }, [handleWakeWord]);
-
-  const toggleWakeWord = useCallback(() => {
-    setWakeWordEnabled((prev) => !prev);
-  }, []);
 
   const playYouTube = useCallback(async (query: string) => {
     try {
@@ -665,8 +673,6 @@ export default function ChatInterface() {
         onClose={() => setIsSettingsOpen(false)}
         voiceEnabled={voiceEnabled}
         onToggleVoice={handleToggleVoice}
-        wakeWordEnabled={wakeWordEnabled}
-        onToggleWakeWord={toggleWakeWord}
         allowedTypes={allowedTypes}
         onResetPermissions={handleResetPermissions}
         onClearChats={handleClearChats}
@@ -704,28 +710,9 @@ export default function ChatInterface() {
           </button>
         </div>
 
-        {/* Wake Word Toggle + Shortcuts */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleWakeWord}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border text-xs sm:text-sm transition-all ${
-              wakeWordEnabled
-                ? wakeWordListening
-                  ? "bg-purple-600/20 border-purple-500/30 text-purple-400 animate-pulse"
-                  : "bg-purple-600/20 border-purple-500/30 text-purple-400"
-                : "bg-white/5 border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10"
-            }`}
-            title={wakeWordEnabled ? 'Say "Laila" to activate (listening...)' : 'Enable wake word "Laila"'}
-          >
-            {wakeWordEnabled ? <Ear size={16} /> : <EarOff size={16} />}
-            <span className="hidden sm:inline">
-              {wakeWordEnabled ? (wakeWordListening ? "Listening..." : "Wake On") : "Wake Off"}
-            </span>
-          </button>
-          <p className="text-xs text-gray-600 hidden lg:block">
-            Ctrl+K New Chat · Ctrl+H History
-          </p>
-        </div>
+        <p className="text-xs text-gray-600 hidden lg:block">
+          Say &quot;Laila&quot; to activate · Ctrl+K New Chat
+        </p>
 
         <button
           onClick={() => setIsTaskPanelOpen(true)}
