@@ -13,7 +13,7 @@ import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
-import { speakText, stopSpeaking, isSpeaking, createWakeWordListener } from "@/lib/speech";
+import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS } from "@/lib/speech";
 import {
   parseCommandFromResponse,
   cleanResponseText,
@@ -113,7 +113,7 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // Load voices on mount
+  // Load voices on mount and unlock TTS on first user interaction
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
@@ -121,6 +121,21 @@ export default function ChatInterface() {
         window.speechSynthesis.getVoices();
       };
     }
+
+    // Chrome requires a user gesture before TTS works
+    // Unlock on first click/touch anywhere on the page
+    const unlock = () => {
+      unlockTTS();
+      document.removeEventListener("click", unlock);
+      document.removeEventListener("touchstart", unlock);
+    };
+    document.addEventListener("click", unlock);
+    document.addEventListener("touchstart", unlock);
+
+    return () => {
+      document.removeEventListener("click", unlock);
+      document.removeEventListener("touchstart", unlock);
+    };
   }, []);
 
   // Keyboard shortcuts
@@ -246,20 +261,16 @@ export default function ChatInterface() {
 
   // Initialize wake word listener - always on
   useEffect(() => {
-    // Use a wrapper that always calls the latest handleWakeWord via ref
     const onWake = (remaining: string) => {
       handleWakeWordRef.current(remaining);
-      // After handling, restart the listener (it was stopped by the wake detection)
-      // The speakAndAnimate will pause/resume it to avoid hearing Laila's own voice
+      // Restart listener after a delay
+      // The listener's isActive stays true, so it will auto-restart via onend
+      // But as a safety net, explicitly restart after processing
       setTimeout(() => {
         if (wakeWordRef.current) {
           wakeWordRef.current.start();
-          // Immediately pause if Laila is speaking
-          if (isSpeaking()) {
-            wakeWordRef.current.pause();
-          }
         }
-      }, 500);
+      }, 2000);
     };
 
     const listener = createWakeWordListener(onWake, setWakeWordListening);
