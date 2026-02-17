@@ -13,7 +13,7 @@ import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import { LAILA_GREETING } from "@/lib/laila-persona";
-import { speakText, stopSpeaking, createWakeWordListener } from "@/lib/speech";
+import { speakText, stopSpeaking, isSpeaking, createWakeWordListener } from "@/lib/speech";
 import {
   parseCommandFromResponse,
   cleanResponseText,
@@ -80,7 +80,7 @@ export default function ChatInterface() {
   const [activeSessionId, setActiveSession] = useState<string | null>(null);
   const [wakeWordEnabled, setWakeWordEnabled] = useState(false);
   const [wakeWordListening, setWakeWordListening] = useState(false);
-  const wakeWordRef = useRef<{ start: () => void; stop: () => void } | null>(null);
+  const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sendMessageRef = useRef<(content: string) => void>(undefined);
 
@@ -164,16 +164,33 @@ export default function ChatInterface() {
 
   const speakAndAnimate = useCallback(
     (text: string) => {
+      // Pause wake word listener so it doesn't hear Laila's own voice
+      if (wakeWordRef.current) {
+        wakeWordRef.current.pause();
+      }
+
       if (voiceEnabled) {
         setAvatarStatus("talking");
         speakText(
           text,
           () => setAvatarStatus("talking"),
-          () => setAvatarStatus("idle")
+          () => {
+            setAvatarStatus("idle");
+            // Resume wake word listener after Laila finishes speaking
+            if (wakeWordRef.current) {
+              wakeWordRef.current.resume();
+            }
+          }
         );
       } else {
         setAvatarStatus("talking");
-        setTimeout(() => setAvatarStatus("idle"), 2000);
+        setTimeout(() => {
+          setAvatarStatus("idle");
+          // Resume wake word listener
+          if (wakeWordRef.current) {
+            wakeWordRef.current.resume();
+          }
+        }, 2000);
       }
     },
     [voiceEnabled]
@@ -195,7 +212,7 @@ export default function ChatInterface() {
         // User said "Laila, do something" - process the command directly
         sendMessageRef.current?.(remainingText);
       } else {
-        // User just said "Laila" - greet and wait for command
+        // User just said "Laila" - greet and wait for next command
         const greetings = wakeGreetings.current;
         const greeting = greetings[Math.floor(Math.random() * greetings.length)];
         setMessages((prev) => [
@@ -204,24 +221,30 @@ export default function ChatInterface() {
         ]);
         speakAndAnimate(greeting);
       }
-
-      // Restart wake word listener after a delay
-      setTimeout(() => {
-        if (wakeWordRef.current && wakeWordEnabled) {
-          wakeWordRef.current.start();
-        }
-      }, 3000);
     },
-    [speakAndAnimate, wakeWordEnabled]
+    [speakAndAnimate]
   );
 
   // Initialize wake word listener
   useEffect(() => {
     if (wakeWordEnabled) {
-      const listener = createWakeWordListener(
-        handleWakeWord,
-        setWakeWordListening
-      );
+      // Use a wrapper that always calls the latest handleWakeWord via ref
+      const onWake = (remaining: string) => {
+        handleWakeWordRef.current(remaining);
+        // After handling, restart the listener (it was stopped by the wake detection)
+        // The speakAndAnimate will pause/resume it to avoid hearing Laila's own voice
+        setTimeout(() => {
+          if (wakeWordRef.current) {
+            wakeWordRef.current.start();
+            // Immediately pause if Laila is speaking
+            if (isSpeaking()) {
+              wakeWordRef.current.pause();
+            }
+          }
+        }, 500);
+      };
+
+      const listener = createWakeWordListener(onWake, setWakeWordListening);
       wakeWordRef.current = listener;
       listener.start();
 
@@ -235,7 +258,14 @@ export default function ChatInterface() {
         wakeWordRef.current = null;
       }
     }
-  }, [wakeWordEnabled, handleWakeWord]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wakeWordEnabled]);
+
+  // Keep handleWakeWord ref updated
+  const handleWakeWordRef = useRef(handleWakeWord);
+  useEffect(() => {
+    handleWakeWordRef.current = handleWakeWord;
+  }, [handleWakeWord]);
 
   const toggleWakeWord = useCallback(() => {
     setWakeWordEnabled((prev) => !prev);

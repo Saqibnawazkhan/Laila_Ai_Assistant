@@ -104,50 +104,68 @@ export function isSpeaking(): boolean {
 }
 
 // Wake word listener - continuously listens for "Laila"
+// Uses word-boundary matching and confidence checks to avoid false triggers
 export function createWakeWordListener(
   onWake: (remainingText: string) => void,
   onListeningChange: (isListening: boolean) => void
-): { start: () => void; stop: () => void } {
+): { start: () => void; stop: () => void; pause: () => void; resume: () => void } {
   let recognition: SpeechRecognition | null = null;
   let isRunning = false;
   let shouldRestart = false;
+  let isPaused = false;
 
   const SpeechRecognitionAPI =
     typeof window !== "undefined"
       ? window.SpeechRecognition || window.webkitSpeechRecognition
       : null;
 
+  // Word-boundary regex patterns for wake word detection
+  // Only match "laila" as a standalone word, not inside other words
+  const wakeRegex = /\b(laila|layla|leila|leyla)\b/i;
+
   function startListening() {
-    if (!SpeechRecognitionAPI || isRunning) return;
+    if (!SpeechRecognitionAPI || isRunning || isPaused) return;
+
+    // Don't start if Laila is currently speaking (would hear her own voice)
+    if (isSpeaking()) {
+      setTimeout(() => {
+        if (shouldRestart && !isPaused) startListening();
+      }, 1000);
+      return;
+    }
 
     recognition = new SpeechRecognitionAPI();
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.continuous = true;
-    recognition.maxAlternatives = 3;
+    recognition.maxAlternatives = 1;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      // Skip if paused or Laila is speaking
+      if (isPaused || isSpeaking()) return;
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (!event.results[i].isFinal) continue;
 
-        // Check all alternatives for the wake word
-        for (let j = 0; j < event.results[i].length; j++) {
-          const transcript = event.results[i][j].transcript.toLowerCase().trim();
+        const transcript = event.results[i][0].transcript.toLowerCase().trim();
+        const confidence = event.results[i][0].confidence;
 
-          // Check if "laila" (or common misheard variants) is in the transcript
-          const wakePatterns = ["laila", "layla", "leila", "leyla", "lyla"];
-          const matchedPattern = wakePatterns.find((p) => transcript.includes(p));
+        // Require decent confidence to avoid garbage triggers
+        if (confidence < 0.5) continue;
 
-          if (matchedPattern) {
-            // Extract text after the wake word
-            const idx = transcript.indexOf(matchedPattern);
-            const remaining = transcript.slice(idx + matchedPattern.length).trim();
+        // Check for wake word using word-boundary regex
+        const match = transcript.match(wakeRegex);
 
-            // Pause wake word listening while handling the command
-            stopListening();
-            onWake(remaining);
-            return;
-          }
+        if (match) {
+          // Extract text after the wake word
+          const matchIndex = match.index!;
+          const matchEnd = matchIndex + match[0].length;
+          const remaining = transcript.slice(matchEnd).trim();
+
+          // Stop listening and trigger wake
+          stopListening();
+          onWake(remaining);
+          return;
         }
       }
     };
@@ -156,10 +174,10 @@ export function createWakeWordListener(
       isRunning = false;
       onListeningChange(false);
       // Auto-restart if we should keep listening
-      if (shouldRestart) {
+      if (shouldRestart && !isPaused) {
         setTimeout(() => {
-          if (shouldRestart) startListening();
-        }, 300);
+          if (shouldRestart && !isPaused) startListening();
+        }, 500);
       }
     };
 
@@ -167,10 +185,10 @@ export function createWakeWordListener(
       isRunning = false;
       // Silently restart on recoverable errors
       if (event.error === "no-speech" || event.error === "aborted") {
-        if (shouldRestart) {
+        if (shouldRestart && !isPaused) {
           setTimeout(() => {
-            if (shouldRestart) startListening();
-          }, 500);
+            if (shouldRestart && !isPaused) startListening();
+          }, 1000);
         }
       } else if (event.error === "not-allowed") {
         shouldRestart = false;
@@ -189,6 +207,7 @@ export function createWakeWordListener(
 
   function stopListening() {
     shouldRestart = false;
+    isPaused = false;
     if (recognition) {
       try {
         recognition.stop();
@@ -201,11 +220,42 @@ export function createWakeWordListener(
     onListeningChange(false);
   }
 
+  function pauseListening() {
+    isPaused = true;
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch {
+        // Already stopped
+      }
+      recognition = null;
+    }
+    isRunning = false;
+    onListeningChange(false);
+  }
+
+  function resumeListening() {
+    if (!shouldRestart) return;
+    isPaused = false;
+    // Wait a moment for TTS to fully stop before resuming
+    setTimeout(() => {
+      if (shouldRestart && !isPaused && !isSpeaking()) {
+        startListening();
+      } else if (shouldRestart && !isPaused) {
+        // Still speaking, try again later
+        resumeListening();
+      }
+    }, 800);
+  }
+
   return {
     start: () => {
       shouldRestart = true;
+      isPaused = false;
       startListening();
     },
     stop: stopListening,
+    pause: pauseListening,
+    resume: resumeListening,
   };
 }
