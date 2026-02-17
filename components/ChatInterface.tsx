@@ -372,7 +372,7 @@ export default function ChatInterface() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 messages: [
-                  { role: "user", content: `I asked: "${command.description}". The system returned: "${data.output}". Please give me a brief, natural, friendly answer based on this result. Do NOT include any [COMMAND:] tags in your response.` },
+                  { role: "user", content: `I asked: "${command.description}". The system returned: "${data.output}". Please give me a brief, natural, friendly answer based on this result. End with a short follow-up like "Is there anything else I can help with?" or "What else can I do for you?". Do NOT include any [COMMAND:] or [TASK:] tags in your response.` },
                 ],
               }),
             });
