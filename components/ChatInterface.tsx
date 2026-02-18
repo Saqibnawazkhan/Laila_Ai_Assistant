@@ -13,6 +13,7 @@ import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import ConfirmDialog from "./ConfirmDialog";
+import KeyboardShortcuts from "./KeyboardShortcuts";
 import ToastContainer, { showToast } from "./Toast";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
@@ -90,6 +91,7 @@ export default function ChatInterface() {
   const [searchQuery, setSearchQuery] = useState("");
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -207,6 +209,11 @@ export default function ChatInterface() {
         e.preventDefault();
         setIsSettingsOpen((prev) => !prev);
       }
+      // Ctrl/Cmd + ? = Keyboard Shortcuts
+      if ((e.metaKey || e.ctrlKey) && (e.key === "?" || (e.shiftKey && e.key === "/"))) {
+        e.preventDefault();
+        setShowShortcuts((prev) => !prev);
+      }
       // Ctrl/Cmd + F = Toggle Search
       if ((e.metaKey || e.ctrlKey) && e.key === "f") {
         e.preventDefault();
@@ -220,6 +227,7 @@ export default function ChatInterface() {
         setIsHistoryOpen(false);
         setSearchOpen(false);
         setSearchQuery("");
+        setShowShortcuts(false);
       }
     };
 
@@ -808,6 +816,9 @@ export default function ChatInterface() {
         onAlwaysAllow={handleAlwaysAllowCommand}
         onDeny={handleDenyCommand}
       />
+
+      {/* Keyboard Shortcuts */}
+      <KeyboardShortcuts isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
       {/* Confirm Dialog */}
       <ConfirmDialog
