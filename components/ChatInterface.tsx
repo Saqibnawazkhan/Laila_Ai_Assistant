@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus, RefreshCw } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -87,6 +87,7 @@ export default function ChatInterface() {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -725,6 +726,7 @@ export default function ChatInterface() {
       } else {
         speakAndAnimate(cleanText);
       }
+      setLastFailedMessage(null);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Something went wrong";
@@ -735,10 +737,11 @@ export default function ChatInterface() {
       setMessages((prev) => [
         ...prev,
         {
-          role: "assistant",
+          role: "assistant", timestamp: new Date().toISOString(),
           content: displayMessage,
         },
       ]);
+      setLastFailedMessage(content);
       if (isRateLimit) {
         speakAndAnimate("Hold on Saqib, give me a few seconds and try again.");
       }
@@ -983,6 +986,30 @@ export default function ChatInterface() {
               ))}
           </AnimatePresence>
           {isLoading && <TypingIndicator />}
+
+          {/* Retry button for failed messages */}
+          {lastFailedMessage && !isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-center py-2"
+            >
+              <button
+                onClick={() => {
+                  const msg = lastFailedMessage;
+                  setLastFailedMessage(null);
+                  // Remove the last error message
+                  setMessages((prev) => prev.slice(0, -1));
+                  sendMessage(msg);
+                }}
+                className="flex items-center gap-2 px-4 py-2 text-xs rounded-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+              >
+                <RefreshCw size={13} />
+                Retry message
+              </button>
+            </motion.div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
