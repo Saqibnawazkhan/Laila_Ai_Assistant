@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession, saveMessages, deleteSessionDb } from "@/lib/db";
+import { getSession, saveMessages, deleteSessionDb, renameSessionDb } from "@/lib/db";
 
 // GET /api/sessions/[id] — Get a session with its messages
 export async function GET(
@@ -50,6 +50,27 @@ export async function PUT(
   } catch (error) {
     console.error("Failed to update session:", error);
     return NextResponse.json({ error: "Failed to update session" }, { status: 500 });
+  }
+}
+
+// PATCH /api/sessions/[id] — Rename a session
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { title } = await request.json();
+
+    if (!title || typeof title !== "string") {
+      return NextResponse.json({ error: "title string required" }, { status: 400 });
+    }
+
+    renameSessionDb(id, title.trim());
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to rename session:", error);
+    return NextResponse.json({ error: "Failed to rename session" }, { status: 500 });
   }
 }
 

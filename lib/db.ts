@@ -118,6 +118,11 @@ export function saveMessages(
   saveAll();
 }
 
+export function renameSessionDb(id: string, title: string): void {
+  const database = getDb();
+  database.prepare("UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?").run(title, new Date().toISOString(), id);
+}
+
 export function deleteSessionDb(id: string): void {
   const database = getDb();
   database.prepare("DELETE FROM chat_sessions WHERE id = ?").run(id);

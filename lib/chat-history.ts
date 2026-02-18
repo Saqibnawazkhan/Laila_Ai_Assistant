@@ -61,6 +61,18 @@ export async function saveMessagesToDb(
   }
 }
 
+export async function renameSessionInDb(id: string, title: string): Promise<void> {
+  try {
+    await fetch(`/api/sessions/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+  } catch {
+    // Silently fail
+  }
+}
+
 export async function deleteSessionFromDb(id: string): Promise<void> {
   try {
     await fetch(`/api/sessions/${id}`, { method: "DELETE" });

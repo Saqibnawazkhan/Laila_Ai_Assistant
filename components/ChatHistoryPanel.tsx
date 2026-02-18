@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MessageSquare, Trash2, Plus, Clock } from "lucide-react";
+import { X, MessageSquare, Trash2, Plus, Clock, Pencil, Check } from "lucide-react";
 import { ChatSession } from "@/lib/chat-history";
 
 interface ChatHistoryPanelProps {
@@ -11,6 +12,7 @@ interface ChatHistoryPanelProps {
   activeSessionId: string | null;
   onSelectSession: (session: ChatSession) => void;
   onDeleteSession: (id: string) => void;
+  onRenameSession: (id: string, title: string) => void;
   onNewChat: () => void;
 }
 
@@ -33,8 +35,33 @@ export default function ChatHistoryPanel({
   activeSessionId,
   onSelectSession,
   onDeleteSession,
+  onRenameSession,
   onNewChat,
 }: ChatHistoryPanelProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingId) {
+      editInputRef.current?.focus();
+      editInputRef.current?.select();
+    }
+  }, [editingId]);
+
+  const startRename = (session: ChatSession) => {
+    setEditingId(session.id);
+    setEditTitle(session.title);
+  };
+
+  const confirmRename = () => {
+    if (editingId && editTitle.trim()) {
+      onRenameSession(editingId, editTitle.trim());
+    }
+    setEditingId(null);
+    setEditTitle("");
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -105,8 +132,10 @@ export default function ChatHistoryPanel({
                             : "bg-white/5 border border-white/10 hover:bg-white/10"
                         }`}
                         onClick={() => {
-                          onSelectSession(session);
-                          onClose();
+                          if (editingId !== session.id) {
+                            onSelectSession(session);
+                            onClose();
+                          }
                         }}
                       >
                         <MessageSquare
@@ -114,20 +143,60 @@ export default function ChatHistoryPanel({
                           className={session.id === activeSessionId ? "text-purple-400" : "text-gray-500"}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-200 truncate">{session.title}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {formatDate(session.updatedAt)} · {session.messages.length} messages
-                          </p>
+                          {editingId === session.id ? (
+                            <div className="flex items-center gap-1">
+                              <input
+                                ref={editInputRef}
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") confirmRename();
+                                  if (e.key === "Escape") { setEditingId(null); setEditTitle(""); }
+                                }}
+                                onBlur={confirmRename}
+                                className="w-full text-sm bg-black/30 border border-purple-500/50 rounded px-2 py-0.5 text-gray-200 focus:outline-none"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <button
+                                onClick={(e) => { e.stopPropagation(); confirmRename(); }}
+                                className="text-green-400 hover:text-green-300 flex-shrink-0"
+                              >
+                                <Check size={14} />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm text-gray-200 truncate">{session.title}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">
+                                {formatDate(session.updatedAt)} · {session.messages.length} messages
+                              </p>
+                            </>
+                          )}
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteSession(session.id);
-                          }}
-                          className="flex-shrink-0 text-gray-600 hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {editingId !== session.id && (
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startRename(session);
+                              }}
+                              className="text-gray-600 hover:text-purple-400 transition-colors"
+                              title="Rename"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteSession(session.id);
+                              }}
+                              className="text-gray-600 hover:text-red-400 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )}
                       </motion.div>
                     ))}
                   </AnimatePresence>

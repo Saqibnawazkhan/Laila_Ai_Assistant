@@ -36,6 +36,7 @@ import {
   createSessionInDb,
   saveMessagesToDb,
   deleteSessionFromDb,
+  renameSessionInDb,
   clearAllSessionsFromDb,
   loadSessionWithMessages,
   getActiveSessionId,
@@ -631,6 +632,17 @@ export default function ChatInterface() {
     [activeSessionId, handleNewChat]
   );
 
+  const handleRenameSession = useCallback(
+    async (id: string, title: string) => {
+      await renameSessionInDb(id, title);
+      setChatSessions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, title } : s))
+      );
+      showToast("Chat renamed", "success");
+    },
+    []
+  );
+
   const handleResetPermissions = useCallback(() => {
     setAllowedTypes(new Set());
     savePermissions(new Set());
@@ -806,6 +818,7 @@ export default function ChatInterface() {
         activeSessionId={activeSessionId}
         onSelectSession={handleSelectSession}
         onDeleteSession={handleDeleteSession}
+        onRenameSession={handleRenameSession}
         onNewChat={handleNewChat}
       />
 
