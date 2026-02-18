@@ -43,6 +43,24 @@ body {
   transition-duration: 150ms;
 }
 
+/* Custom text selection */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #f3e8ff;
+}
+
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #f3e8ff;
+}
+
+/* Focus visible ring */
+:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
 /* Mobile safe areas */
 .safe-area-bottom {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
