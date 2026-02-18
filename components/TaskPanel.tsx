@@ -15,18 +15,18 @@ interface TaskPanelProps {
 export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }: TaskPanelProps) {
   const pending = tasks.filter((t) => !t.completed);
   const completed = tasks.filter((t) => t.completed);
+  const progress = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
 
   const priorityConfig = {
-    high: { color: "text-red-400", bg: "bg-red-500/10", icon: AlertCircle },
-    medium: { color: "text-yellow-400", bg: "bg-yellow-500/10", icon: Clock },
-    low: { color: "text-green-400", bg: "bg-green-500/10", icon: Circle },
+    high: { color: "text-red-400", bg: "bg-red-500/10", border: "border-l-red-500", icon: AlertCircle, label: "High" },
+    medium: { color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-l-yellow-500", icon: Clock, label: "Medium" },
+    low: { color: "text-green-400", bg: "bg-green-500/10", border: "border-l-green-500", icon: Circle, label: "Low" },
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             className="fixed inset-0 z-40 bg-black/40"
             initial={{ opacity: 0 }}
@@ -35,7 +35,6 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
             onClick={onClose}
           />
 
-          {/* Panel */}
           <motion.div
             className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm bg-gray-900 border-l border-white/10 shadow-2xl flex flex-col"
             initial={{ x: "100%" }}
@@ -62,6 +61,24 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
               </button>
             </div>
 
+            {/* Progress bar */}
+            {tasks.length > 0 && (
+              <div className="px-5 pt-4">
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
+                  <span>Progress</span>
+                  <span>{progress}% ({completed.length}/{tasks.length})</span>
+                </div>
+                <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-purple-600 to-fuchsia-500 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Task List */}
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {tasks.length === 0 ? (
@@ -69,6 +86,7 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                   <ListTodo size={48} className="mx-auto mb-3 opacity-30" />
                   <p className="text-sm">No tasks yet</p>
                   <p className="text-xs mt-1">Tell Laila to add a task!</p>
+                  <p className="text-[10px] mt-3 text-gray-600">Try: &quot;Add a task to buy groceries&quot;</p>
                 </div>
               ) : (
                 <>
@@ -89,7 +107,7 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, x: -100 }}
-                                className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-3"
+                                className={`flex items-center gap-3 bg-white/5 border border-white/10 ${pConfig.border} border-l-2 rounded-xl px-3 py-3`}
                               >
                                 <button
                                   onClick={() => onToggle(task.id)}
@@ -97,9 +115,12 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                                 />
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-gray-200 truncate">{task.title}</p>
-                                  {task.dueDate && (
-                                    <p className="text-xs text-gray-500 mt-0.5">{task.dueDate}</p>
-                                  )}
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className={`text-[10px] ${pConfig.color}`}>{pConfig.label}</span>
+                                    {task.dueDate && (
+                                      <span className="text-[10px] text-gray-500">{task.dueDate}</span>
+                                    )}
+                                  </div>
                                 </div>
                                 <div className={`flex-shrink-0 p-1 rounded ${pConfig.bg}`}>
                                   <PriorityIcon size={12} className={pConfig.color} />
@@ -126,13 +147,15 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                       </h3>
                       <div className="space-y-2">
                         {completed.map((task) => (
-                          <div
+                          <motion.div
                             key={task.id}
-                            className="flex items-center gap-3 bg-white/5 border border-white/5 rounded-xl px-3 py-3 opacity-50"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            className="flex items-center gap-3 bg-white/5 border border-white/5 border-l-2 border-l-green-500/50 rounded-xl px-3 py-3"
                           >
                             <button
                               onClick={() => onToggle(task.id)}
-                              className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center"
+                              className="flex-shrink-0 w-5 h-5 rounded-full bg-green-600 flex items-center justify-center"
                             >
                               <Check size={12} className="text-white" />
                             </button>
@@ -145,7 +168,7 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                             >
                               <Trash2 size={14} />
                             </button>
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     </div>
