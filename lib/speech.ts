@@ -126,71 +126,102 @@ export function createSpeechRecognition(
   return recognition;
 }
 
-// Text-to-Speech using Web Speech API
-let currentUtterance: SpeechSynthesisUtterance | null = null;
-let ttsUnlocked = false;
-let voicesLoaded = false;
-let cachedVoice: SpeechSynthesisVoice | null = null;
-let speechRate = 1.0;
+// Text-to-Speech using Edge TTS (Microsoft Neural Voices) via API route
+// Falls back to Web Speech API if Edge TTS fails
+let currentAudio: HTMLAudioElement | null = null;
+let currentAudioUrl: string | null = null;
+let speaking = false;
 
-export function setSpeechRate(rate: number): void {
-  speechRate = Math.max(0.5, Math.min(2.0, rate));
+// No longer need voice init or unlock — Edge TTS works without user gesture
+
+export function initVoices(): void {
+  // No-op — Edge TTS doesn't need voice initialization
+}
+
+export function unlockTTS(): void {
+  // No-op — Edge TTS doesn't need unlocking
+}
+
+export function setSpeechRate(_rate: number): void {
+  // Rate is controlled server-side in the API route
 }
 
 export function getSpeechRate(): number {
-  return speechRate;
-}
-
-// Load and cache the preferred voice
-// Using Samantha (English) for all responses — Laila responds in English for clear pronunciation
-function loadPreferredVoice(): SpeechSynthesisVoice | null {
-  if (typeof window === "undefined" || !window.speechSynthesis) return null;
-
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) return null;
-
-  voicesLoaded = true;
-
-  // Prefer Samantha (clear female American English voice)
-  const preferred = voices.find(
-    (v) =>
-      v.lang.startsWith("en") &&
-      (v.name.toLowerCase().includes("samantha") ||
-        v.name.toLowerCase().includes("karen") ||
-        v.name.toLowerCase().includes("female") ||
-        v.name.toLowerCase().includes("zira") ||
-        v.name.toLowerCase().includes("fiona"))
-  ) || voices.find((v) => v.lang.startsWith("en"));
-
-  cachedVoice = preferred || null;
-  return cachedVoice;
-}
-
-// Initialize voices - call this early
-export function initVoices(): void {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-
-  loadPreferredVoice();
-
-  window.speechSynthesis.onvoiceschanged = () => {
-    loadPreferredVoice();
-  };
-}
-
-// Must be called from a user gesture (click/tap) to unlock TTS in Chrome
-export function unlockTTS(): void {
-  if (ttsUnlocked || typeof window === "undefined" || !window.speechSynthesis) return;
-
-  if (!voicesLoaded) loadPreferredVoice();
-
-  const u = new SpeechSynthesisUtterance("");
-  u.volume = 0;
-  window.speechSynthesis.speak(u);
-  window.speechSynthesis.cancel();
-  ttsUnlocked = true;
+  return 1.0;
 }
 
 export function speakText(
+  text: string,
+  onStart?: () => void,
+  onEnd?: () => void
+): void {
+  if (typeof window === "undefined") {
+    onEnd?.();
+    return;
+  }
+
+  // Stop any current speech
+  stopSpeaking();
+
+  let ended = false;
+  const fireEnd = () => {
+    if (ended) return;
+    ended = true;
+    speaking = false;
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      currentAudioUrl = null;
+    }
+    currentAudio = null;
+    onEnd?.();
+  };
+
+  // Call our Edge TTS API route
+  fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`TTS API returned ${res.status}`);
+      return res.blob();
+    })
+    .then((blob) => {
+      if (ended) return; // Was stopped while fetching
+
+      const url = URL.createObjectURL(blob);
+      currentAudioUrl = url;
+
+      const audio = new Audio(url);
+      currentAudio = audio;
+
+      audio.onplay = () => {
+        speaking = true;
+        onStart?.();
+      };
+
+      audio.onended = fireEnd;
+      audio.onerror = () => {
+        console.warn("Edge TTS audio playback failed, falling back to Web Speech API");
+        fireEnd();
+        speakTextFallback(text, onStart, onEnd);
+      };
+
+      audio.play().catch(() => {
+        console.warn("Edge TTS play() blocked, falling back to Web Speech API");
+        fireEnd();
+        speakTextFallback(text, onStart, onEnd);
+      });
+    })
+    .catch((err) => {
+      console.warn("Edge TTS fetch failed:", err.message, "— falling back to Web Speech API");
+      fireEnd();
+      speakTextFallback(text, onStart, onEnd);
+    });
+}
+
+// Fallback: Web Speech API (used if Edge TTS is unavailable)
+function speakTextFallback(
   text: string,
   onStart?: () => void,
   onEnd?: () => void
@@ -200,24 +231,11 @@ export function speakText(
     return;
   }
 
-  // Stop any current speech
   window.speechSynthesis.cancel();
-  currentUtterance = null;
 
-  // Chrome bug: need a small delay after cancel() before speak()
-  // Otherwise the new utterance is silently dropped
   setTimeout(() => {
-    // Ensure voices are loaded
-    if (!voicesLoaded) loadPreferredVoice();
-
     const utterance = new SpeechSynthesisUtterance(text);
-    currentUtterance = utterance;
-
-    if (cachedVoice) {
-      utterance.voice = cachedVoice;
-    }
-
-    utterance.rate = speechRate;
+    utterance.rate = 1.0;
     utterance.pitch = 1.1;
     utterance.volume = 1;
 
@@ -227,65 +245,49 @@ export function speakText(
     const fireEnd = () => {
       if (ended) return;
       ended = true;
-      currentUtterance = null;
+      speaking = false;
       onEnd?.();
     };
 
     utterance.onstart = () => {
       started = true;
+      speaking = true;
       onStart?.();
     };
     utterance.onend = fireEnd;
     utterance.onerror = (e) => {
-      // "interrupted" happens when we cancel() to speak something new - not a real error
-      if (e.error !== "interrupted") {
-        console.warn("TTS error:", e.error);
-      }
+      if (e.error !== "interrupted") console.warn("TTS fallback error:", e.error);
       fireEnd();
     };
 
     window.speechSynthesis.speak(utterance);
 
-    // Chrome bug: speechSynthesis can get stuck, force a resume
     setTimeout(() => {
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
-    }, 100);
-
-    // Safety net: if TTS didn't start after 2 seconds, fire onEnd
-    // This prevents the UI from getting stuck in "talking" state
-    setTimeout(() => {
-      if (!started && !ended) {
-        console.warn("TTS did not start, firing safety onEnd");
-        fireEnd();
-      }
+      if (!started && !ended) fireEnd();
     }, 2000);
-
-    // Chrome bug: long utterances get cut off at ~15 seconds
-    // Workaround: periodically call resume() to keep it alive
-    const keepAlive = setInterval(() => {
-      if (ended || !window.speechSynthesis.speaking) {
-        clearInterval(keepAlive);
-        return;
-      }
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }, 10000);
-
   }, 200);
 }
 
 export function stopSpeaking(): void {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  if (currentAudioUrl) {
+    URL.revokeObjectURL(currentAudioUrl);
+    currentAudioUrl = null;
+  }
+  speaking = false;
+  // Also stop Web Speech API fallback if active
   if (typeof window !== "undefined" && window.speechSynthesis) {
     window.speechSynthesis.cancel();
-    currentUtterance = null;
   }
 }
 
 export function isSpeaking(): boolean {
   if (typeof window === "undefined") return false;
-  return window.speechSynthesis?.speaking ?? false;
+  return speaking;
 }
 
 // Wake word listener - continuously listens for "Laila"
