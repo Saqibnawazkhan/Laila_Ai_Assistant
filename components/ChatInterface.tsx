@@ -45,6 +45,7 @@ import {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  timestamp?: string;
 }
 
 // Load saved permissions from localStorage
@@ -66,7 +67,7 @@ function savePermissions(permissions: Set<string>) {
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: LAILA_GREETING },
+    { role: "assistant", timestamp: new Date().toISOString(), content: LAILA_GREETING },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [avatarStatus, setAvatarStatus] = useState<"idle" | "thinking" | "talking">("idle");
@@ -280,7 +281,7 @@ export default function ChatInterface() {
         const response = responses[Math.floor(Math.random() * responses.length)];
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: response },
+          { role: "assistant", timestamp: new Date().toISOString(), content: response },
         ]);
         // Resume wake word listener so it keeps listening
         setTimeout(() => wakeWordRef.current?.resume(), 500);
@@ -296,7 +297,7 @@ export default function ChatInterface() {
         const greeting = greetings[Math.floor(Math.random() * greetings.length)];
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: greeting },
+          { role: "assistant", timestamp: new Date().toISOString(), content: greeting },
         ]);
         speakAndAnimate(greeting);
       }
@@ -378,7 +379,7 @@ export default function ChatInterface() {
       if (execData.success) {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: `Now playing! Opened the video for you.` },
+          { role: "assistant", timestamp: new Date().toISOString(), content: `Now playing! Opened the video for you.` },
         ]);
         speakAndAnimate("Now playing! Enjoy!");
       } else {
@@ -387,7 +388,7 @@ export default function ChatInterface() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I couldn't play that. Please try again." },
+        { role: "assistant", timestamp: new Date().toISOString(), content: "Sorry, I couldn't play that. Please try again." },
       ]);
       setAvatarStatus("idle");
     }
@@ -411,20 +412,20 @@ export default function ChatInterface() {
       if (data.success) {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: data.output },
+          { role: "assistant", timestamp: new Date().toISOString(), content: data.output },
         ]);
         speakAndAnimate(message ? `Message sent to ${contact}!` : `Opened chat with ${contact}!`);
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: data.output },
+          { role: "assistant", timestamp: new Date().toISOString(), content: data.output },
         ]);
         speakAndAnimate("Sorry, I had trouble with WhatsApp.");
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I couldn't send the WhatsApp message. Make sure WhatsApp is installed." },
+        { role: "assistant", timestamp: new Date().toISOString(), content: "Sorry, I couldn't send the WhatsApp message. Make sure WhatsApp is installed." },
       ]);
       setAvatarStatus("idle");
     }
@@ -465,14 +466,14 @@ export default function ChatInterface() {
             const naturalResponse = cleanResponseText(interpretData.reply || data.output);
             setMessages((prev) => [
               ...prev,
-              { role: "assistant", content: naturalResponse },
+              { role: "assistant", timestamp: new Date().toISOString(), content: naturalResponse },
             ]);
             speakAndAnimate(naturalResponse);
           } catch {
             // Fallback: show raw output
             setMessages((prev) => [
               ...prev,
-              { role: "assistant", content: `Here's what I found:\n\`\`\`\n${data.output}\n\`\`\`` },
+              { role: "assistant", timestamp: new Date().toISOString(), content: `Here's what I found:\n\`\`\`\n${data.output}\n\`\`\`` },
             ]);
             speakAndAnimate(data.output.slice(0, 200));
           }
@@ -482,21 +483,21 @@ export default function ChatInterface() {
             : "Done! Command executed successfully.";
           setMessages((prev) => [
             ...prev,
-            { role: "assistant", content: resultMsg },
+            { role: "assistant", timestamp: new Date().toISOString(), content: resultMsg },
           ]);
           speakAndAnimate(data.output ? `Done! Here's the result: ${data.output.slice(0, 150)}` : "Done! The command was executed successfully.");
         }
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: `Hmm, something went wrong: ${data.output}` },
+          { role: "assistant", timestamp: new Date().toISOString(), content: `Hmm, something went wrong: ${data.output}` },
         ]);
         speakAndAnimate("Sorry, there was an issue executing that command.");
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I couldn't execute that command. Please try again." },
+        { role: "assistant", timestamp: new Date().toISOString(), content: "Sorry, I couldn't execute that command. Please try again." },
       ]);
       setAvatarStatus("idle");
     }
@@ -523,7 +524,7 @@ export default function ChatInterface() {
   const handleDenyCommand = () => {
     setMessages((prev) => [
       ...prev,
-      { role: "assistant", content: "No problem! I won't run that command. Let me know if you need anything else." },
+      { role: "assistant", timestamp: new Date().toISOString(), content: "No problem! I won't run that command. Let me know if you need anything else." },
     ]);
     speakAndAnimate("No problem! I won't run that command.");
     setPendingCommand(null);
@@ -590,7 +591,7 @@ export default function ChatInterface() {
 
   // Chat history handlers
   const handleNewChat = useCallback(() => {
-    setMessages([{ role: "assistant", content: LAILA_GREETING }]);
+    setMessages([{ role: "assistant", timestamp: new Date().toISOString(), content: LAILA_GREETING }]);
     setActiveSession(null);
     setActiveSessionId(null);
   }, []);
@@ -601,7 +602,7 @@ export default function ChatInterface() {
     if (sessionData && sessionData.messages.length > 0) {
       setMessages(sessionData.messages);
     } else {
-      setMessages([{ role: "assistant", content: LAILA_GREETING }]);
+      setMessages([{ role: "assistant", timestamp: new Date().toISOString(), content: LAILA_GREETING }]);
     }
     setActiveSession(session.id);
     setActiveSessionId(session.id);
@@ -632,7 +633,7 @@ export default function ChatInterface() {
   }, [handleNewChat]);
 
   const sendMessage = async (content: string) => {
-    const userMessage: Message = { role: "user", content };
+    const userMessage: Message = { role: "user", content, timestamp: new Date().toISOString() };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
@@ -680,7 +681,7 @@ export default function ChatInterface() {
       // Add the clean message (without command/task tags)
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: cleanText },
+        { role: "assistant", timestamp: new Date().toISOString(), content: cleanText },
       ]);
 
       // Handle task commands
@@ -853,6 +854,7 @@ export default function ChatInterface() {
                 key={index}
                 role={msg.role}
                 content={msg.content}
+                timestamp={msg.timestamp}
                 isLatest={index === messages.length - 1}
               />
             ))}
