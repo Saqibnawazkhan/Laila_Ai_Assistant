@@ -103,118 +103,34 @@ export async function POST(request: NextRequest) {
 
     if (isCall) {
       // --- CALL SCRIPT ---
-      // Strategy: Navigate to contact, then click call button using position-based approach
-      // WhatsApp Mac has call buttons in the top-right of the chat header area
+      // WhatsApp Mac button descriptions are:
+      //   "Start voice call with {Name}" and "Start video call with {Name}"
+      // These are deeply nested, so we use `entire contents` to find them.
+      const callType = isVideoCall ? "video call" : "voice call";
       script = searchContactScript(safeContact) + `
 
-            -- Now we're in the chat. Find and click the call button.
-            -- WhatsApp Mac: call buttons are in the top-right toolbar of the chat panel.
-
-            -- Get window position and size
-            set winPos to position of window 1
-            set winSize to size of window 1
-            set winX to item 1 of winPos
-            set winY to item 2 of winPos
-            set winW to item 1 of winSize
-            set winH to item 2 of winSize
-
-            -- Strategy 1: Deep recursive button search
-            -- Search all UI elements for buttons with call-related attributes
+            -- Now we're in the chat. Find the call button using entire contents.
+            -- WhatsApp buttons have descriptions like "Start voice call with ContactName"
             set callClicked to false
-
-            -- Try to find buttons by traversing groups recursively (2 levels deep)
             try
-              set topElements to every UI element of window 1
-              repeat with elem in topElements
+              set allElems to entire contents of window 1
+              repeat with elem in allElems
                 if not callClicked then
                   try
-                    -- Check direct buttons
                     if role of elem is "AXButton" then
                       set d to ""
                       try
-                        set d to description of elem
+                        set d to description of elem as string
                       end try
-                      set t to ""
-                      try
-                        set t to title of elem
-                      end try
-                      set combined to d & " " & t
-                      if combined contains "${isVideoCall ? "video" : "call"}" or combined contains "${isVideoCall ? "Video" : "Call"}" or combined contains "${isVideoCall ? "camera" : "phone"}" or combined contains "${isVideoCall ? "Camera" : "Phone"}" then
+                      if d contains "${callType}" or d contains "Start ${callType}" then
                         click elem
                         set callClicked to true
                       end if
                     end if
                   end try
-
-                  -- Check children
-                  if not callClicked then
-                    try
-                      set subElements to every UI element of elem
-                      repeat with subElem in subElements
-                        if not callClicked then
-                          try
-                            if role of subElem is "AXButton" then
-                              set d2 to ""
-                              try
-                                set d2 to description of subElem
-                              end try
-                              set t2 to ""
-                              try
-                                set t2 to title of subElem
-                              end try
-                              set combined2 to d2 & " " & t2
-                              if combined2 contains "${isVideoCall ? "video" : "call"}" or combined2 contains "${isVideoCall ? "Video" : "Call"}" or combined2 contains "${isVideoCall ? "camera" : "phone"}" or combined2 contains "${isVideoCall ? "Camera" : "Phone"}" then
-                                click subElem
-                                set callClicked to true
-                              end if
-                            end if
-                          end try
-
-                          -- Go one more level deep
-                          if not callClicked then
-                            try
-                              set subSubElements to every UI element of subElem
-                              repeat with sss in subSubElements
-                                if not callClicked then
-                                  try
-                                    if role of sss is "AXButton" then
-                                      set d3 to ""
-                                      try
-                                        set d3 to description of sss
-                                      end try
-                                      set t3 to ""
-                                      try
-                                        set t3 to title of sss
-                                      end try
-                                      set combined3 to d3 & " " & t3
-                                      if combined3 contains "${isVideoCall ? "video" : "call"}" or combined3 contains "${isVideoCall ? "Video" : "Call"}" or combined3 contains "${isVideoCall ? "camera" : "phone"}" or combined3 contains "${isVideoCall ? "Camera" : "Phone"}" then
-                                        click sss
-                                        set callClicked to true
-                                      end if
-                                    end if
-                                  end try
-                                end if
-                              end repeat
-                            end try
-                          end if
-                        end if
-                      end repeat
-                    end try
-                  end if
                 end if
               end repeat
             end try
-
-            -- Strategy 2: Position-based click as fallback
-            -- WhatsApp Mac: the voice call button is near top-right of window
-            -- Typically at around (window_right - 90, window_top + 38) for voice
-            -- and (window_right - 55, window_top + 38) for video
-            if not callClicked then
-              ${isVideoCall
-                ? 'click at {winX + winW - 55, winY + 38}'
-                : 'click at {winX + winW - 90, winY + 38}'}
-              delay 0.5
-            end if
 
             delay 1
           end tell
