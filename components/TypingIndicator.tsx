@@ -1,8 +1,26 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const thinkingMessages = [
+  "Laila is thinking...",
+  "Crafting a response...",
+  "Processing your request...",
+  "Almost there...",
+  "Working on it...",
+];
 
 export default function TypingIndicator() {
+  const [msgIndex, setMsgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMsgIndex((prev) => (prev + 1) % thinkingMessages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -17,9 +35,18 @@ export default function TypingIndicator() {
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        <span className="text-xs font-semibold text-purple-400 block mb-1.5">
-          Laila is thinking...
-        </span>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={msgIndex}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2 }}
+            className="text-xs font-semibold text-purple-400 block mb-1.5"
+          >
+            {thinkingMessages[msgIndex]}
+          </motion.span>
+        </AnimatePresence>
         <div className="flex gap-1.5 items-center h-5">
           {[0, 1, 2].map((i) => (
             <motion.div
