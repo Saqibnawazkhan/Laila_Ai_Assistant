@@ -311,17 +311,22 @@ export default function ChatInterface() {
     try {
       const parts = value.split("::"); const contact = parts[0]?.trim(); const message = parts[1]?.trim() || "";
       if (!contact) throw new Error("No contact specified");
+      const isCall = message === "__CALL__";
+      const isVideoCall = message === "__VIDEO_CALL__";
       const res = await fetch("/api/whatsapp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contact, message }) });
       const data = await res.json();
       if (data.success) {
         setMessages((prev) => [...prev, { role: "assistant", timestamp: new Date().toISOString(), content: data.output }]);
-        speakAndAnimate(message ? `Message sent to ${contact}!` : `Opened chat with ${contact}!`);
+        if (isCall) speakAndAnimate(`Calling ${contact} on WhatsApp!`);
+        else if (isVideoCall) speakAndAnimate(`Starting video call with ${contact}!`);
+        else if (message) speakAndAnimate(`Message sent to ${contact}!`);
+        else speakAndAnimate(`Opened chat with ${contact}!`);
       } else {
         setMessages((prev) => [...prev, { role: "assistant", timestamp: new Date().toISOString(), content: data.output }]);
         speakAndAnimate("Sorry, I had trouble with WhatsApp.");
       }
     } catch {
-      setMessages((prev) => [...prev, { role: "assistant", timestamp: new Date().toISOString(), content: "Sorry, I couldn't send the WhatsApp message. Make sure WhatsApp is installed." }]);
+      setMessages((prev) => [...prev, { role: "assistant", timestamp: new Date().toISOString(), content: "Sorry, I couldn't complete the WhatsApp action. Make sure WhatsApp desktop app is installed (not WhatsApp Web)." }]);
       setAvatarStatus("idle");
     }
   }, [speakAndAnimate]);

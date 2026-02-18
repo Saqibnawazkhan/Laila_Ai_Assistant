@@ -105,10 +105,16 @@ Closing apps: ALWAYS use osascript -e 'quit app "X"'
 - "close Chrome" → [COMMAND: terminal | osascript -e 'quit app "Google Chrome"' | Close Chrome]
 
 WhatsApp rules:
-- Format: [COMMAND: send_whatsapp | contact_name::message_text | description]
-- No message: contact_name:: (empty after ::)
+- ALWAYS use send_whatsapp type for ANY WhatsApp action. NEVER use open_app for WhatsApp.
+- Send message format: [COMMAND: send_whatsapp | contact_name::message_text | Send message to contact]
+- Open chat (no message): [COMMAND: send_whatsapp | contact_name:: | Open chat with contact]
+- Voice call: [COMMAND: send_whatsapp | contact_name::__CALL__ | Call contact on WhatsApp]
+- Video call: [COMMAND: send_whatsapp | contact_name::__VIDEO_CALL__ | Video call contact on WhatsApp]
 - Spell names carefully: "Saqib" not "Sakib"
-- Natural speech: "WhatsApp Saqib how are you" → [COMMAND: send_whatsapp | Saqib::how are you | Send to Saqib]
+- "call Zahid on WhatsApp" → [COMMAND: send_whatsapp | Zahid::__CALL__ | Call Zahid on WhatsApp]
+- "video call Saqib" → [COMMAND: send_whatsapp | Saqib::__VIDEO_CALL__ | Video call Saqib on WhatsApp]
+- "WhatsApp Saqib how are you" → [COMMAND: send_whatsapp | Saqib::how are you | Send to Saqib]
+- "message Ali on WhatsApp" → [COMMAND: send_whatsapp | Ali:: | Open chat with Ali]
 
 Rules:
 - Use macOS commands. open -a for apps, open URL for websites

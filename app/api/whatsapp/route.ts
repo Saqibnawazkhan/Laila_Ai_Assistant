@@ -12,131 +12,245 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No contact provided" }, { status: 400 });
     }
 
+    // Detect call actions
+    const isVoiceCall = message === "__CALL__";
+    const isVideoCall = message === "__VIDEO_CALL__";
+    const isCall = isVoiceCall || isVideoCall;
+
     // Escape special characters for AppleScript strings
     const safeContact = contact.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    const safeMessage = message ? message.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : "";
+    const safeMessage = (!isCall && message) ? message.replace(/\\/g, '\\\\').replace(/"/g, '\\"') : "";
 
-    // AppleScript for native macOS WhatsApp app
-    // Clicks directly on the Search field instead of using Cmd+N
-    // Uses clipboard paste to avoid typos
-    const script = `
-      tell application "WhatsApp" to activate
-      delay 2
+    // Build AppleScript based on action type
+    let script: string;
 
-      tell application "System Events"
-        tell process "WhatsApp"
-          -- Press Escape to close any open panels
-          key code 53
-          delay 0.5
+    if (isCall) {
+      // --- CALL SCRIPT ---
+      // Opens WhatsApp, searches for contact, opens chat, then clicks call button
+      script = `
+        tell application "WhatsApp" to activate
+        delay 2
 
-          -- Try to find and click the Search field in the native WhatsApp Mac app
-          -- Method 1: Look for the search text field by placeholder text
-          set searchClicked to false
-          try
-            set allTextFields to every text field of window 1
-            repeat with aField in allTextFields
-              set pVal to ""
-              try
-                set pVal to value of attribute "AXPlaceholderValue" of aField
-              end try
-              if pVal contains "Search" or pVal contains "search" then
-                click aField
-                set searchClicked to true
-                exit repeat
-              end if
-            end repeat
-          end try
+        tell application "System Events"
+          tell process "WhatsApp"
+            -- Press Escape to close any open panels
+            key code 53
+            delay 0.5
 
-          -- Method 2: If search field not found directly, try searching in groups/scroll areas
-          if not searchClicked then
+            -- Find and click the Search field
+            set searchClicked to false
+
+            -- Method 1: Look for search text field by placeholder
             try
-              set allGroups to every group of window 1
-              repeat with aGroup in allGroups
+              set allTextFields to every text field of window 1
+              repeat with aField in allTextFields
+                set pVal to ""
                 try
-                  set groupFields to every text field of aGroup
-                  repeat with gField in groupFields
-                    set pVal2 to ""
-                    try
-                      set pVal2 to value of attribute "AXPlaceholderValue" of gField
-                    end try
-                    if pVal2 contains "Search" or pVal2 contains "search" then
-                      click gField
-                      set searchClicked to true
-                      exit repeat
-                    end if
-                  end repeat
+                  set pVal to value of attribute "AXPlaceholderValue" of aField
                 end try
-                if searchClicked then exit repeat
+                if pVal contains "Search" or pVal contains "search" then
+                  click aField
+                  set searchClicked to true
+                  exit repeat
+                end if
               end repeat
             end try
-          end if
 
-          -- Method 3: Fallback - try Cmd+F for search
-          if not searchClicked then
-            keystroke "f" using command down
-            delay 0.5
-          end if
-
-          delay 1
-
-          -- Clear any existing text and paste the contact name
-          keystroke "a" using command down
-          delay 0.2
-          set the clipboard to "${safeContact}"
-          keystroke "v" using command down
-          delay 3
-
-          -- Select the first search result
-          -- In native WhatsApp Mac, press Enter from search to open first result
-          key code 36
-          delay 1
-
-          -- If Enter didn't work, try down arrow then Enter
-          -- (this handles both old and new WhatsApp versions)
-          key code 125
-          delay 0.3
-          key code 36
-          delay 2
-
-          ${message ? `
-          -- Click on the message input area to make sure we're typing there
-          -- Try to find the message text field
-          try
-            set msgFields to every text field of window 1
-            if (count of msgFields) > 1 then
-              click item (count of msgFields) of msgFields
-              delay 0.3
+            -- Method 2: Search in groups/scroll areas
+            if not searchClicked then
+              try
+                set allGroups to every group of window 1
+                repeat with aGroup in allGroups
+                  try
+                    set groupFields to every text field of aGroup
+                    repeat with gField in groupFields
+                      set pVal2 to ""
+                      try
+                        set pVal2 to value of attribute "AXPlaceholderValue" of gField
+                      end try
+                      if pVal2 contains "Search" or pVal2 contains "search" then
+                        click gField
+                        set searchClicked to true
+                        exit repeat
+                      end if
+                    end repeat
+                  end try
+                  if searchClicked then exit repeat
+                end repeat
+              end try
             end if
-          end try
 
-          -- Paste message using clipboard (avoids typos)
-          set the clipboard to "${safeMessage}"
-          keystroke "v" using command down
-          delay 0.5
+            -- Method 3: Fallback Cmd+F
+            if not searchClicked then
+              keystroke "f" using command down
+              delay 0.5
+            end if
 
-          -- Press Enter to send
-          key code 36
-          delay 0.5
-          ` : ""}
+            delay 1
+
+            -- Search for the contact
+            keystroke "a" using command down
+            delay 0.2
+            set the clipboard to "${safeContact}"
+            keystroke "v" using command down
+            delay 3
+
+            -- Select first result
+            key code 36
+            delay 1
+            key code 125
+            delay 0.3
+            key code 36
+            delay 2
+
+            -- Now click the call button in the chat header
+            -- In WhatsApp Mac, the call buttons are in the top-right of the chat
+            -- Try to find and click the ${isVideoCall ? "video" : "audio"} call button
+            try
+              set allButtons to every button of window 1
+              repeat with aBtn in allButtons
+                set btnDesc to ""
+                try
+                  set btnDesc to description of aBtn
+                end try
+                set btnTitle to ""
+                try
+                  set btnTitle to title of aBtn
+                end try
+                set btnHelp to ""
+                try
+                  set btnHelp to help of aBtn
+                end try
+                set combined to btnDesc & " " & btnTitle & " " & btnHelp
+                if combined contains "${isVideoCall ? "video" : "audio"}" or combined contains "${isVideoCall ? "Video" : "Audio"}" or combined contains "${isVideoCall ? "video call" : "voice call"}" then
+                  click aBtn
+                  exit repeat
+                end if
+              end repeat
+            end try
+
+            -- Fallback: Try clicking by position in the toolbar area
+            -- WhatsApp typically has call icons near the top-right
+            delay 1
+          end tell
         end tell
-      end tell
-    `;
+      `;
+    } else {
+      // --- MESSAGE SCRIPT (existing logic) ---
+      script = `
+        tell application "WhatsApp" to activate
+        delay 2
+
+        tell application "System Events"
+          tell process "WhatsApp"
+            -- Press Escape to close any open panels
+            key code 53
+            delay 0.5
+
+            -- Find and click the Search field
+            set searchClicked to false
+            try
+              set allTextFields to every text field of window 1
+              repeat with aField in allTextFields
+                set pVal to ""
+                try
+                  set pVal to value of attribute "AXPlaceholderValue" of aField
+                end try
+                if pVal contains "Search" or pVal contains "search" then
+                  click aField
+                  set searchClicked to true
+                  exit repeat
+                end if
+              end repeat
+            end try
+
+            if not searchClicked then
+              try
+                set allGroups to every group of window 1
+                repeat with aGroup in allGroups
+                  try
+                    set groupFields to every text field of aGroup
+                    repeat with gField in groupFields
+                      set pVal2 to ""
+                      try
+                        set pVal2 to value of attribute "AXPlaceholderValue" of gField
+                      end try
+                      if pVal2 contains "Search" or pVal2 contains "search" then
+                        click gField
+                        set searchClicked to true
+                        exit repeat
+                      end if
+                    end repeat
+                  end try
+                  if searchClicked then exit repeat
+                end repeat
+              end try
+            end if
+
+            if not searchClicked then
+              keystroke "f" using command down
+              delay 0.5
+            end if
+
+            delay 1
+
+            -- Search for contact
+            keystroke "a" using command down
+            delay 0.2
+            set the clipboard to "${safeContact}"
+            keystroke "v" using command down
+            delay 3
+
+            -- Select first result
+            key code 36
+            delay 1
+            key code 125
+            delay 0.3
+            key code 36
+            delay 2
+
+            ${safeMessage ? `
+            -- Click on the message input area
+            try
+              set msgFields to every text field of window 1
+              if (count of msgFields) > 1 then
+                click item (count of msgFields) of msgFields
+                delay 0.3
+              end if
+            end try
+
+            -- Paste and send message
+            set the clipboard to "${safeMessage}"
+            keystroke "v" using command down
+            delay 0.5
+            key code 36
+            delay 0.5
+            ` : ""}
+          end tell
+        end tell
+      `;
+    }
 
     await execAsync(`osascript -e '${script.replace(/'/g, "'\\''")}'`, {
       timeout: 30000,
       shell: "/bin/zsh",
     });
 
-    return NextResponse.json({
-      success: true,
-      output: message
-        ? `Sent "${message}" to ${contact} on WhatsApp`
-        : `Opened chat with ${contact} on WhatsApp`,
-    });
+    let output: string;
+    if (isVoiceCall) {
+      output = `Calling ${contact} on WhatsApp...`;
+    } else if (isVideoCall) {
+      output = `Starting video call with ${contact} on WhatsApp...`;
+    } else if (safeMessage) {
+      output = `Sent "${message}" to ${contact} on WhatsApp`;
+    } else {
+      output = `Opened chat with ${contact} on WhatsApp`;
+    }
+
+    return NextResponse.json({ success: true, output });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : "Failed";
 
-    // Check if it's an accessibility permission issue
     if (msg.includes("not allowed assistive access") || msg.includes("System Events")) {
       return NextResponse.json({
         success: false,
@@ -146,7 +260,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: false,
-      output: `Couldn't send the message: ${msg}`,
+      output: `Couldn't complete the WhatsApp action: ${msg}`,
     });
   }
 }
