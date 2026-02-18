@@ -95,6 +95,8 @@ export default function ChatInterface() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [sessionDuration, setSessionDuration] = useState("0:00");
+  const sessionStartRef = useRef(Date.now());
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -153,6 +155,17 @@ export default function ChatInterface() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Session duration timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - sessionStartRef.current) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      setSessionDuration(`${mins}:${secs.toString().padStart(2, "0")}`);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Update browser tab title with message count
   useEffect(() => {
@@ -1185,6 +1198,7 @@ export default function ChatInterface() {
         </div>
         <div className="flex items-center gap-3">
           <span>{messages.length} message{messages.length !== 1 ? "s" : ""}</span>
+          <span>{sessionDuration}</span>
           <span>v1.0</span>
         </div>
       </div>
