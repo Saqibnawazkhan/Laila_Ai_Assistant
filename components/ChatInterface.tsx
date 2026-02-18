@@ -476,7 +476,9 @@ export default function ChatInterface() {
       if (taskCommand) handleTaskAction(data.reply);
 
       if (command) {
-        if (allowedTypes.has(command.type)) { speakAndAnimate(cleanText); executeCommand(command); }
+        // High-risk commands ALWAYS require 3-step confirmation (never auto-allowed)
+        if (command.risk === "high") { setPendingCommand(command); speakAndAnimate(cleanText); }
+        else if (allowedTypes.has(command.type)) { speakAndAnimate(cleanText); executeCommand(command); }
         else { setPendingCommand(command); speakAndAnimate(cleanText); }
       } else { speakAndAnimate(cleanText); }
       setLastFailedMessage(null);
