@@ -813,7 +813,12 @@ export default function ChatInterface() {
         <div className="max-w-3xl mx-auto">
           <AnimatePresence>
             {messages.map((msg, index) => (
-              <MessageBubble key={index} role={msg.role} content={msg.content} />
+              <MessageBubble
+                key={index}
+                role={msg.role}
+                content={msg.content}
+                isLatest={index === messages.length - 1}
+              />
             ))}
           </AnimatePresence>
           {isLoading && <TypingIndicator />}
