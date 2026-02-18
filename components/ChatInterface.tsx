@@ -31,13 +31,15 @@ import {
 } from "@/lib/tasks";
 import {
   ChatSession,
-  loadSessions,
-  saveSessions,
+  loadSessionsFromDb,
+  createSessionInDb,
+  saveMessagesToDb,
+  deleteSessionFromDb,
+  clearAllSessionsFromDb,
+  loadSessionWithMessages,
   getActiveSessionId,
   setActiveSessionId,
-  createSession,
-  updateSession,
-  deleteSession as deleteChatSession,
+  generateSessionTitle,
 } from "@/lib/chat-history";
 
 interface Message {
@@ -87,8 +89,23 @@ export default function ChatInterface() {
   useEffect(() => {
     setAllowedTypes(loadPermissions());
     setTasks(loadTasks());
-    setChatSessions(loadSessions());
-    setActiveSession(getActiveSessionId());
+
+    // Load chat sessions from database
+    const loadChats = async () => {
+      const sessions = await loadSessionsFromDb();
+      setChatSessions(sessions);
+
+      // Restore active session with messages
+      const savedActiveId = getActiveSessionId();
+      if (savedActiveId) {
+        const sessionData = await loadSessionWithMessages(savedActiveId);
+        if (sessionData && sessionData.messages.length > 0) {
+          setMessages(sessionData.messages);
+          setActiveSession(savedActiveId);
+        }
+      }
+    };
+    loadChats();
 
     // Show onboarding if first time
     const onboarded = localStorage.getItem("laila_onboarded");
@@ -97,11 +114,24 @@ export default function ChatInterface() {
     }
   }, []);
 
-  // Auto-save messages to active session
+  // Auto-save messages to active session in database
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!activeSessionId || messages.length <= 1) return;
-    const updated = updateSession(chatSessions, activeSessionId, messages);
-    setChatSessions(updated);
+
+    // Debounce saves to avoid excessive API calls
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveMessagesToDb(activeSessionId, messages);
+      // Update local session list's updatedAt
+      setChatSessions((prev) =>
+        prev.map((s) =>
+          s.id === activeSessionId
+            ? { ...s, updatedAt: new Date().toISOString() }
+            : s
+        )
+      );
+    }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, activeSessionId]);
 
@@ -548,25 +578,27 @@ export default function ChatInterface() {
     setActiveSessionId(null);
   }, []);
 
-  const handleSelectSession = useCallback((session: ChatSession) => {
-    setMessages(
-      session.messages.length > 0
-        ? session.messages
-        : [{ role: "assistant", content: LAILA_GREETING }]
-    );
+  const handleSelectSession = useCallback(async (session: ChatSession) => {
+    // Load full messages from database
+    const sessionData = await loadSessionWithMessages(session.id);
+    if (sessionData && sessionData.messages.length > 0) {
+      setMessages(sessionData.messages);
+    } else {
+      setMessages([{ role: "assistant", content: LAILA_GREETING }]);
+    }
     setActiveSession(session.id);
     setActiveSessionId(session.id);
   }, []);
 
   const handleDeleteSession = useCallback(
-    (id: string) => {
-      const updated = deleteChatSession(chatSessions, id);
-      setChatSessions(updated);
+    async (id: string) => {
+      await deleteSessionFromDb(id);
+      setChatSessions((prev) => prev.filter((s) => s.id !== id));
       if (activeSessionId === id) {
         handleNewChat();
       }
     },
-    [chatSessions, activeSessionId, handleNewChat]
+    [activeSessionId, handleNewChat]
   );
 
   const handleResetPermissions = useCallback(() => {
@@ -574,9 +606,9 @@ export default function ChatInterface() {
     savePermissions(new Set());
   }, []);
 
-  const handleClearChats = useCallback(() => {
+  const handleClearChats = useCallback(async () => {
+    await clearAllSessionsFromDb();
     setChatSessions([]);
-    saveSessions([]);
     setActiveSession(null);
     setActiveSessionId(null);
     handleNewChat();
@@ -592,11 +624,11 @@ export default function ChatInterface() {
 
     // Create a new session if we don't have one
     if (!activeSessionId) {
-      const newSession = createSession(content);
+      const id = Date.now().toString();
+      const title = generateSessionTitle(content);
+      const newSession = await createSessionInDb(id, title);
       newSession.messages = updatedMessages;
-      const updatedSessions = [newSession, ...chatSessions];
-      setChatSessions(updatedSessions);
-      saveSessions(updatedSessions);
+      setChatSessions((prev) => [newSession, ...prev]);
       setActiveSession(newSession.id);
       setActiveSessionId(newSession.id);
     }

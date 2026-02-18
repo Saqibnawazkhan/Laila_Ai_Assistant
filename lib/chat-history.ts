@@ -6,23 +6,89 @@ export interface ChatSession {
   updatedAt: string;
 }
 
-const STORAGE_KEY = "laila_chat_sessions";
 const ACTIVE_KEY = "laila_active_session";
 
-export function loadSessions(): ChatSession[] {
-  if (typeof window === "undefined") return [];
+// --- API-based functions (async, backed by SQLite) ---
+
+export async function loadSessionsFromDb(): Promise<ChatSession[]> {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    const res = await fetch("/api/sessions");
+    const data = await res.json();
+    return (data.sessions || []).map((s: { id: string; title: string; created_at: string; updated_at: string }) => ({
+      id: s.id,
+      title: s.title,
+      messages: [],
+      createdAt: s.created_at,
+      updatedAt: s.updated_at,
+    }));
   } catch {
     return [];
   }
 }
 
-export function saveSessions(sessions: ChatSession[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+export async function createSessionInDb(id: string, title: string): Promise<ChatSession> {
+  try {
+    const res = await fetch("/api/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, title }),
+    });
+    const data = await res.json();
+    return {
+      id: data.session.id,
+      title: data.session.title,
+      messages: [],
+      createdAt: data.session.created_at,
+      updatedAt: data.session.updated_at,
+    };
+  } catch {
+    return { id, title, messages: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  }
 }
+
+export async function saveMessagesToDb(
+  sessionId: string,
+  messages: { role: string; content: string }[]
+): Promise<void> {
+  try {
+    await fetch(`/api/sessions/${sessionId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+    });
+  } catch {
+    // Silently fail - messages will be retried on next save
+  }
+}
+
+export async function deleteSessionFromDb(id: string): Promise<void> {
+  try {
+    await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+  } catch {
+    // Silently fail
+  }
+}
+
+export async function clearAllSessionsFromDb(): Promise<void> {
+  try {
+    await fetch("/api/sessions", { method: "DELETE" });
+  } catch {
+    // Silently fail
+  }
+}
+
+export async function loadSessionWithMessages(id: string): Promise<ChatSession | null> {
+  try {
+    const res = await fetch(`/api/sessions/${id}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.session as ChatSession;
+  } catch {
+    return null;
+  }
+}
+
+// --- Active session ID (localStorage — just a quick pointer) ---
 
 export function getActiveSessionId(): string | null {
   if (typeof window === "undefined") return null;
@@ -38,37 +104,10 @@ export function setActiveSessionId(id: string | null): void {
   }
 }
 
-export function createSession(firstUserMessage: string): ChatSession {
-  // Generate title from first message (truncate)
-  const title = firstUserMessage.length > 40
+// --- Helper ---
+
+export function generateSessionTitle(firstUserMessage: string): string {
+  return firstUserMessage.length > 40
     ? firstUserMessage.slice(0, 40) + "..."
     : firstUserMessage;
-
-  return {
-    id: Date.now().toString(),
-    title,
-    messages: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-}
-
-export function updateSession(
-  sessions: ChatSession[],
-  sessionId: string,
-  messages: { role: "user" | "assistant"; content: string }[]
-): ChatSession[] {
-  const updated = sessions.map((s) =>
-    s.id === sessionId
-      ? { ...s, messages, updatedAt: new Date().toISOString() }
-      : s
-  );
-  saveSessions(updated);
-  return updated;
-}
-
-export function deleteSession(sessions: ChatSession[], sessionId: string): ChatSession[] {
-  const updated = sessions.filter((s) => s.id !== sessionId);
-  saveSessions(updated);
-  return updated;
 }
