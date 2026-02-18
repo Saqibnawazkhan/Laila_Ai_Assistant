@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Sparkles, User } from "lucide-react";
+import { Copy, Check, Sparkles } from "lucide-react";
 import { showToast } from "./Toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -58,40 +58,84 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
     ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
     : "";
 
+  // --- USER MESSAGE (right side) ---
+  if (!isLaila) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className={`flex justify-end ${isGrouped ? "mt-1" : "mt-4 first:mt-0"} group`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div className="max-w-[80%] sm:max-w-[70%]">
+          {/* Timestamp */}
+          {!isGrouped && timeStr && (
+            <div className="flex justify-end mb-1">
+              <span className="text-[10px] text-gray-600">{timeStr}</span>
+            </div>
+          )}
+
+          {/* Bubble */}
+          <div className="relative">
+            <div
+              className="px-4 py-2.5 rounded-2xl rounded-br-md bg-purple-600 text-white text-sm leading-relaxed"
+              onDoubleClick={() => {
+                navigator.clipboard.writeText(content);
+                showToast("Message copied!", "success");
+              }}
+            >
+              {content}
+            </div>
+
+            {/* Copy on hover */}
+            {hovered && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={handleCopy}
+                className="absolute -top-1 -left-1 w-6 h-6 rounded-md bg-gray-800 border border-white/[0.08] flex items-center justify-center hover:bg-gray-700 transition-colors"
+                title="Copy message"
+              >
+                {copied ? (
+                  <Check size={11} className="text-green-400" />
+                ) : (
+                  <Copy size={11} className="text-gray-400" />
+                )}
+              </motion.button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // --- ASSISTANT MESSAGE (left side) ---
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`flex gap-2.5 ${isGrouped ? "mt-0.5" : "mt-4 first:mt-0"} group`}
+      className={`flex gap-2.5 ${isGrouped ? "mt-1" : "mt-4 first:mt-0"} group`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Avatar */}
       {!isGrouped ? (
-        <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-          isLaila
-            ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-sm shadow-purple-500/20"
-            : "bg-white/[0.06] border border-white/[0.08]"
-        }`}>
-          {isLaila ? (
-            <Sparkles size={13} className="text-white" />
-          ) : (
-            <User size={13} className="text-gray-400" />
-          )}
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-purple-500/20">
+          <Sparkles size={13} className="text-white" />
         </div>
       ) : (
         <div className="w-7 flex-shrink-0" />
       )}
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 max-w-[85%]">
         {/* Name + time */}
         {!isGrouped && (
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-xs font-semibold ${isLaila ? "text-purple-400" : "text-gray-300"}`}>
-              {isLaila ? "Laila" : "You"}
-            </span>
+            <span className="text-xs font-semibold text-purple-400">Laila</span>
             {timeStr && <span className="text-[10px] text-gray-600">{timeStr}</span>}
           </div>
         )}
