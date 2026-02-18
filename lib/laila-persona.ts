@@ -31,4 +31,12 @@ CRITICAL - Voice input correction (user speaks via speech-to-text, expect errors
 ${COMMAND_SYSTEM_PROMPT}
 ${TASK_SYSTEM_PROMPT}`;
 
-export const LAILA_GREETING = "Hey! I'm Laila, your personal AI assistant. I can chat, manage your tasks, play music, send messages, and control your laptop. What can I do for you? 💜";
+const GREETINGS = [
+  "Hey Saqib! I'm Laila, your personal AI assistant. What can I do for you today?",
+  "Hi there, Saqib! Ready to help with anything you need. What's on your mind?",
+  "Hello Saqib! Laila here, at your service. How can I assist you?",
+  "Hey! I'm Laila, your AI assistant. I can chat, manage tasks, play music, and more. What's up?",
+  "Good to see you, Saqib! I'm Laila. Need help with anything?",
+];
+
+export const LAILA_GREETING = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
