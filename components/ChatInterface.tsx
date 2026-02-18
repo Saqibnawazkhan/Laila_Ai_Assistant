@@ -92,6 +92,7 @@ export default function ChatInterface() {
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -171,6 +172,8 @@ export default function ChatInterface() {
       const { scrollTop, scrollHeight, clientHeight } = container;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
       setShowScrollBtn(distanceFromBottom > 150);
+      const progress = scrollHeight > clientHeight ? (scrollTop / (scrollHeight - clientHeight)) * 100 : 0;
+      setScrollProgress(progress);
     };
 
     container.addEventListener("scroll", handleScroll);
@@ -976,6 +979,17 @@ export default function ChatInterface() {
       >
         <Avatar status={avatarStatus} />
       </motion.div>
+
+      {/* Scroll progress bar */}
+      {scrollProgress > 0 && scrollProgress < 99 && (
+        <div className="h-0.5 bg-transparent flex-shrink-0">
+          <motion.div
+            className="h-full bg-gradient-to-r from-purple-600 to-fuchsia-500"
+            style={{ width: `${scrollProgress}%` }}
+            transition={{ duration: 0.1 }}
+          />
+        </div>
+      )}
 
       {/* Messages Area */}
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
