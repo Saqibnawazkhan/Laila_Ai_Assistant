@@ -151,6 +151,13 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Update browser tab title with message count
+  useEffect(() => {
+    const unread = messages.filter((m) => m.role === "assistant").length;
+    document.title = unread > 1 ? `(${unread}) Laila AI Assistant` : "Laila AI Assistant";
+    return () => { document.title = "Laila AI Assistant"; };
+  }, [messages]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
