@@ -1011,15 +1011,34 @@ export default function ChatInterface() {
               .filter(({ msg }) =>
                 !searchQuery || msg.content.toLowerCase().includes(searchQuery.toLowerCase())
               )
-              .map(({ msg, index }) => (
-                <MessageBubble
-                  key={index}
-                  role={msg.role}
-                  content={msg.content}
-                  timestamp={msg.timestamp}
-                  isLatest={index === messages.length - 1}
-                />
-              ))}
+              .map(({ msg, index }, filteredIdx, filtered) => {
+                const showDateSep = (() => {
+                  if (!msg.timestamp || filteredIdx === 0) return msg.timestamp ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) : null;
+                  const prev = filtered[filteredIdx - 1]?.msg;
+                  if (!prev?.timestamp) return null;
+                  const curDate = new Date(msg.timestamp).toDateString();
+                  const prevDate = new Date(prev.timestamp).toDateString();
+                  return curDate !== prevDate ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) : null;
+                })();
+
+                return (
+                  <div key={index}>
+                    {showDateSep && (
+                      <div className="flex items-center gap-3 my-4">
+                        <div className="flex-1 h-px bg-white/10" />
+                        <span className="text-[10px] text-gray-500 font-medium px-2">{showDateSep}</span>
+                        <div className="flex-1 h-px bg-white/10" />
+                      </div>
+                    )}
+                    <MessageBubble
+                      role={msg.role}
+                      content={msg.content}
+                      timestamp={msg.timestamp}
+                      isLatest={index === messages.length - 1}
+                    />
+                  </div>
+                );
+              })}
           </AnimatePresence>
           {isLoading && <TypingIndicator />}
 
