@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus, RefreshCw } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -14,6 +14,7 @@ import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
 import ConfirmDialog from "./ConfirmDialog";
 import KeyboardShortcuts from "./KeyboardShortcuts";
+import CommandPalette, { type CommandItem } from "./CommandPalette";
 import ToastContainer, { showToast } from "./Toast";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
@@ -92,6 +93,7 @@ export default function ChatInterface() {
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -230,6 +232,11 @@ export default function ChatInterface() {
         setSearchOpen((prev) => !prev);
         setSearchQuery("");
       }
+      // Ctrl/Cmd + P = Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key === "p") {
+        e.preventDefault();
+        setShowCommandPalette((prev) => !prev);
+      }
       // Escape = Close panels
       if (e.key === "Escape") {
         setIsTaskPanelOpen(false);
@@ -238,6 +245,7 @@ export default function ChatInterface() {
         setSearchOpen(false);
         setSearchQuery("");
         setShowShortcuts(false);
+        setShowCommandPalette(false);
       }
     };
 
@@ -829,6 +837,21 @@ export default function ChatInterface() {
 
       {/* Keyboard Shortcuts */}
       <KeyboardShortcuts isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        commands={[
+          { id: "new-chat", label: "New Chat", icon: <Plus size={16} />, shortcut: "Ctrl+K", action: handleNewChat },
+          { id: "history", label: "Chat History", icon: <Clock size={16} />, shortcut: "Ctrl+H", action: () => setIsHistoryOpen(true) },
+          { id: "settings", label: "Settings", icon: <Settings size={16} />, shortcut: "Ctrl+,", action: () => setIsSettingsOpen(true) },
+          { id: "tasks", label: "Task Manager", icon: <ListTodo size={16} />, action: () => setIsTaskPanelOpen(true) },
+          { id: "search", label: "Search Messages", icon: <Search size={16} />, shortcut: "Ctrl+F", action: () => setSearchOpen(true) },
+          { id: "shortcuts", label: "Keyboard Shortcuts", icon: <Search size={16} />, shortcut: "Ctrl+?", action: () => setShowShortcuts(true) },
+          { id: "voice", label: voiceEnabled ? "Mute Voice" : "Enable Voice", icon: voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />, action: handleToggleVoice },
+        ] as CommandItem[]}
+      />
 
       {/* Confirm Dialog */}
       <ConfirmDialog
