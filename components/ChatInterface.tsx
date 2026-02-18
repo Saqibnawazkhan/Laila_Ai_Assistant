@@ -885,6 +885,10 @@ export default function ChatInterface() {
         tasks={tasks}
         onToggle={handleToggleTask}
         onDelete={handleDeleteTask}
+        onAdd={(title: string) => {
+          const updated = addTask(tasks, title);
+          setTasks(updated);
+        }}
       />
 
       {/* Settings Panel */}

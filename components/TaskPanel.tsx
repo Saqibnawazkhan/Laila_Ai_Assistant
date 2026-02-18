@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Trash2, Circle, AlertCircle, Clock, ListTodo } from "lucide-react";
+import { useState } from "react";
+import { X, Check, Trash2, Circle, AlertCircle, Clock, ListTodo, Plus } from "lucide-react";
 import { Task } from "@/lib/tasks";
 
 interface TaskPanelProps {
@@ -10,9 +11,11 @@ interface TaskPanelProps {
   tasks: Task[];
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onAdd?: (title: string) => void;
 }
 
-export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }: TaskPanelProps) {
+export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, onAdd }: TaskPanelProps) {
+  const [newTaskTitle, setNewTaskTitle] = useState("");
   const pending = tasks.filter((t) => !t.completed);
   const completed = tasks.filter((t) => t.completed);
   const progress = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
@@ -75,6 +78,39 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete }
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   />
+                </div>
+              </div>
+            )}
+
+            {/* Quick add task */}
+            {onAdd && (
+              <div className="px-5 pt-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newTaskTitle.trim()) {
+                        onAdd(newTaskTitle.trim());
+                        setNewTaskTitle("");
+                      }
+                    }}
+                    placeholder="Add a task..."
+                    className="flex-1 text-sm bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50"
+                  />
+                  <button
+                    onClick={() => {
+                      if (newTaskTitle.trim()) {
+                        onAdd(newTaskTitle.trim());
+                        setNewTaskTitle("");
+                      }
+                    }}
+                    disabled={!newTaskTitle.trim()}
+                    className="px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:opacity-50 text-white transition-colors"
+                  >
+                    <Plus size={16} />
+                  </button>
                 </div>
               </div>
             )}
