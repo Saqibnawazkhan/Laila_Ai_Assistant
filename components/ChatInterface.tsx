@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -81,8 +81,10 @@ export default function ChatInterface() {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSession] = useState<string | null>(null);
   const [wakeWordListening, setWakeWordListening] = useState(false);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sendMessageRef = useRef<(content: string) => void>(undefined);
 
   // Load everything on mount
@@ -142,6 +144,21 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  // Track scroll position to show/hide scroll-to-bottom button
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setShowScrollBtn(distanceFromBottom > 150);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Load voices on mount and unlock TTS on first user interaction
   useEffect(() => {
@@ -718,7 +735,26 @@ export default function ChatInterface() {
   const pendingTaskCount = tasks.filter((t) => !t.completed).length;
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black">
+    <div className="relative flex flex-col h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black overflow-hidden">
+      {/* Animated gradient background orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-purple-700/10 blur-3xl"
+          animate={{ x: [0, 60, 0], y: [0, 40, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-violet-600/10 blur-3xl"
+          animate={{ x: [0, -50, 0], y: [0, -60, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-fuchsia-600/5 blur-3xl"
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
       {/* Permission Modal */}
       <PermissionModal
         command={pendingCommand}
@@ -809,7 +845,7 @@ export default function ChatInterface() {
       </motion.div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
+      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence>
             {messages.map((msg, index) => (
@@ -824,6 +860,23 @@ export default function ChatInterface() {
           {isLoading && <TypingIndicator />}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Scroll to bottom floating button */}
+        <AnimatePresence>
+          {showScrollBtn && (
+            <motion.button
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              onClick={scrollToBottom}
+              className="sticky bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-purple-600/80 backdrop-blur-sm border border-purple-400/30 flex items-center justify-center text-white shadow-lg shadow-purple-900/30 hover:bg-purple-500/90 transition-colors z-10 mx-auto"
+              title="Scroll to bottom"
+            >
+              <ChevronDown size={20} />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Input */}
