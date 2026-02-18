@@ -78,7 +78,14 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setShowReactionPicker(false); }}
     >
-      <div className="relative max-w-[80%]">
+      <div
+        className="relative max-w-[80%]"
+        onDoubleClick={() => {
+          navigator.clipboard.writeText(content);
+          showToast("Message copied!", "success");
+        }}
+        title="Double-click to copy"
+      >
         <div
           className={`rounded-2xl px-4 py-3 ${
             isLaila
