@@ -12,6 +12,7 @@ import TaskPanel from "./TaskPanel";
 import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
+import ConfirmDialog from "./ConfirmDialog";
 import ToastContainer, { showToast } from "./Toast";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
@@ -88,6 +89,7 @@ export default function ChatInterface() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -622,13 +624,20 @@ export default function ChatInterface() {
   }, []);
 
   const handleDeleteSession = useCallback(
-    async (id: string) => {
-      await deleteSessionFromDb(id);
-      setChatSessions((prev) => prev.filter((s) => s.id !== id));
-      if (activeSessionId === id) {
-        handleNewChat();
-      }
-      showToast("Chat deleted", "success");
+    (id: string) => {
+      setConfirmAction({
+        title: "Delete Chat",
+        message: "This conversation will be permanently deleted. This action cannot be undone.",
+        onConfirm: async () => {
+          await deleteSessionFromDb(id);
+          setChatSessions((prev) => prev.filter((s) => s.id !== id));
+          if (activeSessionId === id) {
+            handleNewChat();
+          }
+          showToast("Chat deleted", "success");
+          setConfirmAction(null);
+        },
+      });
     },
     [activeSessionId, handleNewChat]
   );
@@ -649,13 +658,20 @@ export default function ChatInterface() {
     savePermissions(new Set());
   }, []);
 
-  const handleClearChats = useCallback(async () => {
-    await clearAllSessionsFromDb();
-    setChatSessions([]);
-    setActiveSession(null);
-    setActiveSessionId(null);
-    handleNewChat();
-    showToast("All chats cleared", "success");
+  const handleClearChats = useCallback(() => {
+    setConfirmAction({
+      title: "Clear All Chats",
+      message: "All conversations will be permanently deleted. This action cannot be undone.",
+      onConfirm: async () => {
+        await clearAllSessionsFromDb();
+        setChatSessions([]);
+        setActiveSession(null);
+        setActiveSessionId(null);
+        handleNewChat();
+        showToast("All chats cleared", "success");
+        setConfirmAction(null);
+      },
+    });
   }, [handleNewChat]);
 
   const sendMessage = async (content: string) => {
@@ -791,6 +807,15 @@ export default function ChatInterface() {
         onAllow={handleAllowCommand}
         onAlwaysAllow={handleAlwaysAllowCommand}
         onDeny={handleDenyCommand}
+      />
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={!!confirmAction}
+        title={confirmAction?.title || ""}
+        message={confirmAction?.message || ""}
+        onConfirm={() => confirmAction?.onConfirm()}
+        onCancel={() => setConfirmAction(null)}
       />
 
       {/* Task Panel */}
