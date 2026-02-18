@@ -1151,6 +1151,26 @@ export default function ChatInterface() {
             </motion.div>
           )}
 
+          {/* Quick replies after Laila responds */}
+          {!isLoading && !lastFailedMessage && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap gap-1.5 py-2"
+            >
+              {["Tell me more", "Thanks!", "Can you explain?", "What else?"].map((reply) => (
+                <button
+                  key={reply}
+                  onClick={() => sendMessage(reply)}
+                  className="px-2.5 py-1 text-[11px] rounded-full bg-white/5 border border-purple-500/20 text-gray-400 hover:bg-purple-600/15 hover:text-purple-300 hover:border-purple-500/40 transition-all"
+                >
+                  {reply}
+                </button>
+              ))}
+            </motion.div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
