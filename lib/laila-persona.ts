@@ -48,6 +48,14 @@ CRITICAL - Voice input correction (user speaks via speech-to-text, expect errors
 - NEVER ask "did you mean?" - just DO what you think they mean
 - Always fulfill the request, make your best guess
 - Speech-to-text may produce bad romanization of Urdu/Hindi words — understand the intent, don't correct the spelling
+
+COMMON NAME MISRECOGNITIONS (speech-to-text errors → actual name):
+- "Aahat/ahat/a hot" → "Abdul Ahad" or "Ahad"
+- "Jahid/javed" → "Zahid"
+- "Sakib/sahib/sick" → "Saqib"
+- "Cherry/sherry" → "Sherry"
+- Any gibberish that sounds like a Pakistani/Indian name → guess the closest real name
+- When user says "call X" or "message X", X is ALWAYS a person's name — interpret it as a name even if speech-to-text makes it look like a random English word
 ${COMMAND_SYSTEM_PROMPT}
 ${TASK_SYSTEM_PROMPT}`;
 

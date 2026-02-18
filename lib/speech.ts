@@ -1,3 +1,68 @@
+// Common misrecognition corrections for Urdu/Hindi names and words
+// Maps what speech-to-text produces → what user actually said
+const SPEECH_CORRECTIONS: Record<string, string> = {
+  // Names (lowercase keys)
+  "aahat": "Ahad",
+  "ahat": "Ahad",
+  "a hot": "Ahad",
+  "a hut": "Ahad",
+  "jahid": "Zahid",
+  "javed": "Zahid",
+  "sahib": "Saqib",
+  "sakib": "Saqib",
+  "sick": "Saqib",
+  "sucked": "Saqib",
+  "soccer": "Saqib",
+  "sake": "Saqib",
+  "lyla": "Laila",
+  "lila": "Laila",
+  "leela": "Laila",
+  "lighter": "Laila",
+  // Urdu/Hindi words commonly misheard
+  "cola": "kholo",
+  "color": "kholo",
+  "hollow": "hallo",
+  "bought": "baat",
+  "but": "baat",
+  "car": "kar",
+  "cargo": "karo",
+  "caller": "karo",
+  "bhejo": "bhejo",
+  "badge": "bhej",
+  "banner": "band",
+  "band": "band",
+  "gun": "gaana",
+  "gonna": "gaana",
+  "challah": "chala",
+  "shallow": "chalo",
+  "shall oh": "chalo",
+  "butter": "batao",
+  "motor": "batao",
+  "walk": "waqt",
+  "walked": "waqt",
+  "sugar": "shukriya",
+  "sugar yeah": "shukriya",
+  "chop": "chup",
+  "job": "chup",
+};
+
+// Apply corrections to transcript
+function correctTranscript(text: string): string {
+  let corrected = text;
+  // Try full phrase corrections first
+  const lower = text.toLowerCase().trim();
+  if (SPEECH_CORRECTIONS[lower]) {
+    return SPEECH_CORRECTIONS[lower];
+  }
+  // Try word-by-word corrections
+  const words = corrected.split(/\s+/);
+  const correctedWords = words.map((word) => {
+    const key = word.toLowerCase().replace(/[.,!?]/g, "");
+    return SPEECH_CORRECTIONS[key] || word;
+  });
+  return correctedWords.join(" ");
+}
+
 // Speech-to-Text using Web Speech API
 export function createSpeechRecognition(
   onResult: (text: string) => void,
@@ -15,13 +80,29 @@ export function createSpeechRecognition(
   }
 
   const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
+  // en-IN handles South Asian names & Hinglish much better than en-US
+  recognition.lang = "en-IN";
   recognition.interimResults = false;
   recognition.continuous = false;
+  recognition.maxAlternatives = 3;
 
   recognition.onresult = (event: SpeechRecognitionEvent) => {
-    const transcript = event.results[0][0].transcript;
-    onResult(transcript);
+    // Pick the best transcript from all alternatives
+    let bestTranscript = "";
+    let bestConfidence = 0;
+
+    for (let alt = 0; alt < event.results[0].length; alt++) {
+      const transcript = event.results[0][alt].transcript;
+      const confidence = event.results[0][alt].confidence;
+      if (confidence > bestConfidence) {
+        bestConfidence = confidence;
+        bestTranscript = transcript;
+      }
+    }
+
+    // Apply name/word corrections
+    const corrected = correctTranscript(bestTranscript);
+    onResult(corrected);
   };
 
   recognition.onend = () => {
@@ -30,7 +111,6 @@ export function createSpeechRecognition(
 
   recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
     if (event.error === "aborted") {
-      // Normal - recognition was stopped programmatically, not an error
       onEnd();
       return;
     } else if (event.error === "no-speech") {
@@ -242,10 +322,10 @@ export function createWakeWordListener(
 
     try {
       recognition = new SpeechRecognitionAPI();
-      recognition.lang = "en-US";
+      recognition.lang = "en-IN";
       recognition.interimResults = false;
       recognition.continuous = true;
-      recognition.maxAlternatives = 3;
+      recognition.maxAlternatives = 5;
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         if (isPaused || isSpeaking()) return;
@@ -264,7 +344,9 @@ export function createWakeWordListener(
 
             if (match) {
               const matchEnd = match.index! + match[0].length;
-              const remaining = transcript.slice(matchEnd).trim();
+              const rawRemaining = transcript.slice(matchEnd).trim();
+              // Apply corrections to the remaining text after wake word
+              const remaining = correctTranscript(rawRemaining);
 
               // Stop recognition but keep isActive true so we can restart
               if (recognition) {
