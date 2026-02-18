@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus, RefreshCw, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -97,6 +97,7 @@ export default function ChatInterface() {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [sessionDuration, setSessionDuration] = useState("0:00");
+  const [focusMode, setFocusMode] = useState(false);
   const sessionStartRef = useRef(Date.now());
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -966,6 +967,13 @@ export default function ChatInterface() {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => setFocusMode((p) => !p)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all text-xs sm:text-sm ${focusMode ? "bg-purple-600/20 border-purple-500/30 text-purple-400" : "bg-white/5 border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10"}`}
+              title="Focus Mode"
+            >
+              {focusMode ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
           </div>
         </div>
 
@@ -1009,14 +1017,14 @@ export default function ChatInterface() {
       </div>
 
       {/* Avatar Section */}
-      <motion.div
+      {!focusMode && <motion.div
         className="flex-shrink-0 flex justify-center pt-4 sm:pt-8 pb-2 sm:pb-4 border-b border-white/5 bg-black/20 backdrop-blur-lg"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <Avatar status={avatarStatus} />
-      </motion.div>
+      </motion.div>}
 
       {/* Scroll progress bar */}
       {scrollProgress > 0 && scrollProgress < 99 && (
@@ -1198,7 +1206,7 @@ export default function ChatInterface() {
       />
 
       {/* Status Bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-1 bg-black/40 backdrop-blur-xl border-t border-white/5 text-[10px] text-gray-600">
+      {!focusMode && <div className="flex-shrink-0 flex items-center justify-between px-4 py-1 bg-black/40 backdrop-blur-xl border-t border-white/5 text-[10px] text-gray-600">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
@@ -1218,7 +1226,7 @@ export default function ChatInterface() {
           <span>{sessionDuration}</span>
           <span>v1.0</span>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
