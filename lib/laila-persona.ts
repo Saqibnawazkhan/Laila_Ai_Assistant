@@ -31,7 +31,7 @@ CRITICAL - Voice input correction (user speaks via speech-to-text, expect errors
 ${COMMAND_SYSTEM_PROMPT}
 ${TASK_SYSTEM_PROMPT}`;
 
-const GREETINGS = [
+export const GREETINGS = [
   "Hey Saqib! I'm Laila, your personal AI assistant. What can I do for you today?",
   "Hi there, Saqib! Ready to help with anything you need. What's on your mind?",
   "Hello Saqib! Laila here, at your service. How can I assist you?",
@@ -39,4 +39,6 @@ const GREETINGS = [
   "Good to see you, Saqib! I'm Laila. Need help with anything?",
 ];
 
-export const LAILA_GREETING = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+// Use a fixed greeting for SSR to avoid hydration mismatch
+// The random selection happens in ChatInterface via useEffect
+export const LAILA_GREETING = GREETINGS[0];

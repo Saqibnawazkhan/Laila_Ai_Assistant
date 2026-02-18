@@ -17,7 +17,7 @@ import KeyboardShortcuts from "./KeyboardShortcuts";
 import CommandPalette, { type CommandItem } from "./CommandPalette";
 import ParticleBackground from "./ParticleBackground";
 import ToastContainer, { showToast } from "./Toast";
-import { LAILA_GREETING } from "@/lib/laila-persona";
+import { LAILA_GREETING, GREETINGS } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
 import {
   parseCommandFromResponse,
@@ -73,8 +73,18 @@ function savePermissions(permissions: Set<string>) {
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", timestamp: new Date().toISOString(), content: LAILA_GREETING },
+    { role: "assistant", content: LAILA_GREETING },
   ]);
+
+  // Set timestamp client-side to avoid hydration mismatch
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && !prev[0].timestamp) {
+        return [{ ...prev[0], timestamp: new Date().toISOString() }];
+      }
+      return prev;
+    });
+  }, []);
   const [isLoading, setIsLoading] = useState(false);
   const [avatarStatus, setAvatarStatus] = useState<"idle" | "thinking" | "talking">("idle");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
@@ -647,7 +657,8 @@ export default function ChatInterface() {
 
   // Chat history handlers
   const handleNewChat = useCallback(() => {
-    setMessages([{ role: "assistant", timestamp: new Date().toISOString(), content: LAILA_GREETING }]);
+    const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+    setMessages([{ role: "assistant", timestamp: new Date().toISOString(), content: randomGreeting }]);
     setActiveSession(null);
     setActiveSessionId(null);
   }, []);
