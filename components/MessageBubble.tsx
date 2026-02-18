@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessageBubbleProps {
   role: "user" | "assistant";
@@ -76,8 +78,12 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
               Laila
             </span>
           )}
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {displayedText}
+
+          {/* Markdown rendered content */}
+          <div className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-code:text-purple-300 prose-code:bg-black/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-a:text-purple-400 prose-strong:text-white prose-blockquote:border-purple-500/50 prose-blockquote:text-gray-300">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {displayedText}
+            </ReactMarkdown>
             {isTyping && (
               <motion.span
                 className="inline-block w-0.5 h-4 bg-purple-400 ml-0.5 align-middle"
@@ -85,7 +91,8 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
                 transition={{ duration: 0.5, repeat: Infinity }}
               />
             )}
-          </p>
+          </div>
+
           {timeStr && (
             <span className="text-[10px] text-gray-500 mt-1 block text-right">
               {timeStr}
