@@ -12,11 +12,12 @@ interface MessageBubbleProps {
   content: string;
   timestamp?: string;
   isLatest?: boolean;
+  isGrouped?: boolean;
 }
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "🎉", "🤔", "👀"];
 
-export default function MessageBubble({ role, content, timestamp, isLatest }: MessageBubbleProps) {
+export default function MessageBubble({ role, content, timestamp, isLatest, isGrouped }: MessageBubbleProps) {
   const isLaila = role === "assistant";
   const [displayedText, setDisplayedText] = useState(isLatest && isLaila ? "" : content);
   const [isTyping, setIsTyping] = useState(isLatest && isLaila);
@@ -74,7 +75,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
       initial={{ opacity: 0, y: 10, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className={`flex ${isLaila ? "justify-start" : "justify-end"} mb-4 group`}
+      className={`flex ${isLaila ? "justify-start" : "justify-end"} ${isGrouped ? "mb-1" : "mb-4"} group`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setShowReactionPicker(false); }}
     >
@@ -93,7 +94,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
               : "bg-white/10 border border-white/10 text-gray-100"
           }`}
         >
-          {isLaila && (
+          {isLaila && !isGrouped && (
             <span
               className="text-xs font-semibold block mb-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]"
             >

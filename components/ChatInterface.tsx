@@ -1103,6 +1103,9 @@ export default function ChatInterface() {
                   return curDate !== prevDate ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) : null;
                 })();
 
+                const prevMsg = filteredIdx > 0 ? filtered[filteredIdx - 1]?.msg : null;
+                const isGrouped = prevMsg?.role === msg.role && !showDateSep;
+
                 return (
                   <div key={index}>
                     {showDateSep && (
@@ -1117,6 +1120,7 @@ export default function ChatInterface() {
                       content={msg.content}
                       timestamp={msg.timestamp}
                       isLatest={index === messages.length - 1}
+                      isGrouped={isGrouped}
                     />
                   </div>
                 );
