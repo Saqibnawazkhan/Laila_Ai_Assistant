@@ -1127,6 +1127,10 @@ export default function ChatInterface() {
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-1 bg-black/40 border-t border-white/5 text-[10px] text-gray-600">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Online
+          </span>
+          <span className="flex items-center gap-1">
             <span className={`w-1.5 h-1.5 rounded-full ${wakeWordListening ? "bg-green-500 animate-pulse" : "bg-gray-600"}`} />
             {wakeWordListening ? "Listening" : "Wake word off"}
           </span>
@@ -1135,7 +1139,10 @@ export default function ChatInterface() {
             Voice {voiceEnabled ? "on" : "off"}
           </span>
         </div>
-        <span>{messages.length} message{messages.length !== 1 ? "s" : ""}</span>
+        <div className="flex items-center gap-3">
+          <span>{messages.length} message{messages.length !== 1 ? "s" : ""}</span>
+          <span>v1.0</span>
+        </div>
       </div>
     </div>
   );
