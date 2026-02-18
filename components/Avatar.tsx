@@ -7,29 +7,52 @@ interface AvatarProps {
 }
 
 export default function Avatar({ status }: AvatarProps) {
+  const statusColors = {
+    idle: "from-purple-500 via-violet-500 to-fuchsia-500",
+    thinking: "from-blue-500 via-purple-500 to-violet-500",
+    talking: "from-fuchsia-500 via-pink-500 to-purple-500",
+  };
+
+  const statusGlow = {
+    idle: "bg-purple-500/30",
+    thinking: "bg-blue-500/30",
+    talking: "bg-fuchsia-500/30",
+  };
+
   return (
     <div className="flex flex-col items-center gap-3">
       {/* Glow effect behind avatar */}
       <div className="relative">
+        {/* Outer ring pulse */}
         <motion.div
-          className="absolute inset-0 rounded-full bg-purple-500/30 blur-2xl"
+          className={`absolute -inset-3 rounded-full ${statusGlow[status]} blur-2xl`}
           animate={{
-            scale: status === "talking" ? [1, 1.3, 1] : status === "thinking" ? [1, 1.15, 1] : [1, 1.05, 1],
-            opacity: status === "talking" ? [0.4, 0.7, 0.4] : status === "thinking" ? [0.3, 0.5, 0.3] : [0.2, 0.3, 0.2],
+            scale: status === "talking" ? [1, 1.4, 1] : status === "thinking" ? [1, 1.2, 1] : [1, 1.08, 1],
+            opacity: status === "talking" ? [0.3, 0.6, 0.3] : status === "thinking" ? [0.2, 0.4, 0.2] : [0.15, 0.25, 0.15],
           }}
           transition={{
-            duration: status === "talking" ? 0.8 : 2,
+            duration: status === "talking" ? 0.6 : status === "thinking" ? 1.5 : 3,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
 
+        {/* Rotating accent ring */}
+        <motion.div
+          className="absolute -inset-1 rounded-full"
+          style={{
+            background: "conic-gradient(from 0deg, transparent, rgba(168, 85, 247, 0.4), transparent, rgba(236, 72, 153, 0.3), transparent)",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: status === "thinking" ? 2 : 8, repeat: Infinity, ease: "linear" }}
+        />
+
         {/* Main avatar circle */}
         <motion.div
-          className="relative w-28 h-28 rounded-full bg-gradient-to-br from-purple-500 via-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-purple-500/25"
+          className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${statusColors[status]} flex items-center justify-center shadow-lg shadow-purple-500/25 transition-all duration-500`}
           animate={{
             y: status === "idle" ? [0, -6, 0] : 0,
-            scale: status === "talking" ? [1, 1.05, 1] : 1,
+            scale: status === "talking" ? [1, 1.06, 1] : 1,
           }}
           transition={{
             duration: status === "idle" ? 3 : 0.5,
@@ -49,6 +72,26 @@ export default function Avatar({ status }: AvatarProps) {
               ease: "linear",
             }}
           />
+
+          {/* Sound wave rings when talking */}
+          {status === "talking" && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={`wave-${i}`}
+                  className="absolute inset-0 rounded-full border border-white/20"
+                  initial={{ scale: 1, opacity: 0.4 }}
+                  animate={{ scale: [1, 1.5 + i * 0.2], opacity: [0.3, 0] }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    delay: i * 0.4,
+                    ease: "easeOut",
+                  }}
+                />
+              ))}
+            </>
+          )}
 
           {/* Face */}
           <div className="relative flex flex-col items-center">
@@ -84,7 +127,6 @@ export default function Avatar({ status }: AvatarProps) {
               animate={{
                 width: status === "talking" ? ["12px", "16px", "8px", "14px", "12px"] : "12px",
                 height: status === "talking" ? ["4px", "8px", "3px", "7px", "4px"] : status === "thinking" ? "2px" : "4px",
-                borderRadius: status === "idle" ? "9999px" : "9999px",
               }}
               transition={{
                 duration: status === "talking" ? 0.6 : 0.3,
@@ -101,9 +143,7 @@ export default function Avatar({ status }: AvatarProps) {
                 <motion.div
                   key={i}
                   className="absolute w-2 h-2 bg-white/70 rounded-full"
-                  animate={{
-                    rotate: 360,
-                  }}
+                  animate={{ rotate: 360 }}
                   transition={{
                     duration: 1.5,
                     repeat: Infinity,
@@ -124,14 +164,18 @@ export default function Avatar({ status }: AvatarProps) {
         </motion.div>
 
         {/* Online indicator */}
-        <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-950" />
+        <motion.div
+          className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-950"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
       </div>
 
       {/* Name & Status */}
       <div className="text-center">
-        <h2 className="text-white font-semibold text-lg">Laila</h2>
+        <h2 className="text-white font-semibold text-lg tracking-wide">Laila</h2>
         <motion.p
-          className="text-xs text-gray-400"
+          className={`text-xs ${status === "talking" ? "text-pink-400" : status === "thinking" ? "text-blue-400" : "text-gray-400"}`}
           key={status}
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
