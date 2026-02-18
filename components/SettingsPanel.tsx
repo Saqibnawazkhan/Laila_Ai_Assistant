@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear } from "lucide-react";
+import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear, Download } from "lucide-react";
+import { showToast } from "./Toast";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface SettingsPanelProps {
   allowedTypes: Set<string>;
   onResetPermissions: () => void;
   onClearChats: () => void;
+  messages?: { role: string; content: string; timestamp?: string }[];
 }
 
 const typeLabels: Record<string, string> = {
@@ -30,7 +32,43 @@ export default function SettingsPanel({
   allowedTypes,
   onResetPermissions,
   onClearChats,
+  messages = [],
 }: SettingsPanelProps) {
+  const exportChat = (format: "txt" | "json") => {
+    if (messages.length === 0) {
+      showToast("No messages to export", "info");
+      return;
+    }
+
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    if (format === "json") {
+      content = JSON.stringify(messages, null, 2);
+      filename = `laila-chat-${Date.now()}.json`;
+      mimeType = "application/json";
+    } else {
+      content = messages
+        .map((m) => {
+          const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
+          const role = m.role === "assistant" ? "Laila" : "You";
+          return `[${time}] ${role}: ${m.content}`;
+        })
+        .join("\n\n");
+      filename = `laila-chat-${Date.now()}.txt`;
+      mimeType = "text/plain";
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Chat exported as ${format.toUpperCase()}`, "success");
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -163,16 +201,34 @@ export default function SettingsPanel({
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                   Data
                 </h3>
-                <button
-                  onClick={onClearChats}
-                  className="w-full flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-red-500/10 hover:border-red-500/30 transition-colors group"
-                >
-                  <Trash2 size={16} className="text-gray-500 group-hover:text-red-400" />
-                  <div className="text-left">
-                    <p className="text-sm text-gray-200 group-hover:text-red-300">Clear Chat History</p>
-                    <p className="text-xs text-gray-500">Delete all saved conversations</p>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => exportChat("txt")}
+                      className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-purple-500/10 hover:border-purple-500/30 transition-colors text-sm text-gray-300 hover:text-purple-300"
+                    >
+                      <Download size={14} />
+                      Export .txt
+                    </button>
+                    <button
+                      onClick={() => exportChat("json")}
+                      className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-purple-500/10 hover:border-purple-500/30 transition-colors text-sm text-gray-300 hover:text-purple-300"
+                    >
+                      <Download size={14} />
+                      Export .json
+                    </button>
                   </div>
-                </button>
+                  <button
+                    onClick={onClearChats}
+                    className="w-full flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-red-500/10 hover:border-red-500/30 transition-colors group"
+                  >
+                    <Trash2 size={16} className="text-gray-500 group-hover:text-red-400" />
+                    <div className="text-left">
+                      <p className="text-sm text-gray-200 group-hover:text-red-300">Clear Chat History</p>
+                      <p className="text-xs text-gray-500">Delete all saved conversations</p>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               {/* About Section */}

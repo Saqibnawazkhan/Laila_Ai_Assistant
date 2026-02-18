@@ -808,6 +808,7 @@ export default function ChatInterface() {
         allowedTypes={allowedTypes}
         onResetPermissions={handleResetPermissions}
         onClearChats={handleClearChats}
+        messages={messages}
       />
 
       {/* Chat History Panel */}
