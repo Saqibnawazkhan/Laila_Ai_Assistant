@@ -296,9 +296,13 @@ export default function SettingsPanel({
                   <div className="flex items-center gap-3 mb-2">
                     <MessageSquare size={16} className="text-purple-400" />
                     <p className="text-sm text-gray-200 font-medium">Laila AI Assistant</p>
+                    <span className="ml-auto text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">v2.0</span>
                   </div>
                   <p className="text-xs text-gray-500">
-                    Powered by Groq (Llama 3.3 70B) with voice support, system commands, and task management.
+                    Powered by Groq (Llama 3.3 70B) with voice support, system commands, task management, and 50+ features.
+                  </p>
+                  <p className="text-[10px] text-gray-600 mt-1">
+                    Built by Saqib Nawaz Khan
                   </p>
                 </div>
               </div>

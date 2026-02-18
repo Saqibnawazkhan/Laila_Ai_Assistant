@@ -1212,6 +1212,8 @@ export default function ChatInterface() {
                 key={suggestion}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => sendMessage(suggestion)}
                 className="px-3 py-1.5 text-xs sm:text-sm rounded-full bg-white/5 border border-purple-500/20 text-gray-300 hover:bg-purple-600/20 hover:text-purple-300 hover:border-purple-500/40 transition-all"
@@ -1252,7 +1254,7 @@ export default function ChatInterface() {
         <div className="flex items-center gap-3">
           <span>{messages.length} message{messages.length !== 1 ? "s" : ""}</span>
           <span>{sessionDuration}</span>
-          <span>v1.0</span>
+          <span>v2.0</span>
         </div>
       </div>}
     </div>
