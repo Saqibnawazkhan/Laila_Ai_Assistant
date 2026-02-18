@@ -153,9 +153,16 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
           )}
 
           {timeStr && (
-            <span className="text-[10px] text-gray-500 mt-1 block text-right">
-              {timeStr}
-            </span>
+            <div className="flex items-center justify-between mt-1">
+              {isLaila && content.length > 50 && (
+                <span className="text-[10px] text-gray-600">
+                  {content.split(/\s+/).length} words · {Math.max(1, Math.ceil(content.split(/\s+/).length / 200))} min read
+                </span>
+              )}
+              <span className="text-[10px] text-gray-500 ml-auto">
+                {timeStr}
+              </span>
+            </div>
           )}
         </div>
 
