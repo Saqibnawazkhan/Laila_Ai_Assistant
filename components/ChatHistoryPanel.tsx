@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MessageSquare, Trash2, Plus, Clock, Pencil, Check } from "lucide-react";
+import { X, MessageSquare, Trash2, Plus, Clock, Pencil, Check, Search } from "lucide-react";
 import { ChatSession } from "@/lib/chat-history";
 
 interface ChatHistoryPanelProps {
@@ -40,6 +40,7 @@ export default function ChatHistoryPanel({
 }: ChatHistoryPanelProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [historySearch, setHistorySearch] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -109,6 +110,22 @@ export default function ChatHistoryPanel({
               </button>
             </div>
 
+            {/* Search sessions */}
+            {sessions.length > 0 && (
+              <div className="px-5 pt-3">
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input
+                    type="text"
+                    value={historySearch}
+                    onChange={(e) => setHistorySearch(e.target.value)}
+                    placeholder="Search conversations..."
+                    className="w-full pl-8 pr-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Session List */}
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {sessions.length === 0 ? (
@@ -120,7 +137,7 @@ export default function ChatHistoryPanel({
               ) : (
                 <div className="space-y-2">
                   <AnimatePresence>
-                    {sessions.map((session) => (
+                    {sessions.filter((s) => !historySearch || s.title.toLowerCase().includes(historySearch.toLowerCase())).map((session) => (
                       <motion.div
                         key={session.id}
                         initial={{ opacity: 0, y: -10 }}
