@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, ChevronDown, Search, X } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown, Search, X, Plus } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -857,19 +857,29 @@ export default function ChatInterface() {
             Say &quot;Laila&quot; to activate · Ctrl+K New Chat
           </p>
 
-          <button
-            onClick={() => setIsTaskPanelOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
-            title="Tasks"
-          >
-            <ListTodo size={16} />
-            <span className="hidden sm:inline">Tasks</span>
-            {pendingTaskCount > 0 && (
-              <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
-                {pendingTaskCount}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={handleNewChat}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-400 hover:bg-purple-600/30 transition-all text-xs sm:text-sm"
+              title="New Chat (Ctrl+K)"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">New</span>
+            </button>
+            <button
+              onClick={() => setIsTaskPanelOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+              title="Tasks"
+            >
+              <ListTodo size={16} />
+              <span className="hidden sm:inline">Tasks</span>
+              {pendingTaskCount > 0 && (
+                <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                  {pendingTaskCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Search bar */}
