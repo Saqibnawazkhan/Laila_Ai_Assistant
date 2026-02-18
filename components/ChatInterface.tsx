@@ -15,6 +15,7 @@ import ChatHistoryPanel from "./ChatHistoryPanel";
 import ConfirmDialog from "./ConfirmDialog";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import CommandPalette, { type CommandItem } from "./CommandPalette";
+import ParticleBackground from "./ParticleBackground";
 import ToastContainer, { showToast } from "./Toast";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
@@ -839,6 +840,7 @@ export default function ChatInterface() {
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
+      <ParticleBackground />
 
       {/* Permission Modal */}
       <PermissionModal
