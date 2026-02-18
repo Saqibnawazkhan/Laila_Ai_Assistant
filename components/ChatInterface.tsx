@@ -863,7 +863,7 @@ export default function ChatInterface() {
       />
 
       {/* Top Navigation Bar */}
-      <div className="flex-shrink-0 border-b border-white/5 bg-black/30 backdrop-blur-sm">
+      <div className="flex-shrink-0 border-b border-white/5 bg-black/30 backdrop-blur-xl">
         <div className="flex items-center justify-between px-3 sm:px-5 py-2">
           <div className="flex items-center gap-1 sm:gap-2">
             <button
@@ -962,7 +962,7 @@ export default function ChatInterface() {
 
       {/* Avatar Section */}
       <motion.div
-        className="flex-shrink-0 flex justify-center pt-4 sm:pt-8 pb-2 sm:pb-4 border-b border-white/5 bg-black/20"
+        className="flex-shrink-0 flex justify-center pt-4 sm:pt-8 pb-2 sm:pb-4 border-b border-white/5 bg-black/20 backdrop-blur-lg"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -1124,7 +1124,7 @@ export default function ChatInterface() {
       />
 
       {/* Status Bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-1 bg-black/40 border-t border-white/5 text-[10px] text-gray-600">
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-1 bg-black/40 backdrop-blur-xl border-t border-white/5 text-[10px] text-gray-600">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
