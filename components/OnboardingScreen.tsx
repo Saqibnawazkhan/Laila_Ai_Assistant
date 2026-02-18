@@ -80,6 +80,12 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             >
               Get Started <ArrowRight size={18} />
             </motion.button>
+
+            {/* Step indicator */}
+            <div className="flex justify-center gap-2 mt-6">
+              <div className="w-2 h-2 rounded-full bg-purple-500" />
+              <div className="w-2 h-2 rounded-full bg-gray-600" />
+            </div>
           </motion.div>
         )}
 
@@ -111,6 +117,15 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               })}
             </div>
 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="bg-purple-600/10 border border-purple-500/20 rounded-xl px-4 py-3 mb-6 text-center"
+            >
+              <p className="text-xs text-purple-300">Pro tip: Say <strong>&quot;Laila&quot;</strong> anytime to activate voice commands, or press <strong>Ctrl+P</strong> for the command palette!</p>
+            </motion.div>
+
             <div className="flex justify-center">
               <motion.button
                 onClick={() => {
@@ -123,6 +138,12 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               >
                 Start Chatting <ArrowRight size={18} />
               </motion.button>
+            </div>
+
+            {/* Step indicator */}
+            <div className="flex justify-center gap-2 mt-6">
+              <div className="w-2 h-2 rounded-full bg-gray-600" />
+              <div className="w-2 h-2 rounded-full bg-purple-500" />
             </div>
           </motion.div>
         )}
