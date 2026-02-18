@@ -17,7 +17,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#030712",
+  themeColor: "#1a1f2e",
 };
 
 export const metadata: Metadata = {
@@ -41,7 +41,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-100`}
+        style={{ background: "#1a1f2e" }}
         suppressHydrationWarning
       >
         {children}

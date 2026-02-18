@@ -138,27 +138,29 @@ export default function Sidebar({
       <aside
         className={`
           fixed lg:relative z-50 lg:z-auto top-0 left-0 h-full
-          flex flex-col bg-gray-950 border-r border-white/[0.06]
+          flex flex-col border-r border-white/[0.06]
           transition-[width] duration-200 ease-in-out
           ${isOpen ? "w-[280px]" : "w-0 lg:w-0"}
           overflow-hidden
         `}
+        style={{ background: "#161b28" }}
       >
         <div className="w-[280px] h-full flex flex-col">
-          {/* Header — matches main header h-14 */}
+          {/* Header */}
           <div className="flex items-center justify-between px-4 h-14 border-b border-white/[0.06] flex-shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/20">
-                <Sparkles size={16} className="text-white" />
+              <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-md shadow-black/10">
+                <Sparkles size={16} className="text-[#1a1f2e]" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-sm font-bold text-white tracking-tight leading-tight">Laila AI</h1>
-                <p className="text-[10px] text-gray-500 leading-tight">Personal Assistant</p>
+                <p className="text-[10px] leading-tight" style={{ color: "#6b7194" }}>Personal Assistant</p>
               </div>
             </div>
             <button
               onClick={onToggle}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all flex-shrink-0"
+              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/[0.06] transition-all flex-shrink-0"
+              style={{ color: "#6b7194" }}
               title="Close sidebar"
             >
               <PanelLeftClose size={16} />
@@ -169,7 +171,8 @@ export default function Sidebar({
           <div className="px-3 pt-3 pb-1 flex-shrink-0">
             <button
               onClick={onNewChat}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-white text-sm font-medium rounded-xl transition-colors hover:opacity-90"
+              style={{ background: "#7c5cfc" }}
             >
               <Plus size={16} />
               New Chat
@@ -180,11 +183,12 @@ export default function Sidebar({
           <div className="px-3 pt-2 pb-1 flex-shrink-0">
             <button
               onClick={onOpenCommandPalette}
-              className="w-full flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-gray-500 hover:bg-white/[0.05] hover:border-white/[0.10] transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.05] hover:border-white/[0.10] transition-all"
+              style={{ color: "#6b7194" }}
             >
               <Search size={14} />
               <span className="flex-1 text-left text-xs">Search...</span>
-              <kbd className="flex items-center gap-0.5 text-[10px] text-gray-600 bg-white/[0.05] border border-white/[0.06] px-1.5 py-0.5 rounded">
+              <kbd className="flex items-center gap-0.5 text-[10px] bg-white/[0.05] border border-white/[0.06] px-1.5 py-0.5 rounded" style={{ color: "#4a4f66" }}>
                 <Command size={9} />K
               </kbd>
             </button>
@@ -192,7 +196,7 @@ export default function Sidebar({
 
           {/* Navigation */}
           <div className="px-3 pt-3 pb-1 flex-shrink-0">
-            <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider px-1 mb-1.5">Menu</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-1.5" style={{ color: "#4a4f66" }}>Menu</p>
             <nav className="space-y-0.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -203,14 +207,15 @@ export default function Sidebar({
                     onClick={item.onClick}
                     className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all ${
                       isActive
-                        ? "bg-purple-500/15 text-purple-300"
-                        : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
+                        ? "bg-indigo-500/15 text-indigo-300"
+                        : "hover:bg-white/[0.04]"
                     }`}
+                    style={{ color: isActive ? undefined : "#8b8fa3" }}
                   >
-                    <Icon size={16} className={isActive ? "text-purple-400" : "text-gray-500"} />
+                    <Icon size={16} style={{ color: isActive ? "#818cf8" : "#6b7194" }} />
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.badge && (
-                      <span className="bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full min-w-[18px] text-center font-medium">
+                      <span className="text-white text-[10px] px-1.5 py-0.5 rounded-full min-w-[18px] text-center font-medium" style={{ background: "#7c5cfc" }}>
                         {item.badge}
                       </span>
                     )}
@@ -223,20 +228,20 @@ export default function Sidebar({
           {/* Chat History */}
           <div className="flex-1 flex flex-col min-h-0 mt-2">
             <div className="flex items-center justify-between px-4 pb-1.5 flex-shrink-0">
-              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">History</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#4a4f66" }}>History</p>
             </div>
 
             {/* History search */}
             {sessions.length > 3 && (
               <div className="px-3 pb-2 flex-shrink-0">
                 <div className="relative">
-                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600" />
+                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#4a4f66" }} />
                   <input
                     type="text"
                     value={historySearch}
                     onChange={(e) => setHistorySearch(e.target.value)}
                     placeholder="Search chats..."
-                    className="w-full pl-7 pr-2 py-1.5 text-xs bg-white/[0.03] border border-white/[0.06] rounded-lg text-gray-300 placeholder-gray-600 focus:outline-none focus:border-purple-500/30"
+                    className="w-full pl-7 pr-2 py-1.5 text-xs bg-white/[0.03] border border-white/[0.06] rounded-lg text-gray-300 placeholder-[#4a4f66] focus:outline-none focus:border-indigo-500/30"
                   />
                 </div>
               </div>
@@ -246,28 +251,29 @@ export default function Sidebar({
             <div className="flex-1 overflow-y-auto px-2 pb-2">
               {sessions.length === 0 ? (
                 <div className="text-center pt-6 px-4">
-                  <MessageSquare size={24} className="mx-auto mb-2 text-gray-700" />
-                  <p className="text-xs text-gray-600">No conversations yet</p>
-                  <p className="text-[10px] text-gray-700 mt-0.5">Start chatting with Laila!</p>
+                  <MessageSquare size={24} className="mx-auto mb-2" style={{ color: "#3a3f54" }} />
+                  <p className="text-xs" style={{ color: "#6b7194" }}>No conversations yet</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "#4a4f66" }}>Start chatting with Laila!</p>
                 </div>
               ) : grouped.length === 0 ? (
                 <div className="text-center pt-4 px-4">
-                  <p className="text-xs text-gray-600">No results found</p>
+                  <p className="text-xs" style={{ color: "#6b7194" }}>No results found</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {grouped.map((group) => (
                     <div key={group.label}>
-                      <p className="text-[10px] font-medium text-gray-600 px-2 mb-1">{group.label}</p>
+                      <p className="text-[10px] font-medium px-2 mb-1" style={{ color: "#4a4f66" }}>{group.label}</p>
                       <div className="space-y-px">
                         {group.sessions.map((session) => (
                           <div
                             key={session.id}
                             className={`group flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-all ${
                               session.id === activeSessionId
-                                ? "bg-purple-500/10 text-purple-300"
-                                : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-300"
+                                ? "bg-indigo-500/10 text-indigo-300"
+                                : "hover:bg-white/[0.04]"
                             }`}
+                            style={{ color: session.id === activeSessionId ? undefined : "#8b8fa3" }}
                             onClick={() => {
                               if (editingId !== session.id) onSelectSession(session);
                             }}
@@ -285,7 +291,7 @@ export default function Sidebar({
                                       if (e.key === "Escape") { setEditingId(null); setEditTitle(""); }
                                     }}
                                     onBlur={confirmRename}
-                                    className="w-full text-xs bg-black/40 border border-purple-500/40 rounded px-1.5 py-0.5 text-gray-200 focus:outline-none"
+                                    className="w-full text-xs bg-black/40 border border-indigo-500/40 rounded px-1.5 py-0.5 text-gray-200 focus:outline-none"
                                     onClick={(e) => e.stopPropagation()}
                                   />
                                   <button
@@ -307,7 +313,8 @@ export default function Sidebar({
                                     setEditingId(session.id);
                                     setEditTitle(session.title);
                                   }}
-                                  className="w-6 h-6 rounded-md flex items-center justify-center text-gray-600 hover:text-purple-400 hover:bg-white/[0.06] transition-all"
+                                  className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-white/[0.06] transition-all"
+                                  style={{ color: "#6b7194" }}
                                   title="Rename"
                                 >
                                   <Pencil size={11} />
@@ -317,7 +324,7 @@ export default function Sidebar({
                                     e.stopPropagation();
                                     onDeleteSession(session.id);
                                   }}
-                                  className="w-6 h-6 rounded-md flex items-center justify-center text-gray-600 hover:text-red-400 hover:bg-white/[0.06] transition-all"
+                                  className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-white/[0.06] transition-all text-red-400/60 hover:text-red-400"
                                   title="Delete"
                                 >
                                   <Trash2 size={11} />
@@ -337,12 +344,12 @@ export default function Sidebar({
           {/* User Profile */}
           <div className="flex-shrink-0 border-t border-white/[0.06] px-3 py-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold" style={{ background: "#7c5cfc" }}>
                 S
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-200 font-medium truncate leading-tight">Saqib Nawaz</p>
-                <p className="text-[10px] text-gray-600 leading-tight">Pro User</p>
+                <p className="text-sm text-white font-medium truncate leading-tight">Saqib Nawaz</p>
+                <p className="text-[10px] leading-tight" style={{ color: "#6b7194" }}>Pro User</p>
               </div>
             </div>
           </div>

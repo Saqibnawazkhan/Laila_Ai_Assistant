@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, ChevronDown, Search, X, Plus, RefreshCw, Volume2, VolumeX, Menu, Sparkles, Terminal, MessageSquare, Music } from "lucide-react";
+import { ListTodo, Settings, ChevronDown, Search, X, Plus, RefreshCw, Volume2, VolumeX, Menu, Sparkles, Terminal, MessageSquare, Music, LayoutGrid } from "lucide-react";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
 import TypingIndicator from "./TypingIndicator";
@@ -507,14 +507,14 @@ export default function ChatInterface() {
   const pendingTaskCount = tasks.filter((t) => !t.completed).length;
 
   const featureCards = [
-    { icon: MessageSquare, label: "Smart Chat", desc: "Natural conversations", color: "from-purple-500/20 to-purple-600/10", border: "border-purple-500/20", iconColor: "text-purple-400", suggestion: "What can you do?" },
-    { icon: Terminal, label: "System Control", desc: "Command your Mac", color: "from-blue-500/20 to-blue-600/10", border: "border-blue-500/20", iconColor: "text-blue-400", suggestion: "Open YouTube" },
-    { icon: Music, label: "Music & Media", desc: "Play anything", color: "from-pink-500/20 to-pink-600/10", border: "border-pink-500/20", iconColor: "text-pink-400", suggestion: "Play some music" },
-    { icon: ListTodo, label: "Task Manager", desc: "Track your tasks", color: "from-emerald-500/20 to-emerald-600/10", border: "border-emerald-500/20", iconColor: "text-emerald-400", suggestion: "Show my tasks" },
+    { icon: MessageSquare, label: "Smart Chat", desc: "Natural conversations", suggestion: "What can you do?" },
+    { icon: Terminal, label: "System Control", desc: "Command your Mac", suggestion: "Open YouTube" },
+    { icon: Music, label: "Music & Media", desc: "Play anything", suggestion: "Play some music" },
+    { icon: ListTodo, label: "Task Manager", desc: "Track your tasks", suggestion: "Show my tasks" },
   ];
 
   return (
-    <div className="flex h-screen bg-gray-950 overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ background: "#1a1f2e" }}>
       <ToastContainer />
 
       {/* Sidebar */}
@@ -555,69 +555,63 @@ export default function ChatInterface() {
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} allowedTypes={allowedTypes} onResetPermissions={handleResetPermissions} onClearChats={handleClearChats} messages={messages} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 relative bg-gray-950">
-        {/* Background */}
+      <main className="flex-1 flex flex-col min-w-0 relative" style={{ background: "#1a1f2e" }}>
+        {/* Subtle radial gradient background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-purple-600/[0.03] rounded-full blur-[150px]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-fuchsia-600/[0.02] rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full opacity-30" style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)" }} />
         </div>
 
-        {/* Top Bar */}
-        <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-white/[0.06] bg-gray-950/90 backdrop-blur-xl flex-shrink-0 relative z-10">
-          <div className="flex items-center gap-1.5">
+        {/* Top Bar — clean like Sense AI */}
+        <header className="flex items-center justify-between px-5 sm:px-6 h-14 flex-shrink-0 relative z-10">
+          {/* Left: Logo + Name */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen((p) => !p)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all"
+              className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
               title="Toggle sidebar (Ctrl+H)"
             >
-              <Menu size={18} />
-            </button>
-            <div className="h-5 w-px bg-white/[0.06] mx-1 hidden sm:block" />
-            <button
-              onClick={() => { setSearchOpen((p) => !p); setSearchQuery(""); }}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
-                searchOpen ? "bg-purple-500/15 text-purple-400" : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.06]"
-              }`}
-              title="Search (Ctrl+F)"
-            >
-              <Search size={16} />
+              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-black/10">
+                <Sparkles size={18} className="text-[#1a1f2e]" />
+              </div>
+              <span className="text-sm font-semibold text-white tracking-tight hidden sm:inline">Laila AI</span>
             </button>
           </div>
 
-          {/* Center status */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs text-gray-500">
-            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-green-500 animate-pulse" : "bg-gray-700"}`} />
+          {/* Center status — subtle */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs" style={{ color: "#6b7194" }}>
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : "bg-[#3a3f54]"}`} />
             <span className="hidden sm:inline whitespace-nowrap">{wakeWordListening ? 'Listening for "Laila"' : 'Say "Laila" to activate'}</span>
             {avatarStatus === "thinking" && (
-              <span className="flex items-center gap-1 text-purple-400 whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />Thinking...
+              <span className="flex items-center gap-1 text-indigo-400 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />Thinking...
               </span>
             )}
             {avatarStatus === "talking" && (
-              <span className="flex items-center gap-1 text-pink-400 whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />Speaking...
+              <span className="flex items-center gap-1 text-violet-400 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />Speaking...
               </span>
             )}
           </div>
 
-          {/* Right actions */}
+          {/* Right: Grid icon */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleToggleVoice}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
-                voiceEnabled ? "text-purple-400 hover:bg-purple-500/10" : "text-gray-600 hover:bg-white/[0.06]"
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                voiceEnabled ? "text-indigo-400 hover:bg-white/[0.06]" : "hover:bg-white/[0.06]"
               }`}
+              style={{ color: voiceEnabled ? undefined : "#4a4f66" }}
               title={voiceEnabled ? "Mute voice" : "Enable voice"}
             >
               {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
             </button>
             <button
-              onClick={handleNewChat}
-              className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium transition-colors"
-              title="New Chat (Ctrl+K)"
+              onClick={() => setShowCommandPalette(true)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-white/[0.06]"
+              style={{ color: "#8b8fa3" }}
+              title="Command palette (Ctrl+P)"
             >
-              <Plus size={14} />
-              <span className="hidden sm:inline">New Chat</span>
+              <LayoutGrid size={18} />
             </button>
           </div>
         </header>
@@ -630,28 +624,30 @@ export default function ChatInterface() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="overflow-hidden border-b border-white/[0.06] bg-gray-950/80 backdrop-blur-xl relative z-10 flex-shrink-0"
+              className="overflow-hidden border-b border-white/[0.06] backdrop-blur-xl relative z-10 flex-shrink-0"
+              style={{ background: "rgba(26, 31, 46, 0.9)" }}
             >
               <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
                 <div className="flex-1 relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#6b7194" }} />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search messages..."
                     autoFocus
-                    className="w-full pl-9 pr-3 py-2 text-sm bg-white/[0.04] border border-white/[0.08] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/30 focus:ring-1 focus:ring-purple-500/20"
+                    className="w-full pl-9 pr-3 py-2 text-sm bg-white/[0.04] border border-white/[0.08] rounded-xl text-gray-200 placeholder-[#6b7194] focus:outline-none focus:border-indigo-500/30 focus:ring-1 focus:ring-indigo-500/20"
                   />
                 </div>
                 {searchQuery && (
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                  <span className="text-xs whitespace-nowrap" style={{ color: "#6b7194" }}>
                     {messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase())).length} found
                   </span>
                 )}
                 <button
                   onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/[0.06] transition-all"
+                  style={{ color: "#6b7194" }}
                 >
                   <X size={16} />
                 </button>
@@ -664,74 +660,58 @@ export default function ChatInterface() {
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto relative">
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
-            {/* Welcome State */}
+            {/* Welcome State — Sense AI style centered layout */}
             {messages.length <= 1 && !searchQuery && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col items-center pt-[12vh] pb-8"
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)]"
               >
-                {/* Logo */}
+                {/* Logo Icon */}
                 <motion.div
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center shadow-xl shadow-purple-500/25 mb-5"
+                  className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-xl shadow-black/10 mb-8"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                 >
-                  <Sparkles size={24} className="text-white" />
+                  <Sparkles size={28} className="text-[#1a1f2e]" />
                 </motion.div>
 
                 {/* Greeting */}
-                <motion.h1
-                  className="text-2xl sm:text-3xl font-bold text-white mb-1.5 text-center"
+                <motion.p
+                  className="text-lg sm:text-xl font-medium mb-2 text-center"
+                  style={{ color: "#8b8fa3" }}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  Hello, Saqib
-                </motion.h1>
-                <motion.p
-                  className="text-gray-500 text-sm mb-1 text-center"
+                  Hi, Saqib
+                </motion.p>
+                <motion.h1
+                  className="text-2xl sm:text-[32px] font-bold text-white mb-4 text-center leading-tight"
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.25 }}
                 >
-                  How can I assist you today?
-                </motion.p>
+                  Can I help you with anything?
+                </motion.h1>
                 <motion.p
-                  className="text-gray-600 text-xs text-center max-w-sm mb-8"
+                  className="text-sm text-center max-w-md leading-relaxed mb-10"
+                  style={{ color: "#6b7194" }}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  Chat with me, control your system, manage tasks, play music and more.
+                  Ready to assist you with anything you need? From answering questions, controlling your system, to playing music. Let&apos;s get started!
                 </motion.p>
 
-                {/* Quick suggestion pills */}
+                {/* Feature cards — minimal glass style */}
                 <motion.div
-                  className="flex flex-wrap gap-2 justify-center mb-8 max-w-md"
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.35 }}
-                >
-                  {["What can you do?", "Tell me a joke", "Open YouTube", "Play some music", "Show my tasks", "What's the weather?"].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => sendMessage(s)}
-                      className="px-3.5 py-2 text-xs rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </motion.div>
-
-                {/* Feature cards */}
-                <motion.div
-                  className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full max-w-xl"
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl"
                   initial={{ y: 15, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.35 }}
                 >
                   {featureCards.map((card) => {
                     const Icon = card.icon;
@@ -739,11 +719,11 @@ export default function ChatInterface() {
                       <button
                         key={card.label}
                         onClick={() => sendMessage(card.suggestion)}
-                        className={`group bg-gradient-to-b ${card.color} border ${card.border} rounded-xl p-3.5 text-left hover:scale-[1.02] active:scale-[0.98] transition-all`}
+                        className="group glass glass-hover rounded-xl p-4 text-left hover:scale-[1.02] active:scale-[0.98] transition-all"
                       >
-                        <Icon size={20} className={`${card.iconColor} mb-2`} />
-                        <p className="text-[13px] font-medium text-gray-200 leading-tight">{card.label}</p>
-                        <p className="text-[11px] text-gray-500 mt-0.5">{card.desc}</p>
+                        <Icon size={20} className="text-indigo-400 mb-2.5" />
+                        <p className="text-[13px] font-medium text-white leading-tight">{card.label}</p>
+                        <p className="text-[11px] mt-0.5" style={{ color: "#6b7194" }}>{card.desc}</p>
                       </button>
                     );
                   })}
@@ -774,7 +754,7 @@ export default function ChatInterface() {
                           {showDateSep && (
                             <div className="flex items-center gap-3 my-5">
                               <div className="flex-1 h-px bg-white/[0.06]" />
-                              <span className="text-[10px] text-gray-600 font-medium px-2">{showDateSep}</span>
+                              <span className="text-[10px] font-medium px-2" style={{ color: "#4a4f66" }}>{showDateSep}</span>
                               <div className="flex-1 h-px bg-white/[0.06]" />
                             </div>
                           )}
@@ -807,7 +787,7 @@ export default function ChatInterface() {
                   </motion.div>
                 )}
 
-                {/* Quick replies — indented to align with message text (past avatar) */}
+                {/* Quick replies */}
                 {!isLoading && !lastFailedMessage && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
                   <motion.div
                     initial={{ opacity: 0, y: 5 }}
@@ -819,7 +799,8 @@ export default function ChatInterface() {
                       <button
                         key={reply}
                         onClick={() => sendMessage(reply)}
-                        className="px-3 py-1.5 text-[11px] rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-500 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all"
+                        className="px-3 py-1.5 text-[11px] rounded-full bg-white/[0.04] border border-white/[0.08] hover:bg-indigo-500/10 hover:text-indigo-300 hover:border-indigo-500/20 transition-all"
+                        style={{ color: "#6b7194" }}
                       >
                         {reply}
                       </button>
@@ -834,7 +815,7 @@ export default function ChatInterface() {
 
           <AnimatePresence>
             {showScrollBtn && (
-              <motion.button initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} onClick={scrollToBottom} className="sticky bottom-4 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-gray-800/90 backdrop-blur-sm border border-white/10 flex items-center justify-center text-gray-400 shadow-lg hover:bg-gray-700 hover:text-white transition-colors z-10 mx-auto">
+              <motion.button initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} onClick={scrollToBottom} className="sticky bottom-4 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-lg hover:bg-white/[0.08] transition-colors z-10 mx-auto" style={{ background: "rgba(26, 31, 46, 0.9)", color: "#8b8fa3" }}>
                 <ChevronDown size={18} />
               </motion.button>
             )}
@@ -843,6 +824,11 @@ export default function ChatInterface() {
 
         {/* Input */}
         <InputBar onSend={sendMessage} disabled={isLoading} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} onMicStart={() => wakeWordRef.current?.pause()} onMicStop={() => wakeWordRef.current?.resume()} />
+
+        {/* Footer text like Sense AI */}
+        <div className="text-center py-2 flex-shrink-0">
+          <p className="text-[11px]" style={{ color: "#4a4f66" }}>Laila AI may contain errors. We recommend checking important information.</p>
+        </div>
       </main>
     </div>
   );

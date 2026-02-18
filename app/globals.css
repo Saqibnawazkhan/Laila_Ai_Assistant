@@ -2,8 +2,16 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #030712;
-  --foreground: #f9fafb;
+  --background: #1a1f2e;
+  --foreground: #e8eaf0;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.12);
+  --text-muted: #6b7194;
+  --text-secondary: #9499b3;
+  --accent: #7c5cfc;
+  --accent-soft: rgba(124, 92, 252, 0.15);
 }
 
 @theme inline {
@@ -45,18 +53,18 @@ body {
 
 /* Custom text selection */
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(124, 92, 252, 0.35);
   color: #f3e8ff;
 }
 
 ::-moz-selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(124, 92, 252, 0.35);
   color: #f3e8ff;
 }
 
 /* Focus visible ring */
 :focus-visible {
-  outline: 2px solid rgba(139, 92, 246, 0.4);
+  outline: 2px solid rgba(124, 92, 252, 0.4);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -108,4 +116,17 @@ body {
 
 .shake {
   animation: shake 0.4s ease-in-out;
+}
+
+/* Glass effect for cards and panels */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
 }

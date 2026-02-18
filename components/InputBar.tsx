@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent, useEffect } from "react";
-import { Send, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Send, Mic, MicOff, Volume2, VolumeX, Globe, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createSpeechRecognition } from "@/lib/speech";
 
@@ -92,28 +92,49 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
   const isOverLimit = charCount > MAX_CHARS;
 
   return (
-    <div className="border-t border-white/[0.06] bg-gray-950/90 backdrop-blur-xl flex-shrink-0 safe-area-bottom">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3">
-        {/* Input container */}
+    <div className="flex-shrink-0 safe-area-bottom px-4 sm:px-6 pb-1 pt-3">
+      <div className="max-w-3xl mx-auto">
+        {/* Glass input container */}
         <div
-          className={`flex items-end gap-2 bg-white/[0.04] border rounded-2xl px-3 py-2.5 transition-colors ${
+          className={`flex items-end gap-2 rounded-2xl px-3 py-2.5 transition-all ${
             isOverLimit
               ? "border-red-500/30"
               : isListening
-                ? "border-red-400/30"
-                : "border-white/[0.08] focus-within:border-purple-500/30 focus-within:bg-white/[0.05]"
+                ? "border-red-400/20"
+                : "focus-within:border-indigo-500/20"
           }`}
+          style={{
+            background: "rgba(255, 255, 255, 0.04)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+          }}
         >
-          {/* Voice toggle */}
-          <button
-            onClick={onToggleVoice}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
-              voiceEnabled ? "text-purple-400 hover:bg-purple-500/10" : "text-gray-600 hover:bg-white/[0.06]"
-            }`}
-            title={voiceEnabled ? "Mute Laila's voice" : "Enable Laila's voice"}
-          >
-            {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-          </button>
+          {/* Left icons */}
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            <button
+              onClick={onToggleVoice}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
+              style={{ color: voiceEnabled ? "#7c5cfc" : "#4a4f66" }}
+              title={voiceEnabled ? "Mute Laila's voice" : "Enable Laila's voice"}
+            >
+              {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+            <button
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
+              style={{ color: "#4a4f66" }}
+              title="Multilingual support"
+            >
+              <Globe size={16} />
+            </button>
+            <button
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
+              style={{ color: "#4a4f66" }}
+              title="Chat"
+            >
+              <MessageCircle size={16} />
+            </button>
+          </div>
 
           {/* Input area */}
           <div className="flex-1 min-w-0">
@@ -122,7 +143,8 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                 {Array.from({ length: 16 }).map((_, i) => (
                   <motion.div
                     key={i}
-                    className="w-[2px] rounded-full bg-red-400"
+                    className="w-[2px] rounded-full"
+                    style={{ background: "#ef4444" }}
                     animate={{ height: [3, Math.random() * 16 + 5, 3] }}
                     transition={{
                       duration: 0.4 + Math.random() * 0.4,
@@ -132,7 +154,7 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                     }}
                   />
                 ))}
-                <span className="ml-3 text-xs text-red-300 animate-pulse">Listening...</span>
+                <span className="ml-3 text-xs text-red-400 animate-pulse">Listening...</span>
               </div>
             ) : (
               <textarea
@@ -140,26 +162,26 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Send a message to Laila..."
+                placeholder="Ask me anything..."
                 disabled={disabled}
                 rows={1}
-                className="w-full bg-transparent text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none disabled:opacity-50 leading-relaxed"
+                className="w-full bg-transparent text-sm text-white placeholder-[#6b7194] resize-none focus:outline-none disabled:opacity-50 leading-relaxed"
                 style={{ minHeight: "36px", maxHeight: "120px" }}
               />
             )}
           </div>
 
           {/* Right actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
             {/* Mic */}
             <motion.button
               onClick={toggleListening}
               disabled={disabled}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50 ${
-                isListening
-                  ? "bg-red-500/20 text-red-400"
-                  : "text-gray-500 hover:text-purple-400 hover:bg-white/[0.06]"
-              }`}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
+              style={{
+                color: isListening ? "#ef4444" : "#8b8fa3",
+                background: isListening ? "rgba(239, 68, 68, 0.1)" : "transparent",
+              }}
               animate={isListening ? { scale: [1, 1.08, 1] } : {}}
               transition={{ duration: 1, repeat: Infinity }}
               title={isListening ? "Stop listening" : "Speak to Laila"}
@@ -171,11 +193,11 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
             <motion.button
               onClick={handleSend}
               disabled={disabled || !input.trim() || isOverLimit}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                input.trim() && !disabled && !isOverLimit
-                  ? "bg-purple-600 hover:bg-purple-500 text-white"
-                  : "bg-white/[0.04] text-gray-600"
-              }`}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+              style={{
+                background: input.trim() && !disabled && !isOverLimit ? "#7c5cfc" : "rgba(255, 255, 255, 0.04)",
+                color: input.trim() && !disabled && !isOverLimit ? "#ffffff" : "#4a4f66",
+              }}
               whileTap={{ scale: 0.9 }}
             >
               <AnimatePresence mode="wait">
@@ -211,11 +233,10 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
               exit={{ opacity: 0, height: 0 }}
               className="flex items-center justify-between mt-1.5 px-2"
             >
-              <span className="text-[10px] text-gray-600">Shift+Enter for new line</span>
+              <span className="text-[10px]" style={{ color: "#4a4f66" }}>Shift+Enter for new line</span>
               <span
-                className={`text-[10px] ${
-                  isOverLimit ? "text-red-400" : charCount > MAX_CHARS * 0.8 ? "text-yellow-500" : "text-gray-600"
-                }`}
+                className="text-[10px]"
+                style={{ color: isOverLimit ? "#ef4444" : charCount > MAX_CHARS * 0.8 ? "#eab308" : "#4a4f66" }}
               >
                 {charCount}/{MAX_CHARS}
               </span>

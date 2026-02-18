@@ -73,14 +73,15 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
           {/* Timestamp */}
           {!isGrouped && timeStr && (
             <div className="flex justify-end mb-1">
-              <span className="text-[10px] text-gray-600">{timeStr}</span>
+              <span className="text-[10px]" style={{ color: "#4a4f66" }}>{timeStr}</span>
             </div>
           )}
 
           {/* Bubble */}
           <div className="relative">
             <div
-              className="px-4 py-2.5 rounded-2xl rounded-br-md bg-purple-600 text-white text-sm leading-relaxed"
+              className="px-4 py-2.5 rounded-2xl rounded-br-md text-white text-sm leading-relaxed"
+              style={{ background: "#7c5cfc" }}
               onDoubleClick={() => {
                 navigator.clipboard.writeText(content);
                 showToast("Message copied!", "success");
@@ -95,13 +96,14 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={handleCopy}
-                className="absolute -top-1 -left-1 w-6 h-6 rounded-md bg-gray-800 border border-white/[0.08] flex items-center justify-center hover:bg-gray-700 transition-colors"
+                className="absolute -top-1 -left-1 w-6 h-6 rounded-md border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
+                style={{ background: "#1a1f2e" }}
                 title="Copy message"
               >
                 {copied ? (
-                  <Check size={11} className="text-green-400" />
+                  <Check size={11} className="text-emerald-400" />
                 ) : (
-                  <Copy size={11} className="text-gray-400" />
+                  <Copy size={11} style={{ color: "#6b7194" }} />
                 )}
               </motion.button>
             )}
@@ -123,8 +125,8 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
     >
       {/* Avatar */}
       {!isGrouped ? (
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-purple-500/20">
-          <Sparkles size={13} className="text-white" />
+        <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10">
+          <Sparkles size={13} className="text-[#1a1f2e]" />
         </div>
       ) : (
         <div className="w-7 flex-shrink-0" />
@@ -135,8 +137,8 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
         {/* Name + time */}
         {!isGrouped && (
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-purple-400">Laila</span>
-            {timeStr && <span className="text-[10px] text-gray-600">{timeStr}</span>}
+            <span className="text-xs font-semibold text-indigo-400">Laila</span>
+            {timeStr && <span className="text-[10px]" style={{ color: "#4a4f66" }}>{timeStr}</span>}
           </div>
         )}
 
@@ -148,7 +150,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
             showToast("Message copied!", "success");
           }}
         >
-          <div className="text-sm leading-relaxed text-gray-200 prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/[0.06] prose-pre:rounded-xl prose-code:text-purple-300 prose-code:bg-black/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-a:text-purple-400 prose-strong:text-white prose-blockquote:border-purple-500/30 prose-blockquote:text-gray-400">
+          <div className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-pre:bg-black/30 prose-pre:border prose-pre:border-white/[0.06] prose-pre:rounded-xl prose-code:text-indigo-300 prose-code:bg-black/20 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-a:text-indigo-400 prose-strong:text-white prose-blockquote:border-indigo-500/30 prose-blockquote:text-[#8b8fa3]" style={{ color: "#c8cce0" }}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -164,7 +166,8 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                             showToast("Code copied!", "success");
                           }
                         }}
-                        className="absolute top-2 right-2 px-2 py-1 text-[10px] rounded-md bg-white/[0.06] text-gray-400 hover:bg-white/10 hover:text-white transition-all opacity-0 group-hover/code:opacity-100"
+                        className="absolute top-2 right-2 px-2 py-1 text-[10px] rounded-md bg-white/[0.06] hover:bg-white/10 hover:text-white transition-all opacity-0 group-hover/code:opacity-100"
+                        style={{ color: "#6b7194" }}
                       >
                         Copy
                       </button>
@@ -178,7 +181,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
             </ReactMarkdown>
             {isTyping && (
               <motion.span
-                className="inline-block w-0.5 h-4 bg-purple-400 ml-0.5 align-middle"
+                className="inline-block w-0.5 h-4 bg-indigo-400 ml-0.5 align-middle"
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               />
@@ -191,13 +194,14 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               onClick={handleCopy}
-              className="absolute -top-1 -right-1 w-6 h-6 rounded-md bg-gray-800 border border-white/[0.08] flex items-center justify-center hover:bg-gray-700 transition-colors"
+              className="absolute -top-1 -right-1 w-6 h-6 rounded-md border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
+              style={{ background: "#1a1f2e" }}
               title="Copy message"
             >
               {copied ? (
-                <Check size={11} className="text-green-400" />
+                <Check size={11} className="text-emerald-400" />
               ) : (
-                <Copy size={11} className="text-gray-400" />
+                <Copy size={11} style={{ color: "#6b7194" }} />
               )}
             </motion.button>
           )}

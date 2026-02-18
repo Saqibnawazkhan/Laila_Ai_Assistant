@@ -29,21 +29,21 @@ export default function TypingIndicator() {
       className="flex gap-3 mt-5"
     >
       {/* Avatar */}
-      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <Sparkles size={14} className="text-white" />
+      <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10">
+        <Sparkles size={14} className="text-[#1a1f2e]" />
       </div>
 
       {/* Content */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold text-purple-400">Laila</span>
+          <span className="text-xs font-semibold text-indigo-400">Laila</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex gap-1 items-center">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-1.5 h-1.5 rounded-full bg-purple-400"
+                className="w-1.5 h-1.5 rounded-full bg-indigo-400"
                 animate={{
                   y: [0, -5, 0],
                   opacity: [0.4, 1, 0.4],
@@ -64,7 +64,8 @@ export default function TypingIndicator() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-xs text-gray-500"
+              className="text-xs"
+              style={{ color: "#6b7194" }}
             >
               {thinkingMessages[msgIndex]}
             </motion.span>
