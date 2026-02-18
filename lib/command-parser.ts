@@ -111,6 +111,8 @@ WhatsApp rules:
 - Voice call: [COMMAND: send_whatsapp | contact_name::__CALL__ | Call contact on WhatsApp]
 - Video call: [COMMAND: send_whatsapp | contact_name::__VIDEO_CALL__ | Video call contact on WhatsApp]
 - Spell names carefully: "Saqib" not "Sakib"
+- CRITICAL: Use the user's EXACT words as the message. Do NOT rephrase, correct, translate, improve, or rewrite the message in any way. Copy the user's words EXACTLY as they said them.
+- Example: User says "Abdul Ahad ko message likhen ke is tarah baten main un tak nahin pahuncha sakti" → [COMMAND: send_whatsapp | Abdul Ahad::is tarah baten main un tak nahin pahuncha sakti | Send to Abdul Ahad]
 - "call Zahid on WhatsApp" → [COMMAND: send_whatsapp | Zahid::__CALL__ | Call Zahid on WhatsApp]
 - "video call Saqib" → [COMMAND: send_whatsapp | Saqib::__VIDEO_CALL__ | Video call Saqib on WhatsApp]
 - "WhatsApp Saqib how are you" → [COMMAND: send_whatsapp | Saqib::how are you | Send to Saqib]
