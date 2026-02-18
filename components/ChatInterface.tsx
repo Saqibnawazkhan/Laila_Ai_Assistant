@@ -934,6 +934,38 @@ export default function ChatInterface() {
       {/* Messages Area */}
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-3xl mx-auto">
+          {/* Welcome state for new conversations */}
+          {messages.length <= 1 && !searchQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-center py-8 sm:py-12"
+            >
+              <motion.div
+                className="text-5xl sm:text-6xl mb-4"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                &#10024;
+              </motion.div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                Welcome back, Saqib!
+              </h2>
+              <p className="text-sm text-gray-400 max-w-md mx-auto mb-6">
+                I&apos;m Laila, your AI assistant. I can help you with tasks, answer questions,
+                control your system, play music, send messages, and more.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500">
+                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Voice Control</span>
+                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">System Commands</span>
+                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Task Manager</span>
+                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">WhatsApp</span>
+                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">YouTube</span>
+              </div>
+            </motion.div>
+          )}
+
           <AnimatePresence>
             {messages
               .map((msg, index) => ({ msg, index }))
