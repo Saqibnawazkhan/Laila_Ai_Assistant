@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Copy, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Copy, Check, SmilePlus } from "lucide-react";
 import { showToast } from "./Toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -14,12 +14,16 @@ interface MessageBubbleProps {
   isLatest?: boolean;
 }
 
+const REACTION_EMOJIS = ["👍", "❤️", "😂", "🎉", "🤔", "👀"];
+
 export default function MessageBubble({ role, content, timestamp, isLatest }: MessageBubbleProps) {
   const isLaila = role === "assistant";
   const [displayedText, setDisplayedText] = useState(isLatest && isLaila ? "" : content);
   const [isTyping, setIsTyping] = useState(isLatest && isLaila);
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [reactions, setReactions] = useState<string[]>([]);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
   const charIndex = useRef(0);
 
   // Typewriter effect for latest Laila message
@@ -54,6 +58,13 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const toggleReaction = (emoji: string) => {
+    setReactions((prev) =>
+      prev.includes(emoji) ? prev.filter((r) => r !== emoji) : [...prev, emoji]
+    );
+    setShowReactionPicker(false);
+  };
+
   const timeStr = timestamp
     ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
     : "";
@@ -65,7 +76,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
       transition={{ duration: 0.3, ease: "easeOut" }}
       className={`flex ${isLaila ? "justify-start" : "justify-end"} mb-4 group`}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { setHovered(false); setShowReactionPicker(false); }}
     >
       <div className="relative max-w-[80%]">
         <div
@@ -95,6 +106,21 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
             )}
           </div>
 
+          {/* Reactions display */}
+          {reactions.length > 0 && (
+            <div className="flex gap-1 mt-1.5 flex-wrap">
+              {reactions.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => toggleReaction(emoji)}
+                  className="text-sm px-1.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+
           {timeStr && (
             <span className="text-[10px] text-gray-500 mt-1 block text-right">
               {timeStr}
@@ -102,22 +128,55 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
           )}
         </div>
 
-        {/* Copy button */}
+        {/* Action buttons */}
         {hovered && !isTyping && (
-          <motion.button
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            onClick={handleCopy}
-            className={`absolute -top-2 ${isLaila ? "-right-2" : "-left-2"} w-7 h-7 rounded-lg bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 transition-colors`}
-            title="Copy message"
+            className={`absolute -top-2 ${isLaila ? "-right-2" : "-left-2"} flex gap-1`}
           >
-            {copied ? (
-              <Check size={12} className="text-green-400" />
-            ) : (
-              <Copy size={12} className="text-gray-400" />
-            )}
-          </motion.button>
+            <button
+              onClick={handleCopy}
+              className="w-7 h-7 rounded-lg bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 transition-colors"
+              title="Copy message"
+            >
+              {copied ? (
+                <Check size={12} className="text-green-400" />
+              ) : (
+                <Copy size={12} className="text-gray-400" />
+              )}
+            </button>
+            <button
+              onClick={() => setShowReactionPicker((p) => !p)}
+              className="w-7 h-7 rounded-lg bg-gray-800 border border-white/10 flex items-center justify-center hover:bg-gray-700 transition-colors"
+              title="React"
+            >
+              <SmilePlus size={12} className="text-gray-400" />
+            </button>
+          </motion.div>
         )}
+
+        {/* Reaction picker */}
+        <AnimatePresence>
+          {showReactionPicker && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: -5 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -5 }}
+              className={`absolute -top-10 ${isLaila ? "left-0" : "right-0"} flex gap-1 px-2 py-1.5 rounded-xl bg-gray-800 border border-white/10 shadow-lg z-10`}
+            >
+              {REACTION_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => toggleReaction(emoji)}
+                  className={`text-base hover:scale-125 transition-transform px-0.5 ${reactions.includes(emoji) ? "opacity-50" : ""}`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
