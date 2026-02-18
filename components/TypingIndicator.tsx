@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 const thinkingMessages = [
-  "Laila is thinking...",
+  "Thinking...",
   "Crafting a response...",
-  "Processing your request...",
+  "Processing...",
   "Almost there...",
   "Working on it...",
 ];
@@ -23,49 +24,51 @@ export default function TypingIndicator() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex justify-start mb-4"
+      className="flex gap-3 mt-5"
     >
-      <div className="relative bg-gradient-to-r from-purple-600/20 to-violet-600/20 border border-purple-500/30 rounded-2xl px-4 py-3 overflow-hidden">
-        {/* Shimmer overlay */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        />
+      {/* Avatar */}
+      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <Sparkles size={14} className="text-white" />
+      </div>
 
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={msgIndex}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="text-xs font-semibold text-purple-400 block mb-1.5"
-          >
-            {thinkingMessages[msgIndex]}
-          </motion.span>
-        </AnimatePresence>
-        <div className="flex gap-1.5 items-center h-5">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: "rgb(192, 132, 252)" }}
-              animate={{
-                y: [0, -8, 0],
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 0.8,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
+      {/* Content */}
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xs font-semibold text-purple-400">Laila</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1 items-center">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-1.5 h-1.5 rounded-full bg-purple-400"
+                animate={{
+                  y: [0, -5, 0],
+                  opacity: [0.4, 1, 0.4],
+                }}
+                transition={{
+                  duration: 0.7,
+                  repeat: Infinity,
+                  delay: i * 0.15,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={msgIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-xs text-gray-500"
+            >
+              {thinkingMessages[msgIndex]}
+            </motion.span>
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>
