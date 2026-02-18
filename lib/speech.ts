@@ -51,6 +51,15 @@ let currentUtterance: SpeechSynthesisUtterance | null = null;
 let ttsUnlocked = false;
 let voicesLoaded = false;
 let cachedVoice: SpeechSynthesisVoice | null = null;
+let speechRate = 1.0;
+
+export function setSpeechRate(rate: number): void {
+  speechRate = Math.max(0.5, Math.min(2.0, rate));
+}
+
+export function getSpeechRate(): number {
+  return speechRate;
+}
 
 // Load and cache the preferred voice
 function loadPreferredVoice(): SpeechSynthesisVoice | null {
@@ -130,7 +139,7 @@ export function speakText(
       utterance.voice = cachedVoice;
     }
 
-    utterance.rate = 1.0;
+    utterance.rate = speechRate;
     utterance.pitch = 1.1;
     utterance.volume = 1;
 

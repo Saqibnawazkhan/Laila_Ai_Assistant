@@ -1,8 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear, Download } from "lucide-react";
+import { useState } from "react";
+import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear, Download, Gauge } from "lucide-react";
 import { showToast } from "./Toast";
+import { getSpeechRate, setSpeechRate } from "@/lib/speech";
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -34,6 +36,13 @@ export default function SettingsPanel({
   onClearChats,
   messages = [],
 }: SettingsPanelProps) {
+  const [voiceSpeed, setVoiceSpeed] = useState(getSpeechRate());
+
+  const handleSpeedChange = (val: number) => {
+    setVoiceSpeed(val);
+    setSpeechRate(val);
+  };
+
   const exportChat = (format: "txt" | "json") => {
     if (messages.length === 0) {
       showToast("No messages to export", "info");
@@ -138,6 +147,31 @@ export default function SettingsPanel({
                   </div>
                 </button>
               </div>
+
+              {/* Voice Speed */}
+              {voiceEnabled && (
+                <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 mt-2">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Gauge size={16} className="text-purple-400" />
+                    <p className="text-sm text-gray-200">Voice Speed</p>
+                    <span className="ml-auto text-xs text-purple-400 font-mono">{voiceSpeed.toFixed(1)}x</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    value={voiceSpeed}
+                    onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-purple-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                    <span>Slow</span>
+                    <span>Normal</span>
+                    <span>Fast</span>
+                  </div>
+                </div>
+              )}
 
               {/* Wake Word Info */}
               <div>
