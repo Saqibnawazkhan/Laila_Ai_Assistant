@@ -130,23 +130,44 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
             {isListening ? <MicOff size={16} /> : <Mic size={16} />}
           </motion.button>
 
-          {/* Text input */}
+          {/* Text input / Waveform */}
           <div className="flex-1 relative">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening..." : "Message Laila..."}
-              disabled={disabled || isListening}
-              rows={1}
-              className={`w-full bg-white/5 border rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50 transition-colors ${
-                isOverLimit
-                  ? "border-red-500/50 focus:border-red-500/50"
-                  : "border-white/10 focus:border-purple-500/50"
-              }`}
-              style={{ minHeight: "40px", maxHeight: "120px" }}
-            />
+            {isListening ? (
+              <div className="w-full bg-white/5 border border-red-500/30 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 flex items-center justify-center gap-[3px]" style={{ minHeight: "40px" }}>
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-[3px] rounded-full bg-red-400"
+                    animate={{
+                      height: [4, Math.random() * 20 + 6, 4],
+                    }}
+                    transition={{
+                      duration: 0.4 + Math.random() * 0.4,
+                      repeat: Infinity,
+                      delay: i * 0.05,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+                <span className="ml-3 text-xs text-red-300 animate-pulse">Listening...</span>
+              </div>
+            ) : (
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Message Laila..."
+                disabled={disabled}
+                rows={1}
+                className={`w-full bg-white/5 border rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50 transition-colors ${
+                  isOverLimit
+                    ? "border-red-500/50 focus:border-red-500/50"
+                    : "border-white/10 focus:border-purple-500/50"
+                }`}
+                style={{ minHeight: "40px", maxHeight: "120px" }}
+              />
+            )}
           </div>
 
           {/* Send button */}
