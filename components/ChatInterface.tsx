@@ -548,36 +548,67 @@ export default function ChatInterface() {
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} allowedTypes={allowedTypes} onResetPermissions={handleResetPermissions} onClearChats={handleClearChats} messages={messages} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 relative">
+      <main className="flex-1 flex flex-col min-w-0 relative bg-gray-950">
         {/* Background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/[0.03] rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-fuchsia-600/[0.02] rounded-full blur-[100px]" />
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-purple-600/[0.03] rounded-full blur-[150px]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-fuchsia-600/[0.02] rounded-full blur-[120px]" />
         </div>
 
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-white/[0.06] bg-gray-950/80 backdrop-blur-xl flex-shrink-0 relative z-10">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setSidebarOpen((p) => !p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all" title="Toggle sidebar">
+        <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-white/[0.06] bg-gray-950/90 backdrop-blur-xl flex-shrink-0 relative z-10">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setSidebarOpen((p) => !p)}
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all"
+              title="Toggle sidebar (Ctrl+H)"
+            >
               <Menu size={18} />
             </button>
-            <button onClick={() => { setSearchOpen((p) => !p); setSearchQuery(""); }} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${searchOpen ? "bg-purple-500/15 text-purple-400" : "text-gray-500 hover:text-gray-300 hover:bg-white/5"}`} title="Search (Ctrl+F)">
+            <div className="h-5 w-px bg-white/[0.06] mx-1 hidden sm:block" />
+            <button
+              onClick={() => { setSearchOpen((p) => !p); setSearchQuery(""); }}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                searchOpen ? "bg-purple-500/15 text-purple-400" : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.06]"
+              }`}
+              title="Search (Ctrl+F)"
+            >
               <Search size={16} />
             </button>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span className={`w-1.5 h-1.5 rounded-full ${wakeWordListening ? "bg-green-500 animate-pulse" : "bg-gray-600"}`} />
-            <span className="hidden sm:inline">{wakeWordListening ? 'Listening for "Laila"' : 'Say "Laila" to activate'}</span>
-            {avatarStatus === "thinking" && <span className="flex items-center gap-1 text-purple-400"><span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />Thinking...</span>}
-            {avatarStatus === "talking" && <span className="flex items-center gap-1 text-pink-400"><span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />Speaking...</span>}
+          {/* Center status */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs text-gray-500">
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-green-500 animate-pulse" : "bg-gray-700"}`} />
+            <span className="hidden sm:inline whitespace-nowrap">{wakeWordListening ? 'Listening for "Laila"' : 'Say "Laila" to activate'}</span>
+            {avatarStatus === "thinking" && (
+              <span className="flex items-center gap-1 text-purple-400 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />Thinking...
+              </span>
+            )}
+            {avatarStatus === "talking" && (
+              <span className="flex items-center gap-1 text-pink-400 whitespace-nowrap">
+                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />Speaking...
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <button onClick={handleToggleVoice} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${voiceEnabled ? "text-purple-400 hover:bg-purple-500/10" : "text-gray-600 hover:bg-white/5"}`} title={voiceEnabled ? "Mute voice" : "Enable voice"}>
+          {/* Right actions */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleToggleVoice}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                voiceEnabled ? "text-purple-400 hover:bg-purple-500/10" : "text-gray-600 hover:bg-white/[0.06]"
+              }`}
+              title={voiceEnabled ? "Mute voice" : "Enable voice"}
+            >
               {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
             </button>
-            <button onClick={handleNewChat} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium transition-colors" title="New Chat (Ctrl+K)">
+            <button
+              onClick={handleNewChat}
+              className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium transition-colors"
+              title="New Chat (Ctrl+K)"
+            >
               <Plus size={14} />
               <span className="hidden sm:inline">New Chat</span>
             </button>
@@ -587,14 +618,36 @@ export default function ChatInterface() {
         {/* Search Bar */}
         <AnimatePresence>
           {searchOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden border-b border-white/[0.06] bg-gray-950/60 backdrop-blur-xl relative z-10 flex-shrink-0">
-              <div className="px-4 sm:px-6 py-2 flex items-center gap-2">
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="overflow-hidden border-b border-white/[0.06] bg-gray-950/80 backdrop-blur-xl relative z-10 flex-shrink-0"
+            >
+              <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
                 <div className="flex-1 relative">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                  <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search messages..." autoFocus className="w-full pl-8 pr-3 py-1.5 text-sm bg-white/[0.04] border border-white/[0.08] rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/40" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search messages..."
+                    autoFocus
+                    className="w-full pl-9 pr-3 py-2 text-sm bg-white/[0.04] border border-white/[0.08] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/30 focus:ring-1 focus:ring-purple-500/20"
+                  />
                 </div>
-                {searchQuery && <span className="text-xs text-gray-500 whitespace-nowrap">{messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase())).length} found</span>}
-                <button onClick={() => { setSearchOpen(false); setSearchQuery(""); }} className="text-gray-500 hover:text-gray-300 transition-colors"><X size={16} /></button>
+                {searchQuery && (
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase())).length} found
+                  </span>
+                )}
+                <button
+                  onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all"
+                >
+                  <X size={16} />
+                </button>
               </div>
             </motion.div>
           )}
@@ -602,42 +655,88 @@ export default function ChatInterface() {
 
         {/* Messages / Welcome */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto relative">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
             {/* Welcome State */}
             {messages.length <= 1 && !searchQuery && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="flex flex-col items-center justify-center min-h-[60vh]">
-                <motion.div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center shadow-2xl shadow-purple-500/20 mb-6" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, delay: 0.1 }}>
-                  <Sparkles size={28} className="text-white" />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center pt-[12vh] pb-8"
+              >
+                {/* Logo */}
+                <motion.div
+                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center shadow-xl shadow-purple-500/25 mb-5"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                >
+                  <Sparkles size={24} className="text-white" />
                 </motion.div>
-                <motion.h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 text-center" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
+
+                {/* Greeting */}
+                <motion.h1
+                  className="text-2xl sm:text-3xl font-bold text-white mb-1.5 text-center"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
                   Hello, Saqib
                 </motion.h1>
-                <motion.p className="text-gray-500 text-sm sm:text-base mb-2 text-center" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
+                <motion.p
+                  className="text-gray-500 text-sm mb-1 text-center"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.25 }}
+                >
                   How can I assist you today?
                 </motion.p>
-                <motion.p className="text-gray-600 text-xs text-center max-w-md mb-10" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.35 }}>
-                  I&apos;m Laila, your personal AI assistant. Chat with me, control your system, manage tasks, play music and more.
+                <motion.p
+                  className="text-gray-600 text-xs text-center max-w-sm mb-8"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Chat with me, control your system, manage tasks, play music and more.
                 </motion.p>
 
-                {/* Quick pills */}
-                <motion.div className="flex flex-wrap gap-2 justify-center mb-10 max-w-lg" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
+                {/* Quick suggestion pills */}
+                <motion.div
+                  className="flex flex-wrap gap-2 justify-center mb-8 max-w-md"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.35 }}
+                >
                   {["What can you do?", "Tell me a joke", "Open YouTube", "Play some music", "Show my tasks", "What's the weather?"].map((s) => (
-                    <button key={s} onClick={() => sendMessage(s)} className="px-3.5 py-2 text-xs rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all">
+                    <button
+                      key={s}
+                      onClick={() => sendMessage(s)}
+                      className="px-3.5 py-2 text-xs rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all"
+                    >
                       {s}
                     </button>
                   ))}
                 </motion.div>
 
                 {/* Feature cards */}
-                <motion.div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
+                <motion.div
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full max-w-xl"
+                  initial={{ y: 15, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
                   {featureCards.map((card) => {
                     const Icon = card.icon;
                     return (
-                      <button key={card.label} onClick={() => sendMessage(card.suggestion)} className={`group bg-gradient-to-b ${card.color} border ${card.border} rounded-2xl p-4 text-left hover:scale-[1.02] transition-all`}>
-                        <Icon size={22} className={`${card.iconColor} mb-2.5`} />
-                        <p className="text-sm font-medium text-gray-200 mb-0.5">{card.label}</p>
-                        <p className="text-[11px] text-gray-500">{card.desc}</p>
+                      <button
+                        key={card.label}
+                        onClick={() => sendMessage(card.suggestion)}
+                        className={`group bg-gradient-to-b ${card.color} border ${card.border} rounded-xl p-3.5 text-left hover:scale-[1.02] active:scale-[0.98] transition-all`}
+                      >
+                        <Icon size={20} className={`${card.iconColor} mb-2`} />
+                        <p className="text-[13px] font-medium text-gray-200 leading-tight">{card.label}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{card.desc}</p>
                       </button>
                     );
                   })}
@@ -647,58 +746,83 @@ export default function ChatInterface() {
 
             {/* Messages */}
             {(messages.length > 1 || searchQuery) && (
-              <AnimatePresence>
-                {messages
-                  .map((msg, index) => ({ msg, index }))
-                  .filter(({ msg }) => !searchQuery || msg.content.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map(({ msg, index }, filteredIdx, filtered) => {
-                    const showDateSep = (() => {
-                      if (!msg.timestamp || filteredIdx === 0) return msg.timestamp ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) : null;
-                      const prev = filtered[filteredIdx - 1]?.msg;
-                      if (!prev?.timestamp) return null;
-                      return new Date(msg.timestamp).toDateString() !== new Date(prev.timestamp).toDateString()
-                        ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })
-                        : null;
-                    })();
-                    const prevMsg = filteredIdx > 0 ? filtered[filteredIdx - 1]?.msg : null;
-                    const isGrouped = prevMsg?.role === msg.role && !showDateSep;
-                    return (
-                      <div key={index}>
-                        {showDateSep && (
-                          <div className="flex items-center gap-3 my-5">
-                            <div className="flex-1 h-px bg-white/[0.06]" />
-                            <span className="text-[10px] text-gray-600 font-medium px-2">{showDateSep}</span>
-                            <div className="flex-1 h-px bg-white/[0.06]" />
-                          </div>
-                        )}
-                        <MessageBubble role={msg.role} content={msg.content} timestamp={msg.timestamp} isLatest={index === messages.length - 1} isGrouped={isGrouped} />
-                      </div>
-                    );
-                  })}
-              </AnimatePresence>
+              <div className="py-4">
+                <AnimatePresence>
+                  {messages
+                    .map((msg, index) => ({ msg, index }))
+                    .filter(({ msg }) => !searchQuery || msg.content.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map(({ msg, index }, filteredIdx, filtered) => {
+                      const showDateSep = (() => {
+                        if (!msg.timestamp || filteredIdx === 0) return msg.timestamp ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }) : null;
+                        const prev = filtered[filteredIdx - 1]?.msg;
+                        if (!prev?.timestamp) return null;
+                        return new Date(msg.timestamp).toDateString() !== new Date(prev.timestamp).toDateString()
+                          ? new Date(msg.timestamp).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })
+                          : null;
+                      })();
+                      const prevMsg = filteredIdx > 0 ? filtered[filteredIdx - 1]?.msg : null;
+                      const isGrouped = prevMsg?.role === msg.role && !showDateSep;
+                      return (
+                        <div key={index}>
+                          {showDateSep && (
+                            <div className="flex items-center gap-3 my-5">
+                              <div className="flex-1 h-px bg-white/[0.06]" />
+                              <span className="text-[10px] text-gray-600 font-medium px-2">{showDateSep}</span>
+                              <div className="flex-1 h-px bg-white/[0.06]" />
+                            </div>
+                          )}
+                          <MessageBubble role={msg.role} content={msg.content} timestamp={msg.timestamp} isLatest={index === messages.length - 1} isGrouped={isGrouped} />
+                        </div>
+                      );
+                    })}
+                </AnimatePresence>
+
+                {isLoading && <TypingIndicator />}
+
+                {/* Retry button */}
+                {lastFailedMessage && !isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex pl-10 pt-2"
+                  >
+                    <button
+                      onClick={() => {
+                        const msg = lastFailedMessage;
+                        setLastFailedMessage(null);
+                        setMessages((prev) => prev.slice(0, -1));
+                        sendMessage(msg);
+                      }}
+                      className="flex items-center gap-2 px-3.5 py-1.5 text-xs rounded-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      <RefreshCw size={12} /> Retry message
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* Quick replies — indented to align with message text (past avatar) */}
+                {!isLoading && !lastFailedMessage && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-wrap gap-1.5 pl-10 pt-2"
+                  >
+                    {["Tell me more", "Thanks!", "Can you explain?", "What else?"].map((reply) => (
+                      <button
+                        key={reply}
+                        onClick={() => sendMessage(reply)}
+                        className="px-3 py-1.5 text-[11px] rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-500 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all"
+                      >
+                        {reply}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
             )}
 
-            {isLoading && <TypingIndicator />}
-
-            {lastFailedMessage && !isLoading && (
-              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center py-2">
-                <button onClick={() => { const msg = lastFailedMessage; setLastFailedMessage(null); setMessages((prev) => prev.slice(0, -1)); sendMessage(msg); }} className="flex items-center gap-2 px-4 py-2 text-xs rounded-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors">
-                  <RefreshCw size={13} /> Retry message
-                </button>
-              </motion.div>
-            )}
-
-            {!isLoading && !lastFailedMessage && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
-              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-wrap gap-1.5 py-2">
-                {["Tell me more", "Thanks!", "Can you explain?", "What else?"].map((reply) => (
-                  <button key={reply} onClick={() => sendMessage(reply)} className="px-2.5 py-1 text-[11px] rounded-full bg-white/[0.04] border border-white/[0.06] text-gray-500 hover:bg-purple-500/10 hover:text-purple-300 hover:border-purple-500/20 transition-all">
-                    {reply}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} className="h-4" />
           </div>
 
           <AnimatePresence>

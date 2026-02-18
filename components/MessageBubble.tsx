@@ -60,10 +60,10 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className={`flex gap-3 ${isGrouped ? "mt-1" : "mt-5"} group`}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className={`flex gap-2.5 ${isGrouped ? "mt-0.5" : "mt-4 first:mt-0"} group`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -71,13 +71,13 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
       {!isGrouped ? (
         <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
           isLaila
-            ? "bg-gradient-to-br from-purple-500 to-fuchsia-600"
-            : "bg-white/[0.08] border border-white/[0.06]"
+            ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 shadow-sm shadow-purple-500/20"
+            : "bg-white/[0.06] border border-white/[0.08]"
         }`}>
           {isLaila ? (
-            <Sparkles size={14} className="text-white" />
+            <Sparkles size={13} className="text-white" />
           ) : (
-            <User size={14} className="text-gray-400" />
+            <User size={13} className="text-gray-400" />
           )}
         </div>
       ) : (
