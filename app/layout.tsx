@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Laila AI",
   },
+  applicationName: "Laila AI",
+  keywords: ["AI", "assistant", "voice", "chatbot", "productivity"],
+  creator: "Saqib Nawaz Khan",
 };
 
 export default function RootLayout({
