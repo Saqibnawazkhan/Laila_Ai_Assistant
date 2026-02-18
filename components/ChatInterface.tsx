@@ -12,6 +12,7 @@ import TaskPanel from "./TaskPanel";
 import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
 import ChatHistoryPanel from "./ChatHistoryPanel";
+import ToastContainer, { showToast } from "./Toast";
 import { LAILA_GREETING } from "@/lib/laila-persona";
 import { speakText, stopSpeaking, isSpeaking, createWakeWordListener, unlockTTS, initVoices } from "@/lib/speech";
 import {
@@ -615,6 +616,7 @@ export default function ChatInterface() {
       if (activeSessionId === id) {
         handleNewChat();
       }
+      showToast("Chat deleted", "success");
     },
     [activeSessionId, handleNewChat]
   );
@@ -630,6 +632,7 @@ export default function ChatInterface() {
     setActiveSession(null);
     setActiveSessionId(null);
     handleNewChat();
+    showToast("All chats cleared", "success");
   }, [handleNewChat]);
 
   const sendMessage = async (content: string) => {
@@ -737,6 +740,7 @@ export default function ChatInterface() {
 
   return (
     <div className="relative flex flex-col h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black overflow-hidden">
+      <ToastContainer />
       {/* Animated gradient background orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div

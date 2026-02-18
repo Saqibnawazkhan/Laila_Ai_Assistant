@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
+import { showToast } from "./Toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -49,6 +50,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
   const handleCopy = async () => {
     await navigator.clipboard.writeText(content);
     setCopied(true);
+    showToast("Copied to clipboard", "success");
     setTimeout(() => setCopied(false), 2000);
   };
 
