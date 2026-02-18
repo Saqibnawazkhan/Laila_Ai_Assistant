@@ -133,6 +133,18 @@ export default function ChatHistoryPanel({
                   <MessageSquare size={48} className="mx-auto mb-3 opacity-30" />
                   <p className="text-sm">No conversations yet</p>
                   <p className="text-xs mt-1">Start chatting with Laila!</p>
+                  {/* Skeleton placeholders */}
+                  <div className="mt-8 space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-xl px-3 py-3 bg-white/5 border border-white/5 animate-pulse">
+                        <div className="w-4 h-4 rounded bg-white/10" />
+                        <div className="flex-1 space-y-1.5">
+                          <div className="h-3 bg-white/10 rounded w-3/4" />
+                          <div className="h-2 bg-white/5 rounded w-1/2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">
