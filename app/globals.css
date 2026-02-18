@@ -62,11 +62,21 @@ body {
   color: #f3e8ff;
 }
 
-/* Focus visible ring */
-:focus-visible {
+/* Focus visible ring — only on buttons, not textareas/inputs inside containers */
+button:focus-visible,
+a:focus-visible {
   outline: 2px solid rgba(124, 92, 252, 0.4);
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+textarea:focus-visible,
+input:focus-visible {
+  outline: none;
+}
+
+textarea::placeholder {
+  color: #6b7194;
 }
 
 /* Mobile safe areas */
