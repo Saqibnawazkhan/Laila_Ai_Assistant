@@ -94,7 +94,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
           }`}
         >
           {isLaila && (
-            <span className="text-xs font-semibold text-purple-400 block mb-1">
+            <span
+              className="text-xs font-semibold block mb-1 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]"
+            >
               Laila
             </span>
           )}
