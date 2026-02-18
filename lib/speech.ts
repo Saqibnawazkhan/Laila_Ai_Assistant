@@ -130,7 +130,8 @@ export function createSpeechRecognition(
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 let ttsUnlocked = false;
 let voicesLoaded = false;
-let cachedVoice: SpeechSynthesisVoice | null = null;
+let cachedEnglishVoice: SpeechSynthesisVoice | null = null;
+let cachedHindiVoice: SpeechSynthesisVoice | null = null;
 let speechRate = 1.0;
 
 export function setSpeechRate(rate: number): void {
@@ -141,17 +142,64 @@ export function getSpeechRate(): number {
   return speechRate;
 }
 
-// Load and cache the preferred voice
-function loadPreferredVoice(): SpeechSynthesisVoice | null {
-  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+// Detect if text contains Urdu/Hindi/Roman Urdu
+function detectLanguage(text: string): "hindi" | "english" {
+  // Check for Urdu script (Arabic-based)
+  if (/[\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text)) return "hindi";
+  // Check for Devanagari script (Hindi)
+  if (/[\u0900-\u097F]/.test(text)) return "hindi";
+
+  // Check for common Roman Urdu / Hinglish words
+  const romanUrduWords = [
+    "kya", "hai", "haal", "kaise", "ho", "karo", "karna", "kar",
+    "mujhe", "mera", "meri", "mere", "tera", "teri", "tere",
+    "acha", "accha", "theek", "thik", "nahi", "nahin", "nah",
+    "bhai", "bhaiya", "yaar", "yar", "dost",
+    "gaana", "gana", "bajao", "chalao", "chala", "chalo",
+    "kholo", "band", "karo", "batao", "bhejo", "bhej",
+    "waqt", "mausam", "shukriya", "dhanyavaad",
+    "aur", "lekin", "kyun", "kyunke", "kahan", "kab", "kaun",
+    "bohot", "bahut", "bohat", "zyada", "kam", "achha",
+    "abhi", "baad", "pehle", "phir", "wahan", "yahan",
+    "suno", "dekho", "bolo", "jao", "aao", "ruko",
+    "chup", "bas", "haan", "ji", "bilkul",
+    "khana", "pani", "ghar", "kaam", "dil", "pyar",
+    "samajh", "pata", "lagao", "dikhao", "sunao",
+    "WhatsApp pe", "pe call", "ko call", "ko message",
+    "bata", "bataiye", "bataye", "dijiye", "kijiye",
+    "raha", "rahi", "rahe", "wala", "wali", "wale",
+  ];
+
+  const lower = text.toLowerCase();
+  const words = lower.split(/\s+/);
+  let romanUrduCount = 0;
+
+  for (const word of words) {
+    const cleanWord = word.replace(/[.,!?'"]/g, "");
+    if (romanUrduWords.includes(cleanWord)) {
+      romanUrduCount++;
+    }
+  }
+
+  // If more than 30% of words are Roman Urdu/Hindi, use Hindi voice
+  if (words.length > 0 && romanUrduCount / words.length > 0.3) return "hindi";
+  // Or if at least 2 Roman Urdu words found in short text
+  if (romanUrduCount >= 2) return "hindi";
+
+  return "english";
+}
+
+// Load and cache voices for both languages
+function loadVoices(): void {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
 
   const voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) return null;
+  if (voices.length === 0) return;
 
   voicesLoaded = true;
 
-  // Try to pick a female English voice
-  const preferred = voices.find(
+  // English voice - prefer female
+  cachedEnglishVoice = voices.find(
     (v) =>
       v.lang.startsWith("en") &&
       (v.name.toLowerCase().includes("samantha") ||
@@ -159,22 +207,34 @@ function loadPreferredVoice(): SpeechSynthesisVoice | null {
         v.name.toLowerCase().includes("female") ||
         v.name.toLowerCase().includes("zira") ||
         v.name.toLowerCase().includes("fiona"))
-  ) || voices.find((v) => v.lang.startsWith("en"));
+  ) || voices.find((v) => v.lang.startsWith("en")) || null;
 
-  cachedVoice = preferred || null;
-  return cachedVoice;
+  // Hindi/Urdu voice - Lekha (hi_IN) is best for Urdu/Hindi on macOS
+  cachedHindiVoice = voices.find(
+    (v) => v.lang.startsWith("hi") &&
+      v.name.toLowerCase().includes("lekha")
+  ) || voices.find(
+    (v) => v.lang.startsWith("hi")
+  ) || voices.find(
+    (v) => v.lang === "ur-PK" || v.lang === "ur_PK"
+  ) || null;
+}
+
+// Get the right voice for the text
+function getVoiceForText(text: string): SpeechSynthesisVoice | null {
+  const lang = detectLanguage(text);
+  if (lang === "hindi" && cachedHindiVoice) return cachedHindiVoice;
+  return cachedEnglishVoice;
 }
 
 // Initialize voices - call this early
 export function initVoices(): void {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
 
-  // Try loading immediately
-  loadPreferredVoice();
+  loadVoices();
 
-  // Also listen for async voice loading (Chrome loads voices asynchronously)
   window.speechSynthesis.onvoiceschanged = () => {
-    loadPreferredVoice();
+    loadVoices();
   };
 }
 
@@ -182,8 +242,7 @@ export function initVoices(): void {
 export function unlockTTS(): void {
   if (ttsUnlocked || typeof window === "undefined" || !window.speechSynthesis) return;
 
-  // Load voices if not already loaded
-  if (!voicesLoaded) loadPreferredVoice();
+  if (!voicesLoaded) loadVoices();
 
   const u = new SpeechSynthesisUtterance("");
   u.volume = 0;
@@ -210,13 +269,15 @@ export function speakText(
   // Otherwise the new utterance is silently dropped
   setTimeout(() => {
     // Ensure voices are loaded
-    if (!voicesLoaded) loadPreferredVoice();
+    if (!voicesLoaded) loadVoices();
 
     const utterance = new SpeechSynthesisUtterance(text);
     currentUtterance = utterance;
 
-    if (cachedVoice) {
-      utterance.voice = cachedVoice;
+    // Pick the right voice based on text language
+    const voice = getVoiceForText(text);
+    if (voice) {
+      utterance.voice = voice;
     }
 
     utterance.rate = speechRate;
