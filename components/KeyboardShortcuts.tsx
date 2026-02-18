@@ -10,6 +10,7 @@ interface KeyboardShortcutsProps {
 
 const shortcuts = [
   { keys: ["Ctrl", "K"], action: "New Chat" },
+  { keys: ["Ctrl", "P"], action: "Command Palette" },
   { keys: ["Ctrl", "H"], action: "Toggle History" },
   { keys: ["Ctrl", "F"], action: "Search Messages" },
   { keys: ["Ctrl", ","], action: "Open Settings" },
@@ -17,6 +18,7 @@ const shortcuts = [
   { keys: ["Enter"], action: "Send Message" },
   { keys: ["Shift", "Enter"], action: "New Line" },
   { keys: ["Escape"], action: "Close Panel" },
+  { keys: ["Dbl-Click"], action: "Copy Message" },
 ];
 
 export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
