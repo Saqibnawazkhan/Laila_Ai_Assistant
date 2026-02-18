@@ -881,6 +881,33 @@ export default function ChatInterface() {
         </AnimatePresence>
       </div>
 
+      {/* Quick suggestion chips - show when only greeting message */}
+      {messages.length <= 1 && !isLoading && (
+        <div className="flex-shrink-0 px-3 sm:px-4 pb-2">
+          <div className="max-w-3xl mx-auto flex flex-wrap gap-2 justify-center">
+            {[
+              "What can you do?",
+              "Tell me a joke",
+              "What's the weather?",
+              "Open YouTube",
+              "Play some music",
+              "Show my tasks",
+            ].map((suggestion) => (
+              <motion.button
+                key={suggestion}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={() => sendMessage(suggestion)}
+                className="px-3 py-1.5 text-xs sm:text-sm rounded-full bg-white/5 border border-purple-500/20 text-gray-300 hover:bg-purple-600/20 hover:text-purple-300 hover:border-purple-500/40 transition-all"
+              >
+                {suggestion}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <InputBar
         onSend={sendMessage}
