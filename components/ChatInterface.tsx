@@ -1054,12 +1054,27 @@ export default function ChatInterface() {
                 I&apos;m Laila, your AI assistant. I can help you with tasks, answer questions,
                 control your system, play music, send messages, and more.
               </p>
-              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500">
-                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Voice Control</span>
-                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">System Commands</span>
-                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">Task Manager</span>
-                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">WhatsApp</span>
-                <span className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10">YouTube</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-xs">
+                {[
+                  { icon: "🎙️", label: "Voice Control", desc: "Hands-free interaction" },
+                  { icon: "💻", label: "System Commands", desc: "Control your Mac" },
+                  { icon: "📋", label: "Task Manager", desc: "Track your tasks" },
+                  { icon: "💬", label: "WhatsApp", desc: "Send messages" },
+                  { icon: "🎵", label: "YouTube", desc: "Play music & videos" },
+                  { icon: "⌨️", label: "Shortcuts", desc: "Ctrl+P palette" },
+                ].map((feat, i) => (
+                  <motion.div
+                    key={feat.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.08 }}
+                    className="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-center hover:bg-white/10 hover:border-purple-500/30 transition-all cursor-default"
+                  >
+                    <span className="text-lg block mb-0.5">{feat.icon}</span>
+                    <p className="text-gray-300 font-medium">{feat.label}</p>
+                    <p className="text-gray-600 text-[10px]">{feat.desc}</p>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           )}
