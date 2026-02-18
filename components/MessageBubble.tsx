@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, SmilePlus } from "lucide-react";
 import { showToast } from "./Toast";
@@ -94,7 +94,31 @@ export default function MessageBubble({ role, content, timestamp, isLatest }: Me
 
           {/* Markdown rendered content */}
           <div className="text-sm leading-relaxed prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-code:text-purple-300 prose-code:bg-black/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-a:text-purple-400 prose-strong:text-white prose-blockquote:border-purple-500/50 prose-blockquote:text-gray-300">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                pre: (props) => {
+                  const ref = React.useRef<HTMLPreElement>(null);
+                  return (
+                    <div className="relative group/code">
+                      <button
+                        onClick={() => {
+                          const text = ref.current?.textContent;
+                          if (text) {
+                            navigator.clipboard.writeText(text);
+                            showToast("Code copied!", "success");
+                          }
+                        }}
+                        className="absolute top-2 right-2 px-2 py-1 text-[10px] rounded bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white transition-all opacity-0 group-hover/code:opacity-100"
+                      >
+                        Copy
+                      </button>
+                      <pre ref={ref}>{props.children}</pre>
+                    </div>
+                  );
+                },
+              }}
+            >
               {displayedText}
             </ReactMarkdown>
             {isTyping && (
