@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo, Settings, Clock, ChevronDown } from "lucide-react";
+import { ListTodo, Settings, Clock, ChevronDown, Search, X } from "lucide-react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
 import InputBar from "./InputBar";
@@ -84,6 +84,8 @@ export default function ChatInterface() {
   const [activeSessionId, setActiveSession] = useState<string | null>(null);
   const [wakeWordListening, setWakeWordListening] = useState(false);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -201,11 +203,19 @@ export default function ChatInterface() {
         e.preventDefault();
         setIsSettingsOpen((prev) => !prev);
       }
+      // Ctrl/Cmd + F = Toggle Search
+      if ((e.metaKey || e.ctrlKey) && e.key === "f") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+        setSearchQuery("");
+      }
       // Escape = Close panels
       if (e.key === "Escape") {
         setIsTaskPanelOpen(false);
         setIsSettingsOpen(false);
         setIsHistoryOpen(false);
+        setSearchOpen(false);
+        setSearchQuery("");
       }
     };
 
@@ -800,43 +810,91 @@ export default function ChatInterface() {
       />
 
       {/* Top Navigation Bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-3 sm:px-5 py-2 border-b border-white/5 bg-black/30 backdrop-blur-sm">
-        <div className="flex items-center gap-1 sm:gap-2">
+      <div className="flex-shrink-0 border-b border-white/5 bg-black/30 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-3 sm:px-5 py-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setIsHistoryOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+              title="Chat History (Ctrl+H)"
+            >
+              <Clock size={16} />
+              <span className="hidden sm:inline">History</span>
+            </button>
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
+              title="Settings (Ctrl+,)"
+            >
+              <Settings size={16} />
+              <span className="hidden sm:inline">Settings</span>
+            </button>
+            <button
+              onClick={() => { setSearchOpen((p) => !p); setSearchQuery(""); }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border transition-all text-xs sm:text-sm ${searchOpen ? "bg-purple-600/20 border-purple-500/30 text-purple-400" : "bg-white/5 border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10"}`}
+              title="Search messages (Ctrl+F)"
+            >
+              <Search size={16} />
+              <span className="hidden sm:inline">Search</span>
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-600 hidden lg:block">
+            Say &quot;Laila&quot; to activate · Ctrl+K New Chat
+          </p>
+
           <button
-            onClick={() => setIsHistoryOpen(true)}
+            onClick={() => setIsTaskPanelOpen(true)}
             className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
-            title="Chat History (Ctrl+H)"
+            title="Tasks"
           >
-            <Clock size={16} />
-            <span className="hidden sm:inline">History</span>
-          </button>
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
-            title="Settings (Ctrl+,)"
-          >
-            <Settings size={16} />
-            <span className="hidden sm:inline">Settings</span>
+            <ListTodo size={16} />
+            <span className="hidden sm:inline">Tasks</span>
+            {pendingTaskCount > 0 && (
+              <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                {pendingTaskCount}
+              </span>
+            )}
           </button>
         </div>
 
-        <p className="text-xs text-gray-600 hidden lg:block">
-          Say &quot;Laila&quot; to activate · Ctrl+K New Chat
-        </p>
-
-        <button
-          onClick={() => setIsTaskPanelOpen(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-purple-400 hover:bg-white/10 transition-all text-xs sm:text-sm"
-          title="Tasks"
-        >
-          <ListTodo size={16} />
-          <span className="hidden sm:inline">Tasks</span>
-          {pendingTaskCount > 0 && (
-            <span className="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
-              {pendingTaskCount}
-            </span>
+        {/* Search bar */}
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="px-3 sm:px-5 pb-2 flex items-center gap-2">
+                <div className="flex-1 relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search messages..."
+                    autoFocus
+                    className="w-full pl-8 pr-3 py-1.5 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20"
+                  />
+                </div>
+                {searchQuery && (
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase())).length} found
+                  </span>
+                )}
+                <button
+                  onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+                  className="text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </motion.div>
           )}
-        </button>
+        </AnimatePresence>
       </div>
 
       {/* Avatar Section */}
@@ -853,15 +911,20 @@ export default function ChatInterface() {
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence>
-            {messages.map((msg, index) => (
-              <MessageBubble
-                key={index}
-                role={msg.role}
-                content={msg.content}
-                timestamp={msg.timestamp}
-                isLatest={index === messages.length - 1}
-              />
-            ))}
+            {messages
+              .map((msg, index) => ({ msg, index }))
+              .filter(({ msg }) =>
+                !searchQuery || msg.content.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map(({ msg, index }) => (
+                <MessageBubble
+                  key={index}
+                  role={msg.role}
+                  content={msg.content}
+                  timestamp={msg.timestamp}
+                  isLatest={index === messages.length - 1}
+                />
+              ))}
           </AnimatePresence>
           {isLoading && <TypingIndicator />}
           <div ref={messagesEndRef} />
