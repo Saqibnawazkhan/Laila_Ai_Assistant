@@ -94,18 +94,18 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
   return (
     <div className="flex-shrink-0 safe-area-bottom px-4 sm:px-6 pb-1 pt-3">
       <div className="max-w-3xl mx-auto">
-        {/* Glass input container — single row layout */}
+        {/* Glass input container */}
         <div
           className="rounded-2xl overflow-hidden"
           style={{
-            background: "rgba(255, 255, 255, 0.04)",
+            background: "var(--glass-bg)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             border: isOverLimit
               ? "1px solid rgba(239, 68, 68, 0.3)"
               : isListening
                 ? "1px solid rgba(239, 68, 68, 0.2)"
-                : "1px solid rgba(255, 255, 255, 0.08)",
+                : "1px solid var(--glass-border)",
           }}
         >
           {/* Top row: textarea / listening waveform */}
@@ -137,15 +137,15 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                 placeholder="Ask me anything..."
                 disabled={disabled}
                 rows={1}
-                className="w-full bg-transparent text-sm text-white resize-none disabled:opacity-50 leading-relaxed"
+                className="w-full bg-transparent text-sm resize-none disabled:opacity-50 leading-relaxed"
                 style={{
                   minHeight: "36px",
                   maxHeight: "120px",
                   outline: "none",
                   border: "none",
                   boxShadow: "none",
-                  color: "#e8eaf0",
-                  caretColor: "#7c5cfc",
+                  color: "var(--foreground)",
+                  caretColor: "var(--caret)",
                 }}
               />
             )}
@@ -157,22 +157,22 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
             <div className="flex items-center gap-0.5">
               <button
                 onClick={onToggleVoice}
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
-                style={{ color: voiceEnabled ? "#7c5cfc" : "#4a4f66" }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+                style={{ color: voiceEnabled ? "var(--accent)" : "var(--icon-default)" }}
                 title={voiceEnabled ? "Mute Laila's voice" : "Enable Laila's voice"}
               >
                 {voiceEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
               </button>
               <button
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
-                style={{ color: "#4a4f66" }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+                style={{ color: "var(--icon-default)" }}
                 title="Multilingual support"
               >
                 <Globe size={17} />
               </button>
               <button
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-white/[0.06]"
-                style={{ color: "#4a4f66" }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+                style={{ color: "var(--icon-default)" }}
                 title="Chat"
               >
                 <MessageCircle size={17} />
@@ -187,7 +187,7 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                 disabled={disabled}
                 className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
                 style={{
-                  color: isListening ? "#ef4444" : "#8b8fa3",
+                  color: isListening ? "#ef4444" : "var(--icon-secondary)",
                   background: isListening ? "rgba(239, 68, 68, 0.1)" : "transparent",
                 }}
                 animate={isListening ? { scale: [1, 1.08, 1] } : {}}
@@ -203,8 +203,8 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
                 disabled={disabled || !input.trim() || isOverLimit}
                 className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
                 style={{
-                  background: input.trim() && !disabled && !isOverLimit ? "#7c5cfc" : "rgba(255, 255, 255, 0.06)",
-                  color: input.trim() && !disabled && !isOverLimit ? "#ffffff" : "#4a4f66",
+                  background: input.trim() && !disabled && !isOverLimit ? "var(--accent)" : "var(--surface)",
+                  color: input.trim() && !disabled && !isOverLimit ? "#ffffff" : "var(--icon-default)",
                   borderRadius: "10px",
                 }}
                 whileTap={{ scale: 0.9 }}
@@ -243,10 +243,10 @@ export default function InputBar({ onSend, disabled, voiceEnabled, onToggleVoice
               exit={{ opacity: 0, height: 0 }}
               className="flex items-center justify-between mt-1.5 px-2"
             >
-              <span className="text-[10px]" style={{ color: "#4a4f66" }}>Shift+Enter for new line</span>
+              <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>Shift+Enter for new line</span>
               <span
                 className="text-[10px]"
-                style={{ color: isOverLimit ? "#ef4444" : charCount > MAX_CHARS * 0.8 ? "#eab308" : "#4a4f66" }}
+                style={{ color: isOverLimit ? "#ef4444" : charCount > MAX_CHARS * 0.8 ? "#eab308" : "var(--text-dim)" }}
               >
                 {charCount}/{MAX_CHARS}
               </span>

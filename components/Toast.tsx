@@ -65,16 +65,16 @@ export default function ToastContainer() {
             transition={{ duration: 0.25 }}
             className="pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl backdrop-blur-sm shadow-lg max-w-sm"
             style={{
-              background: "rgba(26, 31, 46, 0.95)",
+              background: "var(--background)",
               border: `1px solid ${borders[toast.type]}`,
             }}
           >
             {icons[toast.type]}
-            <span className="text-sm flex-1" style={{ color: "#e8eaf0" }}>{toast.message}</span>
+            <span className="text-sm flex-1" style={{ color: "var(--foreground)" }}>{toast.message}</span>
             <button
               onClick={() => removeToast(toast.id)}
               className="hover:text-white transition-colors ml-2"
-              style={{ color: "#6b7194" }}
+              style={{ color: "var(--text-muted)" }}
             >
               <X size={14} />
             </button>

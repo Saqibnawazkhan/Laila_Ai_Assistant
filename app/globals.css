@@ -1,17 +1,78 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ===== DARK THEME (default) ===== */
 :root {
   --background: #1a1f2e;
+  --background-secondary: #161b28;
   --foreground: #e8eaf0;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.12);
+  --text-primary: #ffffff;
   --text-muted: #6b7194;
   --text-secondary: #9499b3;
+  --text-dim: #4a4f66;
   --accent: #7c5cfc;
   --accent-soft: rgba(124, 92, 252, 0.15);
+  --user-bubble: #7c5cfc;
+  --assistant-text: #c8cce0;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.08);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.15);
+  --selection-bg: rgba(124, 92, 252, 0.35);
+  --selection-color: #f3e8ff;
+  --placeholder: #6b7194;
+  --focus-ring: rgba(124, 92, 252, 0.4);
+  --caret: #7c5cfc;
+  --icon-default: #4a4f66;
+  --icon-secondary: #8b8fa3;
+  --toggle-off: #2a3042;
+  --logo-bg: #ffffff;
+  --logo-icon: #1a1f2e;
+  --code-bg: rgba(0, 0, 0, 0.3);
+  --code-border: rgba(255, 255, 255, 0.06);
+  --badge-bg: #7c5cfc;
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] {
+  --background: #f8f9fc;
+  --background-secondary: #eef0f5;
+  --foreground: #1a1f2e;
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.12);
+  --text-primary: #1a1f2e;
+  --text-muted: #7c8199;
+  --text-secondary: #5a6078;
+  --text-dim: #b0b5c8;
+  --accent: #6c4ce0;
+  --accent-soft: rgba(108, 76, 224, 0.1);
+  --user-bubble: #6c4ce0;
+  --assistant-text: #3a3f54;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --overlay-bg: rgba(0, 0, 0, 0.3);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+  --selection-bg: rgba(108, 76, 224, 0.2);
+  --selection-color: #1a1f2e;
+  --placeholder: #9499b3;
+  --focus-ring: rgba(108, 76, 224, 0.4);
+  --caret: #6c4ce0;
+  --icon-default: #b0b5c8;
+  --icon-secondary: #7c8199;
+  --toggle-off: #d1d5e0;
+  --logo-bg: #6c4ce0;
+  --logo-icon: #ffffff;
+  --code-bg: rgba(0, 0, 0, 0.04);
+  --code-border: rgba(0, 0, 0, 0.08);
+  --badge-bg: #6c4ce0;
 }
 
 @theme inline {
@@ -37,35 +98,35 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--scrollbar-thumb);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Smooth transitions */
 * {
-  transition-property: background-color, border-color;
+  transition-property: background-color, border-color, color;
   transition-duration: 150ms;
 }
 
 /* Custom text selection */
 ::selection {
-  background: rgba(124, 92, 252, 0.35);
-  color: #f3e8ff;
+  background: var(--selection-bg);
+  color: var(--selection-color);
 }
 
 ::-moz-selection {
-  background: rgba(124, 92, 252, 0.35);
-  color: #f3e8ff;
+  background: var(--selection-bg);
+  color: var(--selection-color);
 }
 
 /* Focus visible ring — only on buttons, not textareas/inputs inside containers */
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid rgba(124, 92, 252, 0.4);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -76,7 +137,11 @@ input:focus-visible {
 }
 
 textarea::placeholder {
-  color: #6b7194;
+  color: var(--placeholder);
+}
+
+input::placeholder {
+  color: var(--placeholder);
 }
 
 /* Mobile safe areas */
@@ -130,13 +195,13 @@ body {
 
 /* Glass effect for cards and panels */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--surface-hover);
+  border-color: var(--border-light);
 }

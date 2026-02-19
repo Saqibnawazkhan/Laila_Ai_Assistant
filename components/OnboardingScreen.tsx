@@ -19,7 +19,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
   const [step, setStep] = useState(0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden" style={{ background: "#1a1f2e" }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden" style={{ background: "var(--background)" }}>
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ background: "rgba(124, 92, 252, 0.15)" }} />
@@ -62,10 +62,10 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             >
               <div className="flex items-center justify-center gap-2 mb-3">
                 <Sparkles className="text-indigo-400" size={20} />
-                <h1 className="text-3xl font-bold text-white">Meet Laila</h1>
+                <h1 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>Meet Laila</h1>
               </div>
-              <p className="text-lg mb-2" style={{ color: "#8b8fa3" }}>Your Personal AI Assistant</p>
-              <p className="text-sm max-w-sm mx-auto mb-10" style={{ color: "#6b7194" }}>
+              <p className="text-lg mb-2" style={{ color: "var(--text-secondary)" }}>Your Personal AI Assistant</p>
+              <p className="text-sm max-w-sm mx-auto mb-10" style={{ color: "var(--text-muted)" }}>
                 Smart, friendly, and ready to help you with anything — from managing tasks to controlling your laptop.
               </p>
             </motion.div>
@@ -73,7 +73,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             <motion.button
               onClick={() => setStep(1)}
               className="inline-flex items-center gap-2 px-8 py-3 text-white font-medium rounded-2xl transition-colors hover:opacity-90"
-              style={{ background: "#7c5cfc", boxShadow: "0 8px 30px rgba(124, 92, 252, 0.25)" }}
+              style={{ background: "var(--accent)", boxShadow: "0 8px 30px rgba(124, 92, 252, 0.25)" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               initial={{ opacity: 0 }}
@@ -85,8 +85,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
             {/* Step indicator */}
             <div className="flex justify-center gap-2 mt-6">
-              <div className="w-2 h-2 rounded-full" style={{ background: "#7c5cfc" }} />
-              <div className="w-2 h-2 rounded-full" style={{ background: "#2a3042" }} />
+              <div className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />
+              <div className="w-2 h-2 rounded-full" style={{ background: "var(--surface)" }} />
             </div>
           </motion.div>
         )}
@@ -97,8 +97,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h2 className="text-2xl font-bold text-white text-center mb-2">What Laila Can Do</h2>
-            <p className="text-sm text-center mb-8" style={{ color: "#6b7194" }}>Here&apos;s what your assistant is capable of</p>
+            <h2 className="text-2xl font-bold text-center mb-2" style={{ color: "var(--text-primary)" }}>What Laila Can Do</h2>
+            <p className="text-sm text-center mb-8" style={{ color: "var(--text-muted)" }}>Here&apos;s what your assistant is capable of</p>
 
             <div className="grid grid-cols-2 gap-3 mb-8">
               {features.map((feature, i) => {
@@ -106,15 +106,15 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 return (
                   <motion.div
                     key={feature.title}
-                    className="rounded-2xl p-4 hover:bg-white/[0.07] transition-colors"
-                    style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                    className="rounded-2xl p-4 hover:bg-[var(--surface-hover)] transition-colors"
+                    style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
                   >
                     <Icon className="text-indigo-400 mb-2" size={24} />
-                    <h3 className="text-white font-medium text-sm mb-1">{feature.title}</h3>
-                    <p className="text-xs" style={{ color: "#6b7194" }}>{feature.desc}</p>
+                    <h3 className="font-medium text-sm mb-1" style={{ color: "var(--text-primary)" }}>{feature.title}</h3>
+                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>{feature.desc}</p>
                   </motion.div>
                 );
               })}
@@ -125,7 +125,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="rounded-xl px-4 py-3 mb-6 text-center"
-              style={{ background: "rgba(124, 92, 252, 0.1)", border: "1px solid rgba(124, 92, 252, 0.2)" }}
+              style={{ background: "var(--accent-soft)", border: "1px solid rgba(124, 92, 252, 0.2)" }}
             >
               <p className="text-xs text-indigo-300">Pro tip: Say <strong>&quot;Laila&quot;</strong> anytime to activate voice commands, or press <strong>Ctrl+P</strong> for the command palette!</p>
             </motion.div>
@@ -137,7 +137,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                   onComplete();
                 }}
                 className="inline-flex items-center gap-2 px-8 py-3 text-white font-medium rounded-2xl transition-colors hover:opacity-90"
-                style={{ background: "#7c5cfc", boxShadow: "0 8px 30px rgba(124, 92, 252, 0.25)" }}
+                style={{ background: "var(--accent)", boxShadow: "0 8px 30px rgba(124, 92, 252, 0.25)" }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -147,8 +147,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
 
             {/* Step indicator */}
             <div className="flex justify-center gap-2 mt-6">
-              <div className="w-2 h-2 rounded-full" style={{ background: "#2a3042" }} />
-              <div className="w-2 h-2 rounded-full" style={{ background: "#7c5cfc" }} />
+              <div className="w-2 h-2 rounded-full" style={{ background: "var(--surface)" }} />
+              <div className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />
             </div>
           </motion.div>
         )}

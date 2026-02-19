@@ -29,8 +29,8 @@ export default function TypingIndicator() {
       className="flex gap-3 mt-5"
     >
       {/* Avatar */}
-      <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10">
-        <Sparkles size={14} className="text-[#1a1f2e]" />
+      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10" style={{ background: "var(--logo-bg)" }}>
+        <Sparkles size={14} style={{ color: "var(--logo-icon)" }} />
       </div>
 
       {/* Content */}
@@ -65,7 +65,7 @@ export default function TypingIndicator() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="text-xs"
-              style={{ color: "#6b7194" }}
+              style={{ color: "var(--text-muted)" }}
             >
               {thinkingMessages[msgIndex]}
             </motion.span>

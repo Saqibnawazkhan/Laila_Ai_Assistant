@@ -27,7 +27,8 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] backdrop-blur-sm"
+            style={{ background: "var(--overlay-bg)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -42,17 +43,17 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
           >
             <div
               className="rounded-2xl shadow-2xl mx-4 overflow-hidden"
-              style={{ background: "#1a1f2e", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+              style={{ background: "var(--background)", border: "1px solid var(--border)" }}
             >
-              <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08]">
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
                 <div className="flex items-center gap-2">
                   <Keyboard size={18} className="text-indigo-400" />
-                  <h3 className="text-white font-semibold">Keyboard Shortcuts</h3>
+                  <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Keyboard Shortcuts</h3>
                 </div>
                 <button
                   onClick={onClose}
-                  className="hover:bg-white/[0.06] w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                  style={{ color: "#6b7194" }}
+                  className="hover:bg-[var(--surface-hover)] w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   <X size={18} />
                 </button>
@@ -62,15 +63,15 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
                 {shortcuts.map((shortcut) => (
                   <div
                     key={shortcut.action}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[var(--surface-hover)] transition-colors"
                   >
-                    <span className="text-sm" style={{ color: "#9499b3" }}>{shortcut.action}</span>
+                    <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{shortcut.action}</span>
                     <div className="flex items-center gap-1">
                       {shortcut.keys.map((key) => (
                         <kbd
                           key={key}
                           className="px-2 py-0.5 text-xs font-mono rounded min-w-[24px] text-center"
-                          style={{ background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "#9499b3" }}
+                          style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
                         >
                           {key}
                         </kbd>
@@ -80,8 +81,8 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
                 ))}
               </div>
 
-              <div className="px-5 py-3 border-t border-white/[0.06] text-center">
-                <p className="text-[10px]" style={{ color: "#4a4f66" }}>On Mac, use Cmd instead of Ctrl</p>
+              <div className="px-5 py-3 text-center" style={{ borderTop: "1px solid var(--border)" }}>
+                <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>On Mac, use Cmd instead of Ctrl</p>
               </div>
             </div>
           </motion.div>
