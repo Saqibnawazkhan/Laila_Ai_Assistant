@@ -44,13 +44,13 @@ export default function ToastContainer() {
   const icons = {
     success: <CheckCircle size={16} className="text-green-400" />,
     error: <AlertCircle size={16} className="text-red-400" />,
-    info: <Info size={16} className="text-blue-400" />,
+    info: <Info size={16} className="text-indigo-400" />,
   };
 
   const borders = {
-    success: "border-green-500/30",
-    error: "border-red-500/30",
-    info: "border-blue-500/30",
+    success: "rgba(34, 197, 94, 0.2)",
+    error: "rgba(239, 68, 68, 0.2)",
+    info: "rgba(124, 92, 252, 0.2)",
   };
 
   return (
@@ -63,13 +63,18 @@ export default function ToastContainer() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 50, scale: 0.9 }}
             transition={{ duration: 0.25 }}
-            className={`pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl bg-gray-900/95 backdrop-blur-sm border ${borders[toast.type]} shadow-lg max-w-sm`}
+            className="pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl backdrop-blur-sm shadow-lg max-w-sm"
+            style={{
+              background: "rgba(26, 31, 46, 0.95)",
+              border: `1px solid ${borders[toast.type]}`,
+            }}
           >
             {icons[toast.type]}
-            <span className="text-sm text-gray-200 flex-1">{toast.message}</span>
+            <span className="text-sm flex-1" style={{ color: "#e8eaf0" }}>{toast.message}</span>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-gray-500 hover:text-gray-300 transition-colors ml-2"
+              className="hover:text-white transition-colors ml-2"
+              style={{ color: "#6b7194" }}
             >
               <X size={14} />
             </button>

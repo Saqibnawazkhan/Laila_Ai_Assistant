@@ -43,7 +43,7 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -56,22 +56,29 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.15 }}
           >
-            <div className="bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            <div
+              className="rounded-2xl shadow-2xl overflow-hidden"
+              style={{ background: "#1a1f2e", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+            >
               {/* Search input */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10">
-                <Search size={16} className="text-gray-500 flex-shrink-0" />
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.08]">
+                <Search size={16} className="flex-shrink-0" style={{ color: "#6b7194" }} />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Type a command..."
-                  className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-500 focus:outline-none"
+                  className="flex-1 bg-transparent text-sm focus:outline-none"
+                  style={{ color: "#e8eaf0" }}
                   onKeyDown={(e) => {
                     if (e.key === "Escape") onClose();
                     if (e.key === "Enter" && filtered.length > 0) handleSelect(filtered[0]);
                   }}
                 />
-                <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/10 border border-white/20 rounded text-gray-500">
+                <kbd
+                  className="px-1.5 py-0.5 text-[10px] font-mono rounded"
+                  style={{ background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "#6b7194" }}
+                >
                   Esc
                 </kbd>
               </div>
@@ -79,18 +86,22 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
               {/* Results */}
               <div className="max-h-64 overflow-y-auto py-2">
                 {filtered.length === 0 ? (
-                  <p className="text-center text-sm text-gray-500 py-6">No commands found</p>
+                  <p className="text-center text-sm py-6" style={{ color: "#6b7194" }}>No commands found</p>
                 ) : (
                   filtered.map((cmd) => (
                     <button
                       key={cmd.id}
                       onClick={() => handleSelect(cmd)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/[0.04] transition-colors"
+                      style={{ color: "#9499b3" }}
                     >
-                      <span className="text-gray-500">{cmd.icon}</span>
+                      <span style={{ color: "#6b7194" }}>{cmd.icon}</span>
                       <span className="flex-1 text-left">{cmd.label}</span>
                       {cmd.shortcut && (
-                        <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white/10 border border-white/20 rounded text-gray-500">
+                        <kbd
+                          className="px-1.5 py-0.5 text-[10px] font-mono rounded"
+                          style={{ background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "#6b7194" }}
+                        >
                           {cmd.shortcut}
                         </kbd>
                       )}

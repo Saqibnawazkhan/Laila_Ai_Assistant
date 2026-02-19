@@ -83,7 +83,7 @@ export default function SettingsPanel({
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-40 bg-black/40"
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -91,53 +91,58 @@ export default function SettingsPanel({
           />
 
           <motion.div
-            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm bg-gray-900 border-r border-white/10 shadow-2xl flex flex-col"
+            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm border-r border-white/[0.08] shadow-2xl flex flex-col"
+            style={{ background: "#1a1f2e" }}
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-2">
-                <Settings className="text-purple-400" size={20} />
+                <Settings className="text-indigo-400" size={20} />
                 <h2 className="text-white font-semibold">Settings</h2>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-300 transition-colors"
+                className="hover:bg-white/[0.06] w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                style={{ color: "#6b7194" }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
               {/* Voice Section */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                   Voice
                 </h3>
                 <button
                   onClick={onToggleVoice}
-                  className="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                  className="w-full flex items-center justify-between rounded-xl px-4 py-3"
+                  style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
                 >
                   <div className="flex items-center gap-3">
                     {voiceEnabled ? (
-                      <Volume2 size={18} className="text-purple-400" />
+                      <Volume2 size={18} className="text-indigo-400" />
                     ) : (
-                      <VolumeX size={18} className="text-gray-500" />
+                      <VolumeX size={18} style={{ color: "#6b7194" }} />
                     )}
                     <div className="text-left">
-                      <p className="text-sm text-gray-200">Laila&apos;s Voice</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm" style={{ color: "#e8eaf0" }}>Laila&apos;s Voice</p>
+                      <p className="text-xs" style={{ color: "#6b7194" }}>
                         {voiceEnabled ? "Laila will speak responses aloud" : "Voice responses are muted"}
                       </p>
                     </div>
                   </div>
                   <div
-                    className={`w-10 h-6 rounded-full flex items-center transition-colors ${
-                      voiceEnabled ? "bg-purple-600 justify-end" : "bg-gray-700 justify-start"
-                    }`}
+                    className="w-10 h-6 rounded-full flex items-center transition-colors"
+                    style={{
+                      background: voiceEnabled ? "#7c5cfc" : "#2a3042",
+                      justifyContent: voiceEnabled ? "flex-end" : "flex-start",
+                    }}
                   >
                     <motion.div
                       className="w-4 h-4 bg-white rounded-full mx-1"
@@ -150,11 +155,14 @@ export default function SettingsPanel({
 
               {/* Voice Speed */}
               {voiceEnabled && (
-                <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 mt-2">
+                <div
+                  className="rounded-xl px-4 py-3 mt-2"
+                  style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                >
                   <div className="flex items-center gap-3 mb-2">
-                    <Gauge size={16} className="text-purple-400" />
-                    <p className="text-sm text-gray-200">Voice Speed</p>
-                    <span className="ml-auto text-xs text-purple-400 font-mono">{voiceSpeed.toFixed(1)}x</span>
+                    <Gauge size={16} className="text-indigo-400" />
+                    <p className="text-sm" style={{ color: "#e8eaf0" }}>Voice Speed</p>
+                    <span className="ml-auto text-xs text-indigo-400 font-mono">{voiceSpeed.toFixed(1)}x</span>
                   </div>
                   <input
                     type="range"
@@ -163,9 +171,10 @@ export default function SettingsPanel({
                     step="0.1"
                     value={voiceSpeed}
                     onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
-                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-purple-500"
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-indigo-500"
+                    style={{ background: "rgba(255, 255, 255, 0.1)" }}
                   />
-                  <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+                  <div className="flex justify-between text-[10px] mt-1" style={{ color: "#4a4f66" }}>
                     <span>Slow</span>
                     <span>Normal</span>
                     <span>Fast</span>
@@ -175,15 +184,18 @@ export default function SettingsPanel({
 
               {/* Wake Word Info */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                   Wake Word
                 </h3>
-                <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                <div
+                  className="rounded-xl px-4 py-3"
+                  style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                >
                   <div className="flex items-center gap-3">
-                    <Ear size={18} className="text-purple-400" />
+                    <Ear size={18} className="text-indigo-400" />
                     <div className="text-left">
-                      <p className="text-sm text-gray-200">Say &quot;Laila&quot;</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm" style={{ color: "#e8eaf0" }}>Say &quot;Laila&quot;</p>
+                      <p className="text-xs" style={{ color: "#6b7194" }}>
                         Laila is always listening for her name. Say &quot;Laila stop talking&quot; to silence her.
                       </p>
                     </div>
@@ -193,15 +205,18 @@ export default function SettingsPanel({
 
               {/* Permissions Section */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                   Permissions
                 </h3>
                 <div className="space-y-2">
                   {allowedTypes.size === 0 ? (
-                    <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div
+                      className="rounded-xl px-4 py-3"
+                      style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                    >
                       <div className="flex items-center gap-2">
-                        <Shield size={16} className="text-gray-500" />
-                        <p className="text-sm text-gray-500">No permissions granted yet</p>
+                        <Shield size={16} style={{ color: "#6b7194" }} />
+                        <p className="text-sm" style={{ color: "#6b7194" }}>No permissions granted yet</p>
                       </div>
                     </div>
                   ) : (
@@ -209,10 +224,11 @@ export default function SettingsPanel({
                       {Array.from(allowedTypes).map((type) => (
                         <div
                           key={type}
-                          className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                          className="flex items-center gap-3 rounded-xl px-4 py-3"
+                          style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
                         >
                           <Shield size={16} className="text-green-400" />
-                          <p className="text-sm text-gray-200">{typeLabels[type] || type}</p>
+                          <p className="text-sm" style={{ color: "#e8eaf0" }}>{typeLabels[type] || type}</p>
                           <span className="ml-auto text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">
                             Allowed
                           </span>
@@ -232,21 +248,23 @@ export default function SettingsPanel({
 
               {/* Data Section */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                   Data
                 </h3>
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <button
                       onClick={() => exportChat("txt")}
-                      className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-purple-500/10 hover:border-purple-500/30 transition-colors text-sm text-gray-300 hover:text-purple-300"
+                      className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-colors text-sm"
+                      style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#9499b3" }}
                     >
                       <Download size={14} />
                       Export .txt
                     </button>
                     <button
                       onClick={() => exportChat("json")}
-                      className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-purple-500/10 hover:border-purple-500/30 transition-colors text-sm text-gray-300 hover:text-purple-300"
+                      className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-colors text-sm"
+                      style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#9499b3" }}
                     >
                       <Download size={14} />
                       Export .json
@@ -254,12 +272,13 @@ export default function SettingsPanel({
                   </div>
                   <button
                     onClick={onClearChats}
-                    className="w-full flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:bg-red-500/10 hover:border-red-500/30 transition-colors group"
+                    className="w-full flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-red-500/10 hover:border-red-500/30 transition-colors group"
+                    style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
                   >
-                    <Trash2 size={16} className="text-gray-500 group-hover:text-red-400" />
+                    <Trash2 size={16} style={{ color: "#6b7194" }} className="group-hover:text-red-400" />
                     <div className="text-left">
-                      <p className="text-sm text-gray-200 group-hover:text-red-300">Clear Chat History</p>
-                      <p className="text-xs text-gray-500">Delete all saved conversations</p>
+                      <p className="text-sm group-hover:text-red-300" style={{ color: "#e8eaf0" }}>Clear Chat History</p>
+                      <p className="text-xs" style={{ color: "#6b7194" }}>Delete all saved conversations</p>
                     </div>
                   </button>
                 </div>
@@ -268,7 +287,7 @@ export default function SettingsPanel({
               {/* Chat Statistics */}
               {messages.length > 0 && (
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                     Statistics
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
@@ -278,9 +297,13 @@ export default function SettingsPanel({
                       { label: "Laila Replies", value: messages.filter((m) => m.role === "assistant").length },
                       { label: "Total Words", value: messages.reduce((acc, m) => acc + m.content.split(/\s+/).length, 0) },
                     ].map((stat) => (
-                      <div key={stat.label} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-center">
-                        <p className="text-lg font-bold text-purple-400">{stat.value}</p>
-                        <p className="text-[10px] text-gray-500">{stat.label}</p>
+                      <div
+                        key={stat.label}
+                        className="rounded-xl px-3 py-2.5 text-center"
+                        style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                      >
+                        <p className="text-lg font-bold text-indigo-400">{stat.value}</p>
+                        <p className="text-[10px]" style={{ color: "#6b7194" }}>{stat.label}</p>
                       </div>
                     ))}
                   </div>
@@ -289,19 +312,22 @@ export default function SettingsPanel({
 
               {/* About Section */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-3" style={{ color: "#4a4f66" }}>
                   About
                 </h3>
-                <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                <div
+                  className="rounded-xl px-4 py-3"
+                  style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+                >
                   <div className="flex items-center gap-3 mb-2">
-                    <MessageSquare size={16} className="text-purple-400" />
-                    <p className="text-sm text-gray-200 font-medium">Laila AI Assistant</p>
-                    <span className="ml-auto text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">v2.0</span>
+                    <MessageSquare size={16} className="text-indigo-400" />
+                    <p className="text-sm font-medium" style={{ color: "#e8eaf0" }}>Laila AI Assistant</p>
+                    <span className="ml-auto text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">v2.0</span>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs" style={{ color: "#6b7194" }}>
                     Powered by Groq (Llama 3.3 70B) with voice support, system commands, task management, and 50+ features.
                   </p>
-                  <p className="text-[10px] text-gray-600 mt-1">
+                  <p className="text-[10px] mt-1" style={{ color: "#4a4f66" }}>
                     Built by Saqib Nawaz Khan
                   </p>
                 </div>

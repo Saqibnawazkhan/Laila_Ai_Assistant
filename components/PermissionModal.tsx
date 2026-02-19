@@ -114,7 +114,8 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="w-full max-w-md mx-4 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+            className="w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden"
+            style={{ background: "#1a1f2e", border: "1px solid rgba(255, 255, 255, 0.08)" }}
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
@@ -123,25 +124,28 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
             {/* Header */}
             <div className="flex items-center justify-between px-6 pt-5 pb-3">
               <div className="flex items-center gap-2">
-                <Shield className="text-purple-400" size={20} />
+                <Shield className="text-indigo-400" size={20} />
                 <h3 className="text-white font-semibold">Permission Request</h3>
               </div>
-              <button onClick={handleDeny} className="text-gray-500 hover:text-gray-300 transition-colors">
-                <X size={20} />
+              <button onClick={handleDeny} className="hover:bg-white/[0.06] w-7 h-7 rounded-lg flex items-center justify-center transition-colors" style={{ color: "#6b7194" }}>
+                <X size={18} />
               </button>
             </div>
 
             {/* Content */}
             <div className="px-6 pb-4">
-              <p className="text-gray-300 text-sm mb-4">
+              <p className="text-sm mb-4" style={{ color: "#9499b3" }}>
                 Laila wants to execute a command on your system:
               </p>
 
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
+              <div
+                className="rounded-xl p-4 mb-4"
+                style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+              >
                 <p className="text-white font-medium text-sm mb-2">{command.description}</p>
-                <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2">
-                  <Terminal size={14} className="text-purple-400 flex-shrink-0" />
-                  <code className="text-xs text-gray-300 font-mono break-all">{command.command}</code>
+                <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: "rgba(0, 0, 0, 0.3)" }}>
+                  <Terminal size={14} className="text-indigo-400 flex-shrink-0" />
+                  <code className="text-xs font-mono break-all" style={{ color: "#9499b3" }}>{command.command}</code>
                 </div>
               </div>
 
@@ -169,15 +173,17 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
               <div className="flex gap-3">
                 <button
                   onClick={handleDeny}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm font-medium hover:bg-white/10 transition-colors"
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-white/[0.06] transition-colors"
+                  style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#9499b3" }}
                 >
                   Deny
                 </button>
                 <button
                   onClick={handleAllow}
                   className={`flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-medium transition-colors ${
-                    isHighRisk ? "bg-red-600 hover:bg-red-500" : "bg-purple-600 hover:bg-purple-500"
+                    isHighRisk ? "bg-red-600 hover:bg-red-500" : "hover:opacity-90"
                   }`}
+                  style={isHighRisk ? {} : { background: "#7c5cfc" }}
                 >
                   {isHighRisk ? "I'm Sure" : "Allow Once"}
                 </button>
@@ -185,7 +191,8 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
               {!isHighRisk && (
                 <button
                   onClick={onAlwaysAllow}
-                  className="w-full px-4 py-2.5 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm font-medium hover:bg-purple-600/30 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl text-indigo-300 text-sm font-medium hover:bg-indigo-500/15 transition-colors"
+                  style={{ background: "rgba(124, 92, 252, 0.1)", border: "1px solid rgba(124, 92, 252, 0.2)" }}
                 >
                   Always Allow {typeLabels[command.type]}
                 </button>
@@ -208,7 +215,8 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="w-full max-w-md mx-4 bg-gray-900 border border-red-500/20 rounded-2xl shadow-2xl overflow-hidden"
+            className="w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden"
+            style={{ background: "#1a1f2e", border: "1px solid rgba(239, 68, 68, 0.2)" }}
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             transition={{ type: "spring", damping: 20 }}
@@ -228,20 +236,20 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
 
             {/* Content */}
             <div className="px-6 py-5">
-              <p className="text-gray-300 text-sm mb-4 leading-relaxed">
+              <p className="text-sm mb-4 leading-relaxed" style={{ color: "#9499b3" }}>
                 This command can <strong className="text-red-300">permanently damage</strong> your system.
                 Once executed, it <strong className="text-red-300">cannot be undone</strong>.
               </p>
 
-              <div className="bg-black/30 border border-red-500/15 rounded-xl p-4 mb-5">
+              <div className="rounded-xl p-4 mb-5" style={{ background: "rgba(0, 0, 0, 0.3)", border: "1px solid rgba(239, 68, 68, 0.15)" }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Terminal size={14} className="text-red-400" />
                   <span className="text-xs text-red-300 font-semibold uppercase tracking-wide">Command</span>
                 </div>
-                <code className="text-xs text-gray-300 font-mono break-all">{command.command}</code>
+                <code className="text-xs font-mono break-all" style={{ color: "#9499b3" }}>{command.command}</code>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
+              <div className="flex items-center gap-2 text-xs mb-1" style={{ color: "#4a4f66" }}>
                 <Lock size={12} />
                 <span>Step 2 of 3 — Password will be required next</span>
               </div>
@@ -251,7 +259,8 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
             <div className="flex gap-3 px-6 pb-5">
               <button
                 onClick={handleDeny}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm font-medium hover:bg-white/10 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-white/[0.06] transition-colors"
+                style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#9499b3" }}
               >
                 Cancel
               </button>
@@ -278,27 +287,28 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="w-full max-w-md mx-4 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+          className="w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden"
+          style={{ background: "#1a1f2e", border: "1px solid rgba(255, 255, 255, 0.08)" }}
           initial={{ scale: 0.9, y: 20 }}
           animate={{ scale: 1, y: 0 }}
           transition={{ type: "spring", damping: 20 }}
         >
           {/* Header */}
-          <div className="bg-purple-500/10 border-b border-purple-500/20 px-6 py-4">
+          <div style={{ background: "rgba(124, 92, 252, 0.1)", borderBottom: "1px solid rgba(124, 92, 252, 0.2)" }} className="px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <Lock size={20} className="text-purple-400" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(124, 92, 252, 0.2)" }}>
+                <Lock size={20} className="text-indigo-400" />
               </div>
               <div>
                 <h3 className="text-white font-bold text-base">Security Password</h3>
-                <p className="text-gray-500 text-xs mt-0.5">Final step — Enter your password to proceed</p>
+                <p className="text-xs mt-0.5" style={{ color: "#6b7194" }}>Final step — Enter your password to proceed</p>
               </div>
             </div>
           </div>
 
           {/* Content */}
           <div className="px-6 py-5">
-            <p className="text-gray-400 text-sm mb-5">
+            <p className="text-sm mb-5" style={{ color: "#8b8fa3" }}>
               Enter your security password to authorize this dangerous command.
             </p>
 
@@ -311,16 +321,20 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
                 onKeyDown={(e) => { if (e.key === "Enter" && password) handlePasswordSubmit(); }}
                 placeholder="Enter security password"
                 autoFocus
-                className={`w-full px-4 py-3 pr-12 text-sm rounded-xl border bg-black/30 text-gray-200 placeholder-gray-600 focus:outline-none transition-colors ${
-                  passwordError
-                    ? "border-red-500/50 focus:border-red-500/70 shake"
-                    : "border-white/10 focus:border-purple-500/40"
+                className={`w-full px-4 py-3 pr-12 text-sm rounded-xl focus:outline-none transition-colors ${
+                  passwordError ? "shake" : ""
                 }`}
+                style={{
+                  background: "rgba(0, 0, 0, 0.3)",
+                  border: passwordError ? "1px solid rgba(239, 68, 68, 0.5)" : "1px solid rgba(255, 255, 255, 0.08)",
+                  color: "#e8eaf0",
+                }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-white transition-colors"
+                style={{ color: "#6b7194" }}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -341,7 +355,7 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
               )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-2 text-xs text-gray-600">
+            <div className="flex items-center gap-2 text-xs" style={{ color: "#4a4f66" }}>
               <Lock size={11} />
               <span>Step 3 of 3 — This is the final security check</span>
             </div>
@@ -351,14 +365,16 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
           <div className="flex gap-3 px-6 pb-5">
             <button
               onClick={handleDeny}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm font-medium hover:bg-white/10 transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-white/[0.06] transition-colors"
+              style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)", color: "#9499b3" }}
             >
               Cancel
             </button>
             <button
               onClick={handlePasswordSubmit}
               disabled={!password}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:bg-gray-800 disabled:text-gray-600 text-white text-sm font-bold transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-bold transition-colors"
+              style={{ background: !password ? "#2a3042" : "#7c5cfc" }}
             >
               Authorize
             </button>
