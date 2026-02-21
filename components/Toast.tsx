@@ -15,7 +15,6 @@ interface Toast {
 let toastId = 0;
 let addToastFn: ((message: string, type?: ToastType) => void) | null = null;
 
-// Global function to show toast from anywhere
 export function showToast(message: string, type: ToastType = "info") {
   addToastFn?.(message, type);
 }
@@ -35,51 +34,50 @@ export default function ToastContainer() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // Register global toast function
   useEffect(() => {
     addToastFn = addToast;
     return () => { addToastFn = null; };
   }, [addToast]);
 
-  const icons = {
-    success: <CheckCircle size={16} className="text-green-400" />,
-    error: <AlertCircle size={16} className="text-red-400" />,
-    info: <Info size={16} className="text-indigo-400" />,
-  };
-
-  const borders = {
-    success: "rgba(34, 197, 94, 0.2)",
-    error: "rgba(239, 68, 68, 0.2)",
-    info: "rgba(124, 92, 252, 0.2)",
+  const config = {
+    success: { icon: <CheckCircle size={14} className="text-emerald-400" />, bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.2)" },
+    error: { icon: <AlertCircle size={14} className="text-red-400" />, bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.2)" },
+    info: { icon: <Info size={14} style={{ color: "var(--accent)" }} />, bg: "var(--accent-soft)", border: "rgba(139,92,246,0.2)" },
   };
 
   return (
     <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
       <AnimatePresence>
-        {toasts.map((toast) => (
-          <motion.div
-            key={toast.id}
-            initial={{ opacity: 0, x: 50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 50, scale: 0.9 }}
-            transition={{ duration: 0.25 }}
-            className="pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl backdrop-blur-sm shadow-lg max-w-sm"
-            style={{
-              background: "var(--background)",
-              border: `1px solid ${borders[toast.type]}`,
-            }}
-          >
-            {icons[toast.type]}
-            <span className="text-sm flex-1" style={{ color: "var(--foreground)" }}>{toast.message}</span>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="hover:text-white transition-colors ml-2"
-              style={{ color: "var(--text-muted)" }}
+        {toasts.map((toast) => {
+          const c = config[toast.type];
+          return (
+            <motion.div
+              key={toast.id}
+              initial={{ opacity: 0, x: 80, scale: 0.85 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 80, scale: 0.85 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl backdrop-blur-md max-w-xs"
+              style={{
+                background: "var(--background)",
+                border: `1px solid ${c.border}`,
+                boxShadow: "var(--shadow-md)",
+              }}
             >
-              <X size={14} />
-            </button>
-          </motion.div>
-        ))}
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: c.bg }}>
+                {c.icon}
+              </div>
+              <span className="text-[12px] flex-1" style={{ color: "var(--foreground)" }}>{toast.message}</span>
+              <button
+                onClick={() => removeToast(toast.id)}
+                className="hover:opacity-100 transition-opacity ml-1 opacity-50"
+                style={{ color: "var(--text-muted)" }}
+              >
+                <X size={12} />
+              </button>
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
     </div>
   );
