@@ -121,7 +121,7 @@ export default function SettingsPanel({
 
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
               {/* Theme Toggle */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Palette size={12} style={{ color: "var(--text-dim)" }} />
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Appearance</span>
@@ -154,10 +154,10 @@ export default function SettingsPanel({
                     />
                   </div>
                 </button>
-              </div>
+              </motion.div>
 
               {/* Voice Section */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Volume2 size={12} style={{ color: "var(--text-dim)" }} />
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Voice</span>
@@ -237,10 +237,10 @@ export default function SettingsPanel({
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Permissions */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Shield size={12} style={{ color: "var(--text-dim)" }} />
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Permissions</span>
@@ -273,10 +273,10 @@ export default function SettingsPanel({
                     </>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Data */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Download size={12} style={{ color: "var(--text-dim)" }} />
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Data</span>
@@ -313,11 +313,11 @@ export default function SettingsPanel({
                     <ChevronRight size={14} className="ml-auto" style={{ color: "var(--text-dim)" }} />
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Stats */}
               {messages.length > 0 && (
-                <div>
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                   <div className="flex items-center gap-2 mb-2.5 px-1">
                     <MessageSquare size={12} style={{ color: "var(--text-dim)" }} />
                     <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Stats</span>
@@ -339,11 +339,11 @@ export default function SettingsPanel({
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* About */}
-              <div className="rounded-xl px-4 py-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="rounded-xl px-4 py-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                 <div className="flex items-center gap-2 mb-1.5">
                   <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>Laila AI</p>
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>v2.0</span>
@@ -351,7 +351,7 @@ export default function SettingsPanel({
                 <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
                   Powered by Groq &middot; Built by Saqib Nawaz Khan
                 </p>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         </>

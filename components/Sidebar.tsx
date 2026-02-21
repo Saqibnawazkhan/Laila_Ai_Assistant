@@ -309,10 +309,12 @@ export default function Sidebar({
                                   </button>
                                 </div>
                               ) : (
-                                <p className="text-[11px] truncate leading-snug font-medium">{session.title}</p>
-                              <p className="text-[9px] truncate leading-snug mt-0.5" style={{ color: "var(--text-dim)" }}>
-                                {new Date(session.updatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-                              </p>
+                                <>
+                                  <p className="text-[11px] truncate leading-snug font-medium">{session.title}</p>
+                                  <p className="text-[9px] truncate leading-snug mt-0.5" style={{ color: "var(--text-dim)" }}>
+                                    {new Date(session.updatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                                  </p>
+                                </>
                               )}
                             </div>
                             {editingId !== session.id && (
@@ -358,7 +360,7 @@ export default function Sidebar({
                 <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style={{ background: "var(--accent)" }}>
                   S
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2" style={{ ringColor: "var(--background-secondary)" }} />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 0 2px var(--background-secondary)" }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-medium truncate leading-tight" style={{ color: "var(--text-primary)" }}>Saqib Nawaz</p>

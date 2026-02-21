@@ -158,7 +158,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                   const [codeCopied, setCodeCopied] = React.useState(false);
                   // Detect language from className
                   const codeEl = React.Children.toArray(props.children).find(
-                    (child): child is React.ReactElement => React.isValidElement(child) && child.type === "code"
+                    (child): child is React.ReactElement<{ className?: string }> => React.isValidElement(child) && child.type === "code"
                   );
                   const langClass = codeEl?.props?.className || "";
                   const lang = langClass.replace("language-", "") || "code";
