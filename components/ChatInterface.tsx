@@ -715,7 +715,16 @@ export default function ChatInterface() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.25 }}
                 >
-                  How can I help today?
+                  {"How can I help today?".split("").map((char, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.02, ease: "easeOut" }}
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
                 </motion.h1>
                 <motion.p
                   className="text-sm text-center max-w-sm leading-relaxed mb-12"
