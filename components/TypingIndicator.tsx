@@ -56,22 +56,22 @@ export default function TypingIndicator() {
         </div>
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           {/* Wave dots */}
-          <div className="flex gap-[3px] items-center">
+          <div className="flex gap-[4px] items-center">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-[5px] h-[5px] rounded-full"
+                className="w-[6px] h-[6px] rounded-full"
                 style={{ background: "var(--accent)" }}
                 animate={{
-                  y: [0, -6, 0],
-                  opacity: [0.3, 1, 0.3],
-                  scale: [1, 1.2, 1],
+                  y: [0, -8, 0],
+                  opacity: [0.25, 1, 0.25],
+                  scale: [0.8, 1.3, 0.8],
                 }}
                 transition={{
-                  duration: 0.8,
+                  duration: 1,
                   repeat: Infinity,
-                  delay: i * 0.12,
-                  ease: "easeInOut",
+                  delay: i * 0.15,
+                  ease: [0.45, 0, 0.55, 1],
                 }}
               />
             ))}
