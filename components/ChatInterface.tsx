@@ -911,9 +911,10 @@ export default function ChatInterface() {
         <InputBar onSend={sendMessage} disabled={isLoading} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} onMicStart={() => wakeWordRef.current?.pause()} onMicStop={() => wakeWordRef.current?.resume()} />
 
         {/* Footer */}
-        <div className="flex items-center justify-center gap-3 py-1.5 flex-shrink-0">
+        <div className="flex items-center justify-center gap-2 py-1.5 flex-shrink-0">
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)" }}>v2.0</span>
           <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>Laila may make mistakes</p>
-          <span className="text-[10px]" style={{ color: "var(--border)" }}>|</span>
+          <span className="text-[8px]" style={{ color: "var(--border)" }}>•</span>
           <button
             onClick={() => setShowShortcuts(true)}
             className="text-[10px] hover:underline transition-all"
