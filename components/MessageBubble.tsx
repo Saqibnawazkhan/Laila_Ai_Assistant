@@ -156,11 +156,19 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                 pre: (props) => {
                   const ref = React.useRef<HTMLPreElement>(null);
                   const [codeCopied, setCodeCopied] = React.useState(false);
+                  // Detect language from className
+                  const codeEl = React.Children.toArray(props.children).find(
+                    (child): child is React.ReactElement => React.isValidElement(child) && child.type === "code"
+                  );
+                  const langClass = codeEl?.props?.className || "";
+                  const lang = langClass.replace("language-", "") || "code";
                   return (
                     <div className="relative group/code rounded-xl overflow-hidden" style={{ border: "1px solid var(--code-border)" }}>
-                      {/* Code header */}
-                      <div className="flex items-center justify-between px-4 py-2" style={{ background: "var(--code-bg)", borderBottom: "1px solid var(--code-border)" }}>
-                        <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Code</span>
+                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "var(--code-bg)", borderBottom: "1px solid var(--code-border)" }}>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />
+                          <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>{lang}</span>
+                        </div>
                         <button
                           onClick={() => {
                             const text = ref.current?.textContent;
