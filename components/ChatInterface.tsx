@@ -858,13 +858,17 @@ export default function ChatInterface() {
                       { text: "Thanks!", emoji: "👍" },
                       { text: "Explain?", emoji: "🤔" },
                       { text: "What else?", emoji: "✨" },
-                    ].map((reply) => (
+                    ].map((reply, i) => (
                       <motion.button
                         key={reply.text}
                         onClick={() => sendMessage(reply.text)}
-                        className="px-3 py-1.5 text-[11px] rounded-full transition-all hover:scale-[1.03] active:scale-[0.97]"
+                        className="px-3 py-1.5 text-[11px] rounded-full transition-all"
                         style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
-                        whileHover={{ borderColor: "var(--accent)" }}
+                        initial={{ opacity: 0, scale: 0.8, y: 5 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: 0.6 + i * 0.08, type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{ scale: 1.06, borderColor: "var(--accent)", boxShadow: "0 2px 8px var(--accent-glow)" }}
+                        whileTap={{ scale: 0.93 }}
                       >
                         <span className="mr-1">{reply.emoji}</span>
                         {reply.text}
