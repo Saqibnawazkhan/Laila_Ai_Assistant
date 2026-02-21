@@ -110,9 +110,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
   // --- ASSISTANT MESSAGE ---
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className={`flex gap-3 ${isGrouped ? "mt-0.5" : "mt-5 first:mt-0"} group`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
