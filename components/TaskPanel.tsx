@@ -89,10 +89,22 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, 
                     </svg>
                     <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold" style={{ color: "var(--accent)" }}>{progress}%</span>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>{completed.length} of {tasks.length} done</p>
-                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{pending.length} remaining</p>
+                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                      {progress === 100 ? "All tasks completed!" : progress >= 50 ? "Keep going, almost there!" : `${pending.length} remaining`}
+                    </p>
                   </div>
+                  {progress === 100 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="text-lg"
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      🎉
+                    </motion.span>
+                  )}
                 </div>
               </div>
             )}
