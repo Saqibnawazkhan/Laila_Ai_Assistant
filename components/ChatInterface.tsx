@@ -565,66 +565,64 @@ export default function ChatInterface() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full opacity-30" style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)" }} />
         </div>
 
-        {/* Top Bar */}
-        <header className="flex items-center justify-between px-5 sm:px-6 h-14 flex-shrink-0 relative z-10">
+        {/* Floating Glass Header */}
+        <header className="flex items-center justify-between mx-3 sm:mx-4 mt-2 px-4 sm:px-5 h-12 flex-shrink-0 relative z-10 rounded-2xl glass" style={{ boxShadow: "var(--shadow-sm)" }}>
           {/* Left: Logo + Name */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setSidebarOpen((p) => !p)}
-              className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               title="Toggle sidebar (Ctrl+H)"
             >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-black/10" style={{ background: "var(--logo-bg)" }}>
-                <Sparkles size={18} style={{ color: "var(--logo-icon)" }} />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
+                <Sparkles size={15} style={{ color: "var(--logo-icon)" }} />
               </div>
-              <span className="text-sm font-semibold tracking-tight hidden sm:inline" style={{ color: "var(--text-primary)" }}>Laila AI</span>
+              <div className="hidden sm:flex flex-col">
+                <span className="text-[13px] font-semibold leading-none tracking-tight" style={{ color: "var(--text-primary)" }}>Laila</span>
+                <span className="text-[9px] leading-none mt-0.5" style={{ color: "var(--text-dim)" }}>AI Assistant</span>
+              </div>
             </button>
           </div>
 
-          {/* Center status */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
-            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : ""}`} style={wakeWordListening ? {} : { background: "var(--text-dim)" }} />
-            <span className="hidden sm:inline whitespace-nowrap">{wakeWordListening ? 'Listening for "Laila"' : 'Say "Laila" to activate'}</span>
-            {avatarStatus === "thinking" && (
-              <span className="flex items-center gap-1 text-indigo-400 whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />Thinking...
+          {/* Center status pill */}
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px]" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : ""}`} style={wakeWordListening ? {} : { background: "var(--text-dim)" }} />
+              <span className="hidden sm:inline whitespace-nowrap">
+                {avatarStatus === "thinking" ? (
+                  <span className="text-violet-400 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-violet-400 animate-pulse" />Thinking...</span>
+                ) : avatarStatus === "talking" ? (
+                  <span className="text-violet-400 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-violet-400 animate-pulse" />Speaking...</span>
+                ) : wakeWordListening ? 'Listening...' : 'Say "Laila"'}
               </span>
-            )}
-            {avatarStatus === "talking" && (
-              <span className="flex items-center gap-1 text-violet-400 whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />Speaking...
-              </span>
-            )}
+            </div>
           </div>
 
-          {/* Right: Theme toggle + Grid icon */}
-          <div className="flex items-center gap-1.5">
-            {/* Theme toggle */}
+          {/* Right: Actions */}
+          <div className="flex items-center gap-0.5">
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
               style={{ color: "var(--icon-secondary)" }}
-              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              title={theme === "dark" ? "Light mode" : "Dark mode"}
             >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             </button>
             <button
               onClick={handleToggleVoice}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[var(--surface-hover)] ${
-                voiceEnabled ? "text-indigo-400" : ""
-              }`}
-              style={{ color: voiceEnabled ? undefined : "var(--icon-default)" }}
-              title={voiceEnabled ? "Mute voice" : "Enable voice"}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+              style={{ color: voiceEnabled ? "var(--accent)" : "var(--icon-default)" }}
+              title={voiceEnabled ? "Mute" : "Unmute"}
             >
-              {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+              {voiceEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
             <button
               onClick={() => setShowCommandPalette(true)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
               style={{ color: "var(--icon-secondary)" }}
-              title="Command palette (Ctrl+P)"
+              title="Commands (Ctrl+P)"
             >
-              <LayoutGrid size={18} />
+              <LayoutGrid size={15} />
             </button>
           </div>
         </header>
