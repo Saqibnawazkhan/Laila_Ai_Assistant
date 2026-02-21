@@ -818,15 +818,22 @@ export default function ChatInterface() {
                     transition={{ delay: 0.5 }}
                     className="flex flex-wrap gap-1.5 pl-10 pt-2"
                   >
-                    {["Tell me more", "Thanks!", "Can you explain?", "What else?"].map((reply) => (
-                      <button
-                        key={reply}
-                        onClick={() => sendMessage(reply)}
-                        className="px-3 py-1.5 text-[11px] rounded-full hover:text-indigo-300 hover:border-indigo-500/20 transition-all"
+                    {[
+                      { text: "Tell me more", emoji: "💡" },
+                      { text: "Thanks!", emoji: "👍" },
+                      { text: "Explain?", emoji: "🤔" },
+                      { text: "What else?", emoji: "✨" },
+                    ].map((reply) => (
+                      <motion.button
+                        key={reply.text}
+                        onClick={() => sendMessage(reply.text)}
+                        className="px-3 py-1.5 text-[11px] rounded-full transition-all hover:scale-[1.03] active:scale-[0.97]"
                         style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                        whileHover={{ borderColor: "var(--accent)" }}
                       >
-                        {reply}
-                      </button>
+                        <span className="mr-1">{reply.emoji}</span>
+                        {reply.text}
+                      </motion.button>
                     ))}
                   </motion.div>
                 )}
