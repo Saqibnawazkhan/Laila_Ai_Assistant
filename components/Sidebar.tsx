@@ -306,7 +306,10 @@ export default function Sidebar({
                                   </button>
                                 </div>
                               ) : (
-                                <p className="text-[11px] truncate leading-snug">{session.title}</p>
+                                <p className="text-[11px] truncate leading-snug font-medium">{session.title}</p>
+                              <p className="text-[9px] truncate leading-snug mt-0.5" style={{ color: "var(--text-dim)" }}>
+                                {new Date(session.updatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                              </p>
                               )}
                             </div>
                             {editingId !== session.id && (
