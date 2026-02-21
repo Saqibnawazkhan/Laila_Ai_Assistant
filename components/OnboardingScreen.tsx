@@ -25,24 +25,28 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-[150px] animate-pulse" style={{ background: "rgba(139, 92, 246, 0.12)" }} />
         <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] rounded-full blur-[100px]" style={{ background: "rgba(139, 92, 246, 0.06)" }} />
         {/* Floating particles */}
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full"
+            className="absolute rounded-full"
             style={{
               background: "var(--accent)",
-              opacity: 0.3,
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
+              width: `${3 + (i % 3) * 2}px`,
+              height: `${3 + (i % 3) * 2}px`,
+              left: `${10 + i * 11}%`,
+              top: `${15 + (i % 4) * 20}%`,
+              filter: "blur(0.5px)",
             }}
             animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.5, 0.2],
+              y: [0, -40 - i * 5, 0],
+              x: [0, (i % 2 === 0 ? 15 : -15), 0],
+              opacity: [0.15, 0.6, 0.15],
+              scale: [1, 1.3, 1],
             }}
             transition={{
-              duration: 3 + i * 0.5,
+              duration: 3 + i * 0.7,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.4,
               ease: "easeInOut",
             }}
           />
