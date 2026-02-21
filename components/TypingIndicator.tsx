@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Zap } from "lucide-react";
 
 const thinkingMessages = [
   "Thinking...",
@@ -14,12 +14,18 @@ const thinkingMessages = [
 
 export default function TypingIndicator() {
   const [msgIndex, setMsgIndex] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setMsgIndex((prev) => (prev + 1) % thinkingMessages.length);
     }, 2500);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setElapsed((p) => p + 1), 1000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -36,6 +42,17 @@ export default function TypingIndicator() {
       <div>
         <div className="flex items-center gap-2 mb-1.5">
           <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Laila</span>
+          {elapsed > 2 && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-0.5 text-[9px]"
+              style={{ color: "var(--text-dim)" }}
+            >
+              <Zap size={8} />
+              {elapsed}s
+            </motion.span>
+          )}
         </div>
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           {/* Wave dots */}
