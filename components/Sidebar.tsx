@@ -16,6 +16,7 @@ import {
   PanelLeftClose,
   Sparkles,
   Command,
+  Hash,
 } from "lucide-react";
 import { ChatSession } from "@/lib/chat-history";
 
@@ -113,8 +114,8 @@ export default function Sidebar({
   const grouped = groupSessionsByDate(filteredSessions);
 
   const navItems = [
-    { id: "chat", label: "Chat with AI", icon: MessageSquare, onClick: onNewChat },
-    { id: "voice", label: "Voice Control", icon: Mic, onClick: () => {} },
+    { id: "chat", label: "Chat", icon: MessageSquare, onClick: onNewChat },
+    { id: "voice", label: "Voice", icon: Mic, onClick: () => {} },
     { id: "tasks", label: "Tasks", icon: ListTodo, onClick: onOpenTasks, badge: pendingTaskCount > 0 ? pendingTaskCount : undefined },
     { id: "settings", label: "Settings", icon: Settings, onClick: onOpenSettings },
   ];
@@ -136,26 +137,23 @@ export default function Sidebar({
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside
-        className={`
-          fixed lg:relative z-50 lg:z-auto top-0 left-0 h-full
-          flex flex-col
-          transition-[width] duration-200 ease-in-out
-          ${isOpen ? "w-[280px]" : "w-0 lg:w-0"}
-          overflow-hidden
-        `}
+      <motion.aside
+        className="fixed lg:relative z-50 lg:z-auto top-0 left-0 h-full flex flex-col overflow-hidden"
         style={{ background: "var(--background-secondary)", borderRight: "1px solid var(--border)" }}
+        initial={false}
+        animate={{ width: isOpen ? 272 : 0 }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
       >
-        <div className="w-[280px] h-full flex flex-col">
+        <div className="w-[272px] h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between px-4 h-14 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-black/10" style={{ background: "var(--logo-bg)" }}>
-                <Sparkles size={16} style={{ color: "var(--logo-icon)" }} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
+                <Sparkles size={14} style={{ color: "var(--logo-icon)" }} />
               </div>
               <div className="min-w-0">
-                <h1 className="text-sm font-bold tracking-tight leading-tight" style={{ color: "var(--text-primary)" }}>Laila AI</h1>
-                <p className="text-[10px] leading-tight" style={{ color: "var(--text-muted)" }}>Personal Assistant</p>
+                <h1 className="text-sm font-bold tracking-tight leading-tight" style={{ color: "var(--text-primary)" }}>Laila</h1>
+                <p className="text-[9px] leading-tight" style={{ color: "var(--text-dim)" }}>AI Assistant</p>
               </div>
             </div>
             <button
@@ -164,41 +162,37 @@ export default function Sidebar({
               style={{ color: "var(--text-muted)" }}
               title="Close sidebar"
             >
-              <PanelLeftClose size={16} />
+              <PanelLeftClose size={15} />
             </button>
           </div>
 
-          {/* New Chat button */}
-          <div className="px-3 pt-3 pb-1 flex-shrink-0">
+          {/* New Chat + Search */}
+          <div className="px-3 pt-3 space-y-2 flex-shrink-0">
             <button
               onClick={onNewChat}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-white text-sm font-medium rounded-xl transition-colors hover:opacity-90"
-              style={{ background: "var(--accent)" }}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white text-[13px] font-medium rounded-xl transition-all hover:opacity-90 active:scale-[0.97]"
+              style={{ background: "var(--accent)", boxShadow: "var(--shadow-glow)" }}
             >
-              <Plus size={16} />
+              <Plus size={15} />
               New Chat
             </button>
-          </div>
 
-          {/* Search */}
-          <div className="px-3 pt-2 pb-1 flex-shrink-0">
             <button
               onClick={onOpenCommandPalette}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[var(--surface-hover)] transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-[var(--surface-hover)] transition-all"
               style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
             >
-              <Search size={14} />
-              <span className="flex-1 text-left text-xs">Search...</span>
-              <kbd className="flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>
-                <Command size={9} />K
+              <Search size={13} />
+              <span className="flex-1 text-left text-[11px]">Search...</span>
+              <kbd className="flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>
+                <Command size={8} />K
               </kbd>
             </button>
           </div>
 
-          {/* Navigation */}
-          <div className="px-3 pt-3 pb-1 flex-shrink-0">
-            <p className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-1.5" style={{ color: "var(--text-dim)" }}>Menu</p>
-            <nav className="space-y-0.5">
+          {/* Navigation - horizontal pills */}
+          <div className="px-3 pt-3 flex-shrink-0">
+            <div className="flex gap-1 p-0.5 rounded-xl" style={{ background: "var(--surface)" }}>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = item.id === activeView;
@@ -206,43 +200,45 @@ export default function Sidebar({
                   <button
                     key={item.id}
                     onClick={item.onClick}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all ${
-                      isActive
-                        ? "bg-indigo-500/15 text-indigo-300"
-                        : "hover:bg-[var(--surface-hover)]"
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all relative ${
+                      isActive ? "text-white" : ""
                     }`}
-                    style={{ color: isActive ? undefined : "var(--text-secondary)" }}
+                    style={{
+                      background: isActive ? "var(--accent)" : "transparent",
+                      color: isActive ? "#fff" : "var(--text-muted)",
+                    }}
                   >
-                    <Icon size={16} style={{ color: isActive ? "#818cf8" : "var(--text-muted)" }} />
-                    <span className="flex-1 text-left">{item.label}</span>
+                    <Icon size={13} />
+                    <span className="hidden sm:inline">{item.label}</span>
                     {item.badge && (
-                      <span className="text-white text-[10px] px-1.5 py-0.5 rounded-full min-w-[18px] text-center font-medium" style={{ background: "var(--badge-bg)" }}>
+                      <span className="absolute -top-1 -right-0.5 w-4 h-4 text-[9px] rounded-full flex items-center justify-center text-white font-bold" style={{ background: "var(--error)" }}>
                         {item.badge}
                       </span>
                     )}
                   </button>
                 );
               })}
-            </nav>
+            </div>
           </div>
 
           {/* Chat History */}
-          <div className="flex-1 flex flex-col min-h-0 mt-2">
-            <div className="flex items-center justify-between px-4 pb-1.5 flex-shrink-0">
-              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>History</p>
+          <div className="flex-1 flex flex-col min-h-0 mt-3">
+            <div className="flex items-center justify-between px-4 pb-1 flex-shrink-0">
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Recent</p>
+              <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>{sessions.length}</span>
             </div>
 
             {/* History search */}
             {sessions.length > 3 && (
               <div className="px-3 pb-2 flex-shrink-0">
                 <div className="relative">
-                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--text-dim)" }} />
+                  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--text-dim)" }} />
                   <input
                     type="text"
                     value={historySearch}
                     onChange={(e) => setHistorySearch(e.target.value)}
-                    placeholder="Search chats..."
-                    className="w-full pl-7 pr-2 py-1.5 text-xs rounded-lg focus:outline-none focus:border-indigo-500/30"
+                    placeholder="Filter chats..."
+                    className="w-full pl-7 pr-2 py-1.5 text-[11px] rounded-lg focus:outline-none"
                     style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                   />
                 </div>
@@ -252,35 +248,40 @@ export default function Sidebar({
             {/* Sessions */}
             <div className="flex-1 overflow-y-auto px-2 pb-2">
               {sessions.length === 0 ? (
-                <div className="text-center pt-6 px-4">
-                  <MessageSquare size={24} className="mx-auto mb-2" style={{ color: "var(--text-dim)" }} />
-                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>No conversations yet</p>
+                <div className="text-center pt-8 px-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2" style={{ background: "var(--surface)" }}>
+                    <Hash size={18} style={{ color: "var(--text-dim)" }} />
+                  </div>
+                  <p className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>No conversations</p>
                   <p className="text-[10px] mt-0.5" style={{ color: "var(--text-dim)" }}>Start chatting with Laila!</p>
                 </div>
               ) : grouped.length === 0 ? (
                 <div className="text-center pt-4 px-4">
-                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>No results found</p>
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>No results</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {grouped.map((group) => (
                     <div key={group.label}>
-                      <p className="text-[10px] font-medium px-2 mb-1" style={{ color: "var(--text-dim)" }}>{group.label}</p>
+                      <p className="text-[9px] font-semibold uppercase tracking-wider px-2 mb-1" style={{ color: "var(--text-dim)" }}>{group.label}</p>
                       <div className="space-y-px">
                         {group.sessions.map((session) => (
                           <div
                             key={session.id}
-                            className={`group flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-all ${
+                            className={`group flex items-center gap-2 px-2.5 py-[7px] rounded-lg cursor-pointer transition-all ${
                               session.id === activeSessionId
-                                ? "bg-indigo-500/10 text-indigo-300"
+                                ? ""
                                 : "hover:bg-[var(--surface-hover)]"
                             }`}
-                            style={{ color: session.id === activeSessionId ? undefined : "var(--text-secondary)" }}
+                            style={{
+                              background: session.id === activeSessionId ? "var(--accent-soft)" : undefined,
+                              color: session.id === activeSessionId ? "var(--accent)" : "var(--text-secondary)",
+                            }}
                             onClick={() => {
                               if (editingId !== session.id) onSelectSession(session);
                             }}
                           >
-                            <MessageSquare size={14} className="flex-shrink-0 opacity-40" />
+                            <MessageSquare size={13} className="flex-shrink-0 opacity-40" />
                             <div className="flex-1 min-w-0">
                               {editingId === session.id ? (
                                 <div className="flex items-center gap-1">
@@ -293,19 +294,19 @@ export default function Sidebar({
                                       if (e.key === "Escape") { setEditingId(null); setEditTitle(""); }
                                     }}
                                     onBlur={confirmRename}
-                                    className="w-full text-xs rounded px-1.5 py-0.5 focus:outline-none"
+                                    className="w-full text-[11px] rounded px-1.5 py-0.5 focus:outline-none"
                                     style={{ background: "var(--code-bg)", border: "1px solid var(--accent)", color: "var(--foreground)" }}
                                     onClick={(e) => e.stopPropagation()}
                                   />
                                   <button
                                     onClick={(e) => { e.stopPropagation(); confirmRename(); }}
-                                    className="text-green-400 hover:text-green-300 flex-shrink-0"
+                                    className="text-emerald-400 hover:text-emerald-300 flex-shrink-0"
                                   >
-                                    <Check size={12} />
+                                    <Check size={11} />
                                   </button>
                                 </div>
                               ) : (
-                                <p className="text-xs truncate leading-snug">{session.title}</p>
+                                <p className="text-[11px] truncate leading-snug">{session.title}</p>
                               )}
                             </div>
                             {editingId !== session.id && (
@@ -316,21 +317,21 @@ export default function Sidebar({
                                     setEditingId(session.id);
                                     setEditTitle(session.title);
                                   }}
-                                  className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all"
+                                  className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all"
                                   style={{ color: "var(--text-muted)" }}
                                   title="Rename"
                                 >
-                                  <Pencil size={11} />
+                                  <Pencil size={10} />
                                 </button>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     onDeleteSession(session.id);
                                   }}
-                                  className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all text-red-400/60 hover:text-red-400"
+                                  className="w-5 h-5 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all text-red-400/60 hover:text-red-400"
                                   title="Delete"
                                 >
-                                  <Trash2 size={11} />
+                                  <Trash2 size={10} />
                                 </button>
                               </div>
                             )}
@@ -345,19 +346,19 @@ export default function Sidebar({
           </div>
 
           {/* User Profile */}
-          <div className="flex-shrink-0 px-3 py-3" style={{ borderTop: "1px solid var(--border)" }}>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white text-xs font-bold" style={{ background: "var(--accent)" }}>
+          <div className="flex-shrink-0 px-3 py-2.5" style={{ borderTop: "1px solid var(--border)" }}>
+            <div className="flex items-center gap-2.5 px-1">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[10px] font-bold" style={{ background: "var(--accent)" }}>
                 S
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate leading-tight" style={{ color: "var(--text-primary)" }}>Saqib Nawaz</p>
-                <p className="text-[10px] leading-tight" style={{ color: "var(--text-muted)" }}>Pro User</p>
+                <p className="text-[12px] font-medium truncate leading-tight" style={{ color: "var(--text-primary)" }}>Saqib Nawaz</p>
+                <p className="text-[9px] leading-tight" style={{ color: "var(--text-dim)" }}>Pro User</p>
               </div>
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 }
