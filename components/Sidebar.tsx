@@ -168,14 +168,17 @@ export default function Sidebar({
 
           {/* New Chat + Search */}
           <div className="px-3 pt-3 space-y-2 flex-shrink-0">
-            <button
+            <motion.button
               onClick={onNewChat}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-white text-[13px] font-medium rounded-xl transition-all hover:opacity-90 active:scale-[0.97]"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-white text-[13px] font-semibold rounded-xl transition-all relative overflow-hidden"
               style={{ background: "var(--accent)", boxShadow: "var(--shadow-glow)" }}
+              whileHover={{ scale: 1.02, boxShadow: "0 0 24px var(--accent-glow)" }}
+              whileTap={{ scale: 0.96 }}
             >
-              <Plus size={15} />
-              New Chat
-            </button>
+              <div className="absolute inset-0 animate-shimmer" />
+              <Plus size={15} className="relative z-10" />
+              <span className="relative z-10">New Chat</span>
+            </motion.button>
 
             <button
               onClick={onOpenCommandPalette}
