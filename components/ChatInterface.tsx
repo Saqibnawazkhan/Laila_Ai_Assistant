@@ -749,9 +749,10 @@ export default function ChatInterface() {
                       <motion.button
                         key={card.label}
                         onClick={() => sendMessage(card.suggestion)}
-                        className="group relative rounded-2xl p-4 text-left transition-all hover:scale-[1.03] active:scale-[0.97]"
+                        className="group relative rounded-2xl p-4 text-left transition-all active:scale-[0.97]"
                         style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                        whileHover={{ borderColor: "var(--accent)" }}
+                        whileHover={{ scale: 1.04, borderColor: "var(--accent)", boxShadow: "0 4px 20px var(--accent-glow)" }}
+                        whileTap={{ scale: 0.97 }}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.35 + i * 0.05 }}
