@@ -794,19 +794,29 @@ export default function ChatInterface() {
                   <motion.div
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex pl-10 pt-2"
+                    className="flex items-center gap-2 pl-10 pt-2"
                   >
-                    <button
+                    <motion.button
                       onClick={() => {
                         const msg = lastFailedMessage;
                         setLastFailedMessage(null);
                         setMessages((prev) => prev.slice(0, -1));
                         sendMessage(msg);
                       }}
-                      className="flex items-center gap-2 px-3.5 py-1.5 text-xs rounded-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"
+                      className="flex items-center gap-2 px-3.5 py-1.5 text-[11px] rounded-full bg-red-500/10 border border-red-500/20 text-red-400 transition-all"
+                      whileHover={{ scale: 1.03, backgroundColor: "rgba(239,68,68,0.15)" }}
+                      whileTap={{ scale: 0.97 }}
                     >
-                      <RefreshCw size={12} /> Retry message
-                    </button>
+                      <motion.span
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="flex-shrink-0"
+                      >
+                        <RefreshCw size={11} />
+                      </motion.span>
+                      Retry
+                    </motion.button>
+                    <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>Something went wrong</span>
                   </motion.div>
                 )}
 
