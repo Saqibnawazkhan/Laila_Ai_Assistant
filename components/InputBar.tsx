@@ -20,6 +20,7 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,15 +95,21 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
     <div className="flex-shrink-0 safe-area-bottom px-3 sm:px-6 pb-2 pt-2">
       <div className="max-w-3xl mx-auto">
         <div
-          className="relative rounded-2xl overflow-hidden transition-all"
+          className="relative rounded-2xl overflow-hidden transition-all duration-200"
           style={{
             background: "var(--surface)",
             border: isListening
               ? "1px solid rgba(239, 68, 68, 0.3)"
               : input.length > MAX_CHARS
                 ? "1px solid rgba(239, 68, 68, 0.3)"
-                : "1px solid var(--border)",
-            boxShadow: canSend ? "var(--shadow-glow)" : "var(--shadow-sm)",
+                : isFocused
+                  ? "1px solid var(--accent)"
+                  : "1px solid var(--border)",
+            boxShadow: canSend
+              ? "var(--shadow-glow)"
+              : isFocused
+                ? "0 0 0 3px var(--accent-soft), var(--shadow-sm)"
+                : "var(--shadow-sm)",
           }}
         >
           {/* Textarea / Listening */}
@@ -131,6 +138,8 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 placeholder="Message Laila..."
                 disabled={disabled}
                 rows={1}
