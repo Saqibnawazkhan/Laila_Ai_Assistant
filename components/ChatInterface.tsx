@@ -680,65 +680,74 @@ export default function ChatInterface() {
                 transition={{ duration: 0.6 }}
                 className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)]"
               >
-                {/* Logo Icon */}
+                {/* Animated logo with glow */}
                 <motion.div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl shadow-black/10 mb-8"
-                  style={{ background: "var(--logo-bg)" }}
-                  initial={{ scale: 0.8, opacity: 0 }}
+                  className="relative mb-10"
+                  initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
+                  transition={{ duration: 0.5, delay: 0.1, type: "spring", stiffness: 200 }}
                 >
-                  <Sparkles size={28} style={{ color: "var(--logo-icon)" }} />
+                  <div className="absolute inset-0 rounded-3xl blur-xl opacity-40" style={{ background: "var(--logo-bg-solid)" }} />
+                  <div className="relative w-20 h-20 rounded-3xl flex items-center justify-center" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
+                    <Sparkles size={32} style={{ color: "var(--logo-icon)" }} />
+                  </div>
                 </motion.div>
 
-                {/* Greeting */}
+                {/* Greeting text */}
                 <motion.p
-                  className="text-lg sm:text-xl font-medium mb-2 text-center"
-                  style={{ color: "var(--text-secondary)" }}
+                  className="text-sm font-medium mb-1 text-center tracking-wide uppercase"
+                  style={{ color: "var(--accent)" }}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  Hi, Saqib
+                  Welcome back, Saqib
                 </motion.p>
                 <motion.h1
-                  className="text-2xl sm:text-[32px] font-bold mb-4 text-center leading-tight"
+                  className="text-3xl sm:text-4xl font-bold mb-3 text-center leading-tight tracking-tight"
                   style={{ color: "var(--text-primary)" }}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.25 }}
                 >
-                  Can I help you with anything?
+                  How can I help today?
                 </motion.h1>
                 <motion.p
-                  className="text-sm text-center max-w-md leading-relaxed mb-10"
+                  className="text-sm text-center max-w-sm leading-relaxed mb-12"
                   style={{ color: "var(--text-muted)" }}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  Ready to assist you with anything you need? From answering questions, controlling your system, to playing music. Let&apos;s get started!
+                  Ask me anything — chat, control your system, play music, or manage tasks.
                 </motion.p>
 
-                {/* Feature cards */}
+                {/* Feature cards grid */}
                 <motion.div
-                  className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl"
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full max-w-2xl"
                   initial={{ y: 15, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.35 }}
                 >
-                  {featureCards.map((card) => {
+                  {featureCards.map((card, i) => {
                     const Icon = card.icon;
                     return (
-                      <button
+                      <motion.button
                         key={card.label}
                         onClick={() => sendMessage(card.suggestion)}
-                        className="group glass glass-hover rounded-xl p-4 text-left hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="group relative rounded-2xl p-4 text-left transition-all hover:scale-[1.03] active:scale-[0.97]"
+                        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                        whileHover={{ borderColor: "var(--accent)" }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.35 + i * 0.05 }}
                       >
-                        <Icon size={20} className="text-indigo-400 mb-2.5" />
-                        <p className="text-[13px] font-medium leading-tight" style={{ color: "var(--text-primary)" }}>{card.label}</p>
-                        <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>{card.desc}</p>
-                      </button>
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style={{ background: "var(--accent-soft)" }}>
+                          <Icon size={18} style={{ color: "var(--accent)" }} />
+                        </div>
+                        <p className="text-[13px] font-semibold leading-tight mb-0.5" style={{ color: "var(--text-primary)" }}>{card.label}</p>
+                        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{card.desc}</p>
+                      </motion.button>
                     );
                   })}
                 </motion.div>
