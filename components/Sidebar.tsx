@@ -348,12 +348,18 @@ export default function Sidebar({
           {/* User Profile */}
           <div className="flex-shrink-0 px-3 py-2.5" style={{ borderTop: "1px solid var(--border)" }}>
             <div className="flex items-center gap-2.5 px-1">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[10px] font-bold" style={{ background: "var(--accent)" }}>
-                S
+              <div className="relative flex-shrink-0">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style={{ background: "var(--accent)" }}>
+                  S
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2" style={{ ringColor: "var(--background-secondary)" }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-medium truncate leading-tight" style={{ color: "var(--text-primary)" }}>Saqib Nawaz</p>
-                <p className="text-[9px] leading-tight" style={{ color: "var(--text-dim)" }}>Pro User</p>
+                <p className="text-[9px] leading-tight flex items-center gap-1" style={{ color: "var(--text-dim)" }}>
+                  <span className="w-1 h-1 rounded-full bg-emerald-400 inline-block" />
+                  Online
+                </p>
               </div>
             </div>
           </div>
