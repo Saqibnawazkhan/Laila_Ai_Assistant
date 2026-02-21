@@ -20,11 +20,13 @@ interface CommandPaletteProps {
 
 export default function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setQuery("");
+      setSelectedIndex(0);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
@@ -33,9 +35,20 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
     cmd.label.toLowerCase().includes(query.toLowerCase())
   );
 
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [query]);
+
   const handleSelect = (cmd: CommandItem) => {
     cmd.action();
     onClose();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") { onClose(); return; }
+    if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1)); }
+    if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIndex((i) => Math.max(i - 1, 0)); }
+    if (e.key === "Enter" && filtered.length > 0) { handleSelect(filtered[selectedIndex]); }
   };
 
   return (
@@ -51,7 +64,7 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
             onClick={onClose}
           />
           <motion.div
-            className="fixed z-[71] top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg mx-auto px-4"
+            className="fixed z-[71] top-[18%] left-1/2 -translate-x-1/2 w-full max-w-lg mx-auto px-4"
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -59,46 +72,61 @@ export default function CommandPalette({ isOpen, onClose, commands }: CommandPal
           >
             <div
               className="rounded-2xl shadow-2xl overflow-hidden"
-              style={{ background: "var(--background)", border: "1px solid var(--border)" }}
+              style={{ background: "var(--background)", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
             >
-              {/* Search input */}
+              {/* Search */}
               <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid var(--border)" }}>
-                <Search size={16} className="flex-shrink-0" style={{ color: "var(--text-muted)" }} />
+                <Search size={15} className="flex-shrink-0" style={{ color: "var(--text-muted)" }} />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Type a command..."
-                  className="flex-1 bg-transparent text-sm focus:outline-none"
+                  placeholder="Search commands..."
+                  className="flex-1 bg-transparent text-[13px] focus:outline-none"
                   style={{ color: "var(--foreground)" }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Escape") onClose();
-                    if (e.key === "Enter" && filtered.length > 0) handleSelect(filtered[0]);
-                  }}
+                  onKeyDown={handleKeyDown}
                 />
-                <kbd className="px-1.5 py-0.5 text-[10px] font-mono rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>Esc</kbd>
+                <kbd className="px-1.5 py-0.5 text-[9px] font-mono rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>Esc</kbd>
               </div>
 
               {/* Results */}
-              <div className="max-h-64 overflow-y-auto py-2">
+              <div className="max-h-72 overflow-y-auto py-1.5">
                 {filtered.length === 0 ? (
-                  <p className="text-center text-sm py-6" style={{ color: "var(--text-muted)" }}>No commands found</p>
+                  <p className="text-center text-[13px] py-8" style={{ color: "var(--text-muted)" }}>No commands found</p>
                 ) : (
-                  filtered.map((cmd) => (
+                  filtered.map((cmd, i) => (
                     <button
                       key={cmd.id}
                       onClick={() => handleSelect(cmd)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--surface-hover)] transition-colors"
-                      style={{ color: "var(--text-secondary)" }}
+                      onMouseEnter={() => setSelectedIndex(i)}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors ${
+                        i === selectedIndex ? "bg-[var(--surface-hover)]" : ""
+                      }`}
+                      style={{ color: i === selectedIndex ? "var(--foreground)" : "var(--text-secondary)" }}
                     >
-                      <span style={{ color: "var(--text-muted)" }}>{cmd.icon}</span>
+                      <span style={{ color: i === selectedIndex ? "var(--accent)" : "var(--text-muted)" }}>{cmd.icon}</span>
                       <span className="flex-1 text-left">{cmd.label}</span>
                       {cmd.shortcut && (
-                        <kbd className="px-1.5 py-0.5 text-[10px] font-mono rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>{cmd.shortcut}</kbd>
+                        <kbd className="px-1.5 py-0.5 text-[9px] font-mono rounded" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>{cmd.shortcut}</kbd>
+                      )}
+                      {i === selectedIndex && (
+                        <span className="text-[9px]" style={{ color: "var(--text-dim)" }}>Enter</span>
                       )}
                     </button>
                   ))
                 )}
+              </div>
+
+              {/* Footer hints */}
+              <div className="flex items-center gap-4 px-4 py-2" style={{ borderTop: "1px solid var(--border)" }}>
+                <span className="flex items-center gap-1 text-[9px]" style={{ color: "var(--text-dim)" }}>
+                  <kbd className="px-1 py-0.5 rounded font-mono" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>↑↓</kbd>
+                  Navigate
+                </span>
+                <span className="flex items-center gap-1 text-[9px]" style={{ color: "var(--text-dim)" }}>
+                  <kbd className="px-1 py-0.5 rounded font-mono" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>↵</kbd>
+                  Select
+                </span>
               </div>
             </div>
           </motion.div>
