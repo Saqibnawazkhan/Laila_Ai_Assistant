@@ -870,8 +870,16 @@ export default function ChatInterface() {
         <InputBar onSend={sendMessage} disabled={isLoading} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} onMicStart={() => wakeWordRef.current?.pause()} onMicStop={() => wakeWordRef.current?.resume()} />
 
         {/* Footer */}
-        <div className="text-center py-2 flex-shrink-0">
-          <p className="text-[11px]" style={{ color: "var(--text-dim)" }}>Laila AI may contain errors. We recommend checking important information.</p>
+        <div className="flex items-center justify-center gap-3 py-1.5 flex-shrink-0">
+          <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>Laila may make mistakes</p>
+          <span className="text-[10px]" style={{ color: "var(--border)" }}>|</span>
+          <button
+            onClick={() => setShowShortcuts(true)}
+            className="text-[10px] hover:underline transition-all"
+            style={{ color: "var(--text-dim)" }}
+          >
+            ⌘? Shortcuts
+          </button>
         </div>
       </main>
     </div>
