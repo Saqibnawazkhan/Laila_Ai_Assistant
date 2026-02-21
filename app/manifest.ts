@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Your personal AI assistant with voice control, system commands, and task management",
     start_url: "/",
     display: "standalone",
-    background_color: "#030712",
-    theme_color: "#7c3aed",
+    background_color: "#0a0a0f",
+    theme_color: "#8b5cf6",
     orientation: "portrait-primary",
     categories: ["productivity", "utilities"],
     icons: [
