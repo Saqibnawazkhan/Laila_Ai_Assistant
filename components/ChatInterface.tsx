@@ -703,7 +703,8 @@ export default function ChatInterface() {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.1, type: "spring", stiffness: 200 }}
                 >
-                  <div className="absolute inset-0 rounded-3xl blur-xl opacity-40" style={{ background: "var(--logo-bg-solid)" }} />
+                  <div className="absolute inset-[-8px] rounded-[28px] animate-spin-slow opacity-30" style={{ background: "conic-gradient(from 0deg, var(--accent), transparent, var(--accent))" }} />
+                  <div className="absolute inset-0 rounded-3xl blur-2xl opacity-30" style={{ background: "var(--logo-bg-solid)" }} />
                   <div className="relative w-20 h-20 rounded-3xl flex items-center justify-center" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
                     <Sparkles size={32} style={{ color: "var(--logo-icon)" }} />
                   </div>
