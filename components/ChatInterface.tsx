@@ -586,16 +586,26 @@ export default function ChatInterface() {
 
           {/* Center status pill */}
           <div className="absolute left-1/2 -translate-x-1/2">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px]" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : ""}`} style={wakeWordListening ? {} : { background: "var(--text-dim)" }} />
+            <motion.div
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px]"
+              style={{
+                background: "var(--surface)",
+                border: avatarStatus !== "idle" ? "1px solid var(--accent)" : "1px solid var(--border)",
+                color: "var(--text-muted)",
+                boxShadow: avatarStatus !== "idle" ? "0 0 12px var(--accent-glow)" : "none",
+              }}
+              animate={avatarStatus !== "idle" ? { scale: [1, 1.02, 1] } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : ""}`} style={wakeWordListening ? {} : avatarStatus !== "idle" ? { background: "var(--accent)" } : { background: "var(--text-dim)" }} />
               <span className="hidden sm:inline whitespace-nowrap">
                 {avatarStatus === "thinking" ? (
-                  <span className="text-violet-400 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-violet-400 animate-pulse" />Thinking...</span>
+                  <span style={{ color: "var(--accent)" }} className="flex items-center gap-1"><span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "var(--accent)" }} />Thinking...</span>
                 ) : avatarStatus === "talking" ? (
-                  <span className="text-violet-400 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-violet-400 animate-pulse" />Speaking...</span>
+                  <span style={{ color: "var(--accent)" }} className="flex items-center gap-1"><span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "var(--accent)" }} />Speaking...</span>
                 ) : wakeWordListening ? 'Listening...' : 'Say "Laila"'}
               </span>
-            </div>
+            </motion.div>
           </div>
 
           {/* Right: Actions */}
