@@ -33,34 +33,39 @@ export default function ConfirmDialog({
             onClick={onCancel}
           />
           <motion.div
-            className="fixed z-[61] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm mx-auto"
+            className="fixed z-[61] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[360px] mx-auto px-4"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <div
-              className="rounded-2xl p-6 shadow-2xl mx-4"
-              style={{ background: "var(--background)", border: "1px solid var(--border)" }}
+              className="rounded-2xl overflow-hidden"
+              style={{ background: "var(--background)", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle size={20} className="text-red-400" />
+              {/* Danger header */}
+              <div className="px-5 pt-5 pb-3 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle size={18} className="text-red-400" />
                 </div>
-                <h3 className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>{title}</h3>
+                <div>
+                  <h3 className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>{title}</h3>
+                  <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{message}</p>
+                </div>
               </div>
-              <p className="text-sm mb-6 ml-[52px]" style={{ color: "var(--text-secondary)" }}>{message}</p>
-              <div className="flex gap-3 justify-end">
+
+              {/* Actions */}
+              <div className="flex gap-2.5 px-5 pb-5 pt-2">
                 <button
                   onClick={onCancel}
-                  className="px-4 py-2 text-sm rounded-xl hover:bg-[var(--surface-hover)] transition-colors"
+                  className="flex-1 px-4 py-2.5 text-[13px] font-medium rounded-xl hover:bg-[var(--surface-hover)] transition-colors"
                   style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={onConfirm}
-                  className="px-4 py-2 text-sm rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors"
+                  className="flex-1 px-4 py-2.5 text-[13px] font-medium rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors"
                 >
                   {confirmLabel}
                 </button>
