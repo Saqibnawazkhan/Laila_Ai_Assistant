@@ -566,7 +566,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Floating Glass Header */}
-        <header className="flex items-center justify-between mx-3 sm:mx-4 mt-2 px-4 sm:px-5 h-12 flex-shrink-0 relative z-10 rounded-2xl glass" style={{ boxShadow: "var(--shadow-sm)" }}>
+        <header className="flex items-center justify-between mx-3 sm:mx-4 mt-2 px-4 sm:px-5 h-12 flex-shrink-0 relative z-10 rounded-2xl glass-strong" style={{ boxShadow: "var(--shadow-sm)" }}>
           {/* Left: Logo + Name */}
           <div className="flex items-center gap-2.5">
             <button
