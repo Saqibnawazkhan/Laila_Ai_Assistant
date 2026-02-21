@@ -838,8 +838,22 @@ export default function ChatInterface() {
 
           <AnimatePresence>
             {showScrollBtn && (
-              <motion.button initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} onClick={scrollToBottom} className="sticky bottom-4 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-[var(--surface-hover)] transition-colors z-10 mx-auto" style={{ background: "var(--background)", border: "1px solid var(--border)", color: "var(--icon-secondary)" }}>
-                <ChevronDown size={18} />
+              <motion.button
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                onClick={scrollToBottom}
+                className="sticky bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center z-10 mx-auto group"
+                style={{ background: "var(--surface)", border: "1px solid var(--border-light)", color: "var(--accent)", boxShadow: "var(--shadow-md)" }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
+                {messages.length > 5 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-[8px] rounded-full flex items-center justify-center text-white font-bold" style={{ background: "var(--accent)" }}>
+                    {messages.length}
+                  </span>
+                )}
               </motion.button>
             )}
           </AnimatePresence>
