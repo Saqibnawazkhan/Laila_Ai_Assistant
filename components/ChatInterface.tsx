@@ -775,10 +775,10 @@ export default function ChatInterface() {
                       return (
                         <div key={index}>
                           {showDateSep && (
-                            <div className="flex items-center gap-3 my-5">
-                              <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-                              <span className="text-[10px] font-medium px-2" style={{ color: "var(--text-dim)" }}>{showDateSep}</span>
-                              <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+                            <div className="flex items-center gap-3 my-6">
+                              <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, var(--border))" }} />
+                              <span className="text-[9px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-dim)" }}>{showDateSep}</span>
+                              <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, var(--border))" }} />
                             </div>
                           )}
                           <MessageBubble role={msg.role} content={msg.content} timestamp={msg.timestamp} isLatest={index === messages.length - 1} isGrouped={isGrouped} />
