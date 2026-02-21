@@ -188,13 +188,14 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
             <motion.button
               onClick={handleSend}
               disabled={!canSend}
-              className="w-8 h-8 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
+              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
               style={{
-                background: canSend ? "var(--accent)" : "var(--surface-hover)",
+                background: canSend ? "linear-gradient(135deg, var(--accent), var(--accent-hover))" : "var(--surface-hover)",
                 color: canSend ? "#ffffff" : "var(--icon-default)",
+                boxShadow: canSend ? "0 2px 12px var(--accent-glow)" : "none",
               }}
-              whileTap={canSend ? { scale: 0.85 } : {}}
-              whileHover={canSend ? { scale: 1.05 } : {}}
+              whileTap={canSend ? { scale: 0.82 } : {}}
+              whileHover={canSend ? { scale: 1.08 } : {}}
             >
               <AnimatePresence mode="wait">
                 {isSending ? (
