@@ -208,27 +208,33 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
             <motion.div
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-0.5 mt-1.5"
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-px mt-1.5 p-0.5 rounded-xl w-fit"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1 px-2 py-1 text-[10px] rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
-                style={{ color: "var(--text-muted)" }}
+                className="flex items-center gap-1 px-2.5 py-1 text-[10px] rounded-lg transition-all hover:bg-[var(--surface-hover)]"
+                style={{ color: copied ? "var(--success)" : "var(--text-muted)" }}
+                title="Copy to clipboard"
               >
-                {copied ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} />}
+                {copied ? <Check size={10} /> : <Copy size={10} />}
                 {copied ? "Copied" : "Copy"}
               </button>
+              <div className="w-px h-3" style={{ background: "var(--border)" }} />
               <button
-                className="p-1 rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
+                className="p-1.5 rounded-lg transition-all hover:bg-[var(--surface-hover)] hover:text-emerald-400"
                 style={{ color: "var(--text-dim)" }}
                 onClick={() => showToast("Thanks for the feedback!", "success")}
+                title="Good response"
               >
                 <ThumbsUp size={11} />
               </button>
               <button
-                className="p-1 rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
+                className="p-1.5 rounded-lg transition-all hover:bg-[var(--surface-hover)] hover:text-red-400"
                 style={{ color: "var(--text-dim)" }}
                 onClick={() => showToast("Feedback noted!", "info")}
+                title="Bad response"
               >
                 <ThumbsDown size={11} />
               </button>
