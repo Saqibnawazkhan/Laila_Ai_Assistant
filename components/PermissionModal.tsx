@@ -59,9 +59,19 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
         <motion.div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: "var(--overlay-bg)" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <motion.div className="w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden" style={{ background: "var(--background)", border: "1px solid var(--border)" }} initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} transition={{ type: "spring", damping: 20 }}>
             <div className="flex items-center justify-between px-6 pt-5 pb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="text-indigo-400" size={20} />
-                <h3 className="font-semibold" style={{ color: "var(--text-primary)" }}>Permission Request</h3>
+              <div className="flex items-center gap-2.5">
+                <motion.div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center"
+                  style={{ background: "var(--accent-soft)" }}
+                  animate={{ rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <Shield size={16} style={{ color: "var(--accent)" }} />
+                </motion.div>
+                <div>
+                  <h3 className="font-semibold text-[15px]" style={{ color: "var(--text-primary)" }}>Permission Request</h3>
+                  <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>Step 1{isHighRisk ? " of 3" : ""}</p>
+                </div>
               </div>
               <button onClick={handleDeny} className="hover:bg-[var(--surface-hover)] w-7 h-7 rounded-lg flex items-center justify-center transition-colors" style={{ color: "var(--text-muted)" }}><X size={18} /></button>
             </div>
