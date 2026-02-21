@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Sparkles } from "lucide-react";
+import { Copy, Check, Sparkles, ThumbsUp, ThumbsDown } from "lucide-react";
 import { showToast } from "./Toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -60,53 +60,45 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
     ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
     : "";
 
-  // --- USER MESSAGE (right side) ---
+  // --- USER MESSAGE ---
   if (!isLaila) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-        className={`flex justify-end ${isGrouped ? "mt-1" : "mt-4 first:mt-0"} group`}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className={`flex justify-end ${isGrouped ? "mt-0.5" : "mt-5 first:mt-0"} group`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         <div className="max-w-[80%] sm:max-w-[70%]">
-          {/* Timestamp */}
           {!isGrouped && timeStr && (
-            <div className="flex justify-end mb-1">
+            <div className="flex justify-end mb-1 mr-1">
               <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>{timeStr}</span>
             </div>
           )}
 
-          {/* Bubble */}
           <div className="relative">
             <div
-              className="px-4 py-2.5 rounded-2xl rounded-br-md text-white text-sm leading-relaxed"
-              style={{ background: "var(--user-bubble)" }}
+              className="px-4 py-2.5 rounded-2xl rounded-br-sm text-white text-[14px] leading-relaxed"
+              style={{ background: "var(--user-bubble-solid)", boxShadow: "var(--shadow-sm)" }}
               onDoubleClick={() => {
                 navigator.clipboard.writeText(content);
-                showToast("Message copied!", "success");
+                showToast("Copied!", "success");
               }}
             >
               {content}
             </div>
 
-            {/* Copy on hover */}
             {hovered && (
               <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={handleCopy}
-                className="absolute -top-1 -left-1 w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-colors"
-                style={{ background: "var(--background)", border: "1px solid var(--border)" }}
-                title="Copy message"
+                className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg flex items-center justify-center transition-colors"
+                style={{ background: "var(--background)", border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
               >
-                {copied ? (
-                  <Check size={11} className="text-emerald-400" />
-                ) : (
-                  <Copy size={11} style={{ color: "var(--text-muted)" }} />
-                )}
+                {copied ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} style={{ color: "var(--text-muted)" }} />}
               </motion.button>
             )}
           </div>
@@ -115,49 +107,47 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
     );
   }
 
-  // --- ASSISTANT MESSAGE (left side) ---
+  // --- ASSISTANT MESSAGE ---
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`flex gap-2.5 ${isGrouped ? "mt-1" : "mt-4 first:mt-0"} group`}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`flex gap-3 ${isGrouped ? "mt-0.5" : "mt-5 first:mt-0"} group`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Avatar */}
       {!isGrouped ? (
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10" style={{ background: "var(--logo-bg)" }}>
-          <Sparkles size={13} style={{ color: "var(--logo-icon)" }} />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-sm)" }}>
+          <Sparkles size={12} style={{ color: "var(--logo-icon)" }} />
         </div>
       ) : (
         <div className="w-7 flex-shrink-0" />
       )}
 
       {/* Content */}
-      <div className="flex-1 min-w-0 max-w-[85%]">
-        {/* Name + time */}
+      <div className="flex-1 min-w-0 max-w-[88%]">
         {!isGrouped && (
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-indigo-400">Laila</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Laila</span>
             {timeStr && <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>{timeStr}</span>}
           </div>
         )}
 
-        {/* Message body */}
         <div
           className="relative"
           onDoubleClick={() => {
             navigator.clipboard.writeText(content);
-            showToast("Message copied!", "success");
+            showToast("Copied!", "success");
           }}
         >
           <div
-            className={`text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-pre:rounded-xl prose-a:text-indigo-400 prose-blockquote:border-indigo-500/30 ${
+            className={`text-[14px] leading-[1.7] prose prose-sm max-w-none prose-p:my-1.5 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-3 prose-pre:rounded-xl prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-violet-500/30 ${
               theme === "dark"
-                ? "prose-invert prose-code:text-indigo-300 prose-code:bg-black/20 prose-strong:text-white prose-blockquote:text-[#8b8fa3]"
-                : "prose-code:text-indigo-600 prose-code:bg-indigo-50 prose-strong:text-gray-900 prose-blockquote:text-gray-500"
-            } prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none`}
+                ? "prose-invert prose-code:text-violet-300 prose-code:bg-white/5 prose-strong:text-white prose-blockquote:text-[#8b8fa3]"
+                : "prose-code:text-violet-600 prose-code:bg-violet-50 prose-strong:text-gray-900 prose-blockquote:text-gray-500"
+            } prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[12px] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none`}
             style={{ color: "var(--assistant-text)" }}
           >
             <ReactMarkdown
@@ -165,22 +155,29 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
               components={{
                 pre: (props) => {
                   const ref = React.useRef<HTMLPreElement>(null);
+                  const [codeCopied, setCodeCopied] = React.useState(false);
                   return (
-                    <div className="relative group/code">
-                      <button
-                        onClick={() => {
-                          const text = ref.current?.textContent;
-                          if (text) {
-                            navigator.clipboard.writeText(text);
-                            showToast("Code copied!", "success");
-                          }
-                        }}
-                        className="absolute top-2 right-2 px-2 py-1 text-[10px] rounded-md hover:text-white transition-all opacity-0 group-hover/code:opacity-100"
-                        style={{ background: "var(--surface)", color: "var(--text-muted)" }}
-                      >
-                        Copy
-                      </button>
-                      <pre ref={ref} style={{ background: "var(--code-bg)", border: `1px solid var(--code-border)` }}>{props.children}</pre>
+                    <div className="relative group/code rounded-xl overflow-hidden" style={{ border: "1px solid var(--code-border)" }}>
+                      {/* Code header */}
+                      <div className="flex items-center justify-between px-4 py-2" style={{ background: "var(--code-bg)", borderBottom: "1px solid var(--code-border)" }}>
+                        <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Code</span>
+                        <button
+                          onClick={() => {
+                            const text = ref.current?.textContent;
+                            if (text) {
+                              navigator.clipboard.writeText(text);
+                              setCodeCopied(true);
+                              showToast("Code copied!", "success");
+                              setTimeout(() => setCodeCopied(false), 2000);
+                            }
+                          }}
+                          className="flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-md transition-all hover:bg-white/5"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {codeCopied ? <><Check size={10} className="text-emerald-400" /> Copied</> : <><Copy size={10} /> Copy</>}
+                        </button>
+                      </div>
+                      <pre ref={ref} className="!my-0 !rounded-none" style={{ background: "var(--code-bg)" }}>{props.children}</pre>
                     </div>
                   );
                 },
@@ -190,29 +187,44 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
             </ReactMarkdown>
             {isTyping && (
               <motion.span
-                className="inline-block w-0.5 h-4 bg-indigo-400 ml-0.5 align-middle"
+                className="inline-block w-0.5 h-4 ml-0.5 align-middle rounded-full"
+                style={{ background: "var(--accent)" }}
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               />
             )}
           </div>
 
-          {/* Copy button on hover */}
+          {/* Action buttons on hover */}
           {hovered && !isTyping && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              onClick={handleCopy}
-              className="absolute -top-1 -right-1 w-6 h-6 rounded-md flex items-center justify-center hover:bg-[var(--surface-hover)] transition-colors"
-              style={{ background: "var(--background)", border: "1px solid var(--border)" }}
-              title="Copy message"
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-0.5 mt-1.5"
             >
-              {copied ? (
-                <Check size={11} className="text-emerald-400" />
-              ) : (
-                <Copy size={11} style={{ color: "var(--text-muted)" }} />
-              )}
-            </motion.button>
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1 px-2 py-1 text-[10px] rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {copied ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} />}
+                {copied ? "Copied" : "Copy"}
+              </button>
+              <button
+                className="p-1 rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
+                style={{ color: "var(--text-dim)" }}
+                onClick={() => showToast("Thanks for the feedback!", "success")}
+              >
+                <ThumbsUp size={11} />
+              </button>
+              <button
+                className="p-1 rounded-lg transition-colors hover:bg-[var(--surface-hover)]"
+                style={{ color: "var(--text-dim)" }}
+                onClick={() => showToast("Feedback noted!", "info")}
+              >
+                <ThumbsDown size={11} />
+              </button>
+            </motion.div>
           )}
         </div>
       </div>
