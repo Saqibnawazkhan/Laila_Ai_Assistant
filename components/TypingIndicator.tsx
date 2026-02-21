@@ -28,30 +28,32 @@ export default function TypingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       className="flex gap-3 mt-5"
     >
-      {/* Avatar */}
-      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm shadow-black/10" style={{ background: "var(--logo-bg)" }}>
-        <Sparkles size={14} style={{ color: "var(--logo-icon)" }} />
+      {/* Animated avatar */}
+      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse-glow" style={{ background: "var(--logo-bg-solid)" }}>
+        <Sparkles size={12} style={{ color: "var(--logo-icon)" }} />
       </div>
 
-      {/* Content */}
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold text-indigo-400">Laila</span>
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Laila</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+          {/* Wave dots */}
+          <div className="flex gap-[3px] items-center">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-1.5 h-1.5 rounded-full bg-indigo-400"
+                className="w-[5px] h-[5px] rounded-full"
+                style={{ background: "var(--accent)" }}
                 animate={{
-                  y: [0, -5, 0],
-                  opacity: [0.4, 1, 0.4],
+                  y: [0, -6, 0],
+                  opacity: [0.3, 1, 0.3],
+                  scale: [1, 1.2, 1],
                 }}
                 transition={{
-                  duration: 0.7,
+                  duration: 0.8,
                   repeat: Infinity,
-                  delay: i * 0.15,
+                  delay: i * 0.12,
                   ease: "easeInOut",
                 }}
               />
@@ -60,11 +62,11 @@ export default function TypingIndicator() {
           <AnimatePresence mode="wait">
             <motion.span
               key={msgIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 5 }}
               transition={{ duration: 0.2 }}
-              className="text-xs"
+              className="text-[12px]"
               style={{ color: "var(--text-muted)" }}
             >
               {thinkingMessages[msgIndex]}
