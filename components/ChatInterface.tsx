@@ -638,30 +638,35 @@ export default function ChatInterface() {
               className="overflow-hidden backdrop-blur-xl relative z-10 flex-shrink-0"
               style={{ background: "var(--background)", borderBottom: "1px solid var(--border)" }}
             >
-              <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
+              <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-2">
                 <div className="flex-1 relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--text-muted)" }} />
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--accent)" }} />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search messages..."
                     autoFocus
-                    className="w-full pl-9 pr-3 py-2 text-sm rounded-xl focus:outline-none focus:border-indigo-500/30 focus:ring-1 focus:ring-indigo-500/20"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                    className="w-full pl-9 pr-3 py-1.5 text-[13px] rounded-xl focus:outline-none"
+                    style={{ background: "var(--surface)", border: "1px solid var(--accent-soft)", color: "var(--foreground)", boxShadow: "0 0 0 2px var(--accent-soft)" }}
                   />
                 </div>
                 {searchQuery && (
-                  <span className="text-xs whitespace-nowrap" style={{ color: "var(--text-muted)" }}>
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-[11px] whitespace-nowrap px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+                  >
                     {messages.filter((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase())).length} found
-                  </span>
+                  </motion.span>
                 )}
                 <button
                   onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-[var(--surface-hover)] transition-all flex-shrink-0"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  <X size={16} />
+                  <X size={14} />
                 </button>
               </div>
             </motion.div>
