@@ -64,9 +64,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
   if (!isLaila) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
+        initial={{ opacity: 0, y: 10, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         className={`flex justify-end ${isGrouped ? "mt-0.5" : "mt-5 first:mt-0"} group`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
