@@ -559,10 +559,11 @@ export default function ChatInterface() {
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} allowedTypes={allowedTypes} onResetPermissions={handleResetPermissions} onClearChats={handleClearChats} messages={messages} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 relative" style={{ background: "var(--background)" }}>
+      <main className="flex-1 flex flex-col min-w-0 relative noise-bg" style={{ background: "var(--background)" }}>
         {/* Subtle radial gradient background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full opacity-30" style={{ background: "radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)" }} />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full opacity-25" style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 60%)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20" style={{ background: "radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.06) 0%, transparent 70%)" }} />
         </div>
 
         {/* Floating Glass Header */}
