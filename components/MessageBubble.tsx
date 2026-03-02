@@ -168,11 +168,11 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                   const langClass = codeEl?.props?.className || "";
                   const lang = langClass.replace("language-", "") || "code";
                   return (
-                    <div className="relative group/code rounded-xl overflow-hidden" style={{ border: "1px solid var(--code-border)" }}>
-                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "var(--code-bg)", borderBottom: "1px solid var(--code-border)" }}>
+                    <div className="relative group/code overflow-hidden" style={{ border: "1px solid rgba(0,255,136,0.20)", background: "rgba(0,255,136,0.02)", boxShadow: "0 0 16px rgba(0,255,136,0.04)" }}>
+                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "rgba(0,0,0,0.6)", borderBottom: "1px solid rgba(0,255,136,0.12)" }}>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />
-                          <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>{lang}</span>
+                          <span className="w-2 h-2" style={{ background: "#00ff88", boxShadow: "0 0 6px #00ff88" }} />
+                          <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: "#00ff88" }}>{lang}</span>
                         </div>
                         <button
                           onClick={() => {
