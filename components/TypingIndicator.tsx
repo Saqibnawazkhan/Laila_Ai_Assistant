@@ -40,8 +40,8 @@ export default function TypingIndicator() {
       </div>
 
       <div>
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Laila</span>
+        <div className="flex items-center gap-2 mb-1.5 font-mono">
+          <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#00e5ff", textShadow: "0 0 6px rgba(0,229,255,0.4)" }}>LAILA &gt;</span>
           {elapsed > 2 && (
             <motion.span
               initial={{ opacity: 0 }}
@@ -54,41 +54,16 @@ export default function TypingIndicator() {
             </motion.span>
           )}
         </div>
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-          {/* Wave dots */}
-          <div className="flex gap-[4px] items-center">
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="w-[6px] h-[6px] rounded-full"
-                style={{ background: "var(--accent)" }}
-                animate={{
-                  y: [0, -8, 0],
-                  opacity: [0.25, 1, 0.25],
-                  scale: [0.8, 1.3, 0.8],
-                }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: i * 0.15,
-                  ease: [0.45, 0, 0.55, 1],
-                }}
-              />
-            ))}
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={msgIndex}
-              initial={{ opacity: 0, x: -5 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 5 }}
-              transition={{ duration: 0.2 }}
-              className="text-[12px]"
-              style={{ color: "var(--text-muted)" }}
-            >
-              {thinkingMessages[msgIndex]}
-            </motion.span>
-          </AnimatePresence>
+        <div className="flex items-center gap-2 font-mono text-[13px]" style={{ color: "#4dbb88" }}>
+          <span>// processing</span>
+          <motion.span
+            style={{ color: "#00ff88", textShadow: "0 0 6px rgba(0,255,136,0.6)" }}
+            animate={{ opacity: [1, 0, 1] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+          >_</motion.span>
+          {elapsed > 2 && (
+            <span className="text-[10px]" style={{ color: "#1a3d2e" }}>[{elapsed}s]</span>
+          )}
         </div>
       </div>
     </motion.div>
