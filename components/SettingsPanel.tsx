@@ -95,27 +95,25 @@ export default function SettingsPanel({
           />
 
           <motion.div
-            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col"
-            style={{ background: "var(--background)", borderRight: "1px solid var(--border)" }}
+            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col font-mono"
+            style={{ background: "#000000", borderRight: "1px solid rgba(0,255,136,0.20)", boxShadow: "4px 0 30px rgba(0,255,136,0.06)" }}
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "var(--accent-soft)" }}>
-                  <Settings size={14} style={{ color: "var(--accent)" }} />
-                </div>
-                <h2 className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Settings</h2>
+            {/* Header — Terminal style */}
+            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(0,255,136,0.12)" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] tracking-widest uppercase" style={{ color: "#00ff88" }}>&#x25B6;</span>
+                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>[ CONFIG ]</h2>
               </div>
               <button
                 onClick={onClose}
-                className="hover:bg-[var(--surface-hover)] w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                style={{ color: "var(--text-muted)" }}
+                className="w-7 h-7 flex items-center justify-center transition-colors rounded"
+                style={{ color: "#2a6644", border: "1px solid rgba(0,255,136,0.15)" }}
               >
-                <X size={16} />
+                <X size={14} />
               </button>
             </div>
 
@@ -124,7 +122,7 @@ export default function SettingsPanel({
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Palette size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Appearance</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(0,255,136,0.5)" }}>Appearance</span>
                 </div>
                 <button
                   onClick={toggleTheme}
@@ -160,7 +158,7 @@ export default function SettingsPanel({
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Volume2 size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Voice</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(0,255,136,0.5)" }}>Voice</span>
                 </div>
                 <div className="space-y-2">
                   <button
@@ -243,7 +241,7 @@ export default function SettingsPanel({
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Shield size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Permissions</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(0,255,136,0.5)" }}>Permissions</span>
                 </div>
                 <div className="space-y-1.5">
                   {allowedTypes.size === 0 ? (
@@ -279,7 +277,7 @@ export default function SettingsPanel({
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
                 <div className="flex items-center gap-2 mb-2.5 px-1">
                   <Download size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Data</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(0,255,136,0.5)" }}>Data</span>
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex gap-2">
@@ -320,7 +318,7 @@ export default function SettingsPanel({
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                   <div className="flex items-center gap-2 mb-2.5 px-1">
                     <MessageSquare size={12} style={{ color: "var(--text-dim)" }} />
-                    <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-dim)" }}>Stats</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(0,255,136,0.5)" }}>Stats</span>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
                     {[
