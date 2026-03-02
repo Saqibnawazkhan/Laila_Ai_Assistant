@@ -81,7 +81,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
           <div className="relative">
             <div
               className="px-4 py-2.5 rounded-2xl rounded-br-sm text-white text-[14px] leading-relaxed"
-              style={{ background: "var(--user-bubble)", boxShadow: "0 2px 12px rgba(139, 92, 246, 0.25)" }}
+              style={{ background: "var(--user-bubble)", boxShadow: "0 2px 16px rgba(0, 255, 136, 0.25), 0 0 0 1px rgba(0,255,136,0.15)" }}
               onDoubleClick={() => {
                 navigator.clipboard.writeText(content);
                 showToast("Copied!", "success");
