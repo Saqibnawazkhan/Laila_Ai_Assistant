@@ -49,6 +49,12 @@ export default function BottomDock({ activeView, onViewChange, pendingTaskCount 
                 background: isActive ? "rgba(0,255,136,0.08)" : "transparent",
                 boxShadow: isActive ? "0 0 12px rgba(0,255,136,0.15)" : "none",
               }}
+              whileHover={{
+                scale: 1.12,
+                color: "#00ff88",
+                boxShadow: "0 0 16px rgba(0,255,136,0.20)",
+                background: "rgba(0,255,136,0.06)",
+              }}
               whileTap={{ scale: 0.9 }}
             >
               <Icon size={18} />
