@@ -557,10 +557,11 @@ export default function ChatInterface() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col w-full relative noise-bg" style={{ background: "var(--background)", paddingBottom: "80px" }}>
-        {/* Subtle radial gradient background */}
+        {/* Neon cyberpunk grid background */}
+        <div className="cyber-grid" />
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full opacity-25" style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 60%)" }} />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20" style={{ background: "radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.06) 0%, transparent 70%)" }} />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-20" style={{ background: "radial-gradient(circle, rgba(0, 255, 136, 0.05) 0%, transparent 60%)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-15" style={{ background: "radial-gradient(ellipse at bottom, rgba(0, 229, 255, 0.04) 0%, transparent 70%)" }} />
         </div>
 
         {/* Cyberpunk Header */}
