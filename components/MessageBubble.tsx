@@ -143,10 +143,10 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
           }}
         >
           <div
-            className={`text-[14px] leading-[1.7] prose prose-sm max-w-none prose-p:my-1.5 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-3 prose-pre:rounded-xl prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-violet-500/30 ${
+            className={`text-[13px] leading-[1.7] font-mono prose prose-sm max-w-none prose-p:my-1.5 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-3 prose-pre:rounded-none prose-a:no-underline hover:prose-a:underline prose-blockquote:border-emerald-500/30 ${
               theme === "dark"
-                ? "prose-invert prose-code:text-violet-300 prose-code:bg-white/5 prose-strong:text-white prose-blockquote:text-[#8b8fa3]"
-                : "prose-code:text-violet-600 prose-code:bg-violet-50 prose-strong:text-gray-900 prose-blockquote:text-gray-500"
+                ? "prose-invert prose-code:text-emerald-300 prose-code:bg-emerald-950/40 prose-strong:text-emerald-200 prose-a:text-cyan-400 prose-blockquote:text-[#4dbb88]"
+                : "prose-code:text-emerald-700 prose-code:bg-emerald-50 prose-strong:text-emerald-900 prose-a:text-cyan-700 prose-blockquote:text-emerald-600"
             } prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[12px] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none`}
             style={{ color: "var(--assistant-text)" }}
           >
