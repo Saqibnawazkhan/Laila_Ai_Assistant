@@ -43,14 +43,15 @@ export default function Avatar({ status }: AvatarProps) {
           }}
         />
 
-        {/* Rotating accent ring */}
+        {/* Hexagonal neon ring */}
         <motion.div
-          className="absolute -inset-1 rounded-full"
+          className="absolute -inset-2"
           style={{
-            background: "conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.5), transparent, rgba(0, 229, 255, 0.4), transparent)",
+            background: "conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.6), transparent, rgba(0, 229, 255, 0.5), transparent)",
+            clipPath: "polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)",
           }}
           animate={{ rotate: 360 }}
-          transition={{ duration: status === "thinking" ? 2 : 8, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: status === "thinking" ? 2 : 6, repeat: Infinity, ease: "linear" }}
         />
 
         {/* Main avatar circle */}
