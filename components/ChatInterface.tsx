@@ -704,7 +704,7 @@ export default function ChatInterface() {
 
         {/* Messages / Welcome */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto relative">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="max-w-3xl mx-auto px-4 sm:px-8 pb-4">
 
             {/* Welcome State */}
             {messages.length <= 1 && !searchQuery && (
