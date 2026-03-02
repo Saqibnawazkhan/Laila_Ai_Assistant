@@ -590,3 +590,47 @@ body {
 .animate-neon-flicker-cyan {
   animation: neon-flicker-cyan 4s infinite;
 }
+
+/* ===== GLITCH TEXT ANIMATION ===== */
+@keyframes glitch {
+  0% { transform: translate(0); clip-path: inset(0 0 100% 0); }
+  10% { transform: translate(-2px, 1px); clip-path: inset(20% 0 60% 0); color: #00e5ff; }
+  20% { transform: translate(2px, -1px); clip-path: inset(50% 0 30% 0); color: #00ff88; }
+  30% { transform: translate(0); clip-path: inset(0 0 100% 0); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch-main {
+  0%, 90%, 100% { transform: translate(0); opacity: 1; }
+  91% { transform: translate(-1px, 0); opacity: 0.9; }
+  92% { transform: translate(1px, 0); opacity: 0.8; }
+  93% { transform: translate(0); opacity: 1; }
+  94% { transform: translate(-2px, 1px); opacity: 0.7; }
+  95% { transform: translate(2px, -1px); opacity: 0.9; }
+  96% { transform: translate(0); opacity: 1; }
+}
+
+.animate-glitch {
+  animation: glitch-main 4s ease-in-out infinite;
+  position: relative;
+}
+
+.animate-glitch::before,
+.animate-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.animate-glitch::before {
+  color: #00e5ff;
+  animation: glitch 4s ease-in-out infinite;
+  animation-delay: 0.05s;
+}
+
+.animate-glitch::after {
+  color: #00ff88;
+  animation: glitch 4s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
