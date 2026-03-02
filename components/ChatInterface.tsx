@@ -556,7 +556,7 @@ export default function ChatInterface() {
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} allowedTypes={allowedTypes} onResetPermissions={handleResetPermissions} onClearChats={handleClearChats} messages={messages} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col w-full relative noise-bg" style={{ background: "var(--background)", paddingBottom: "80px" }}>
+      <main className="flex-1 flex flex-col w-full relative noise-bg overflow-hidden" style={{ background: "var(--background)" }}>
         {/* Neon cyberpunk grid background */}
         <div className="cyber-grid" />
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -926,11 +926,12 @@ export default function ChatInterface() {
           </AnimatePresence>
         </div>
 
-        {/* Input */}
-        <InputBar onSend={sendMessage} disabled={isLoading} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} onMicStart={() => wakeWordRef.current?.pause()} onMicStop={() => wakeWordRef.current?.resume()} />
+      </main>
 
-        {/* Footer */}
-        <div className="flex items-center justify-center gap-2 py-1.5 flex-shrink-0">
+      {/* Input + Footer — sits between chat and dock */}
+      <div className="flex-shrink-0 relative z-10" style={{ background: "var(--background)", paddingBottom: "84px" }}>
+        <InputBar onSend={sendMessage} disabled={isLoading} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} onMicStart={() => wakeWordRef.current?.pause()} onMicStop={() => wakeWordRef.current?.resume()} />
+        <div className="flex items-center justify-center gap-2 py-1 flex-shrink-0">
           <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)" }}>v2.0</span>
           <p className="text-[10px]" style={{ color: "var(--text-dim)" }}>Laila may make mistakes</p>
           <span className="text-[8px]" style={{ color: "var(--border)" }}>•</span>
@@ -942,7 +943,7 @@ export default function ChatInterface() {
             ⌘? Shortcuts
           </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
