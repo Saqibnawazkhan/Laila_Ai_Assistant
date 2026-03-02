@@ -40,9 +40,9 @@ export default function ToastContainer() {
   }, [addToast]);
 
   const config = {
-    success: { icon: <CheckCircle size={14} className="text-emerald-400" />, bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.2)" },
-    error: { icon: <AlertCircle size={14} className="text-red-400" />, bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.2)" },
-    info: { icon: <Info size={14} style={{ color: "var(--accent)" }} />, bg: "var(--accent-soft)", border: "rgba(139,92,246,0.2)" },
+    success: { label: "[OK]", color: "#00ff88", border: "rgba(0,255,136,0.3)", glow: "rgba(0,255,136,0.10)" },
+    error: { label: "[ERR]", color: "#ff2244", border: "rgba(255,34,68,0.3)", glow: "rgba(255,34,68,0.10)" },
+    info: { label: "[INFO]", color: "#00e5ff", border: "rgba(0,229,255,0.3)", glow: "rgba(0,229,255,0.10)" },
   };
 
   return (
@@ -57,23 +57,21 @@ export default function ToastContainer() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 80, scale: 0.85 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl backdrop-blur-md max-w-xs"
+              className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded max-w-xs font-mono"
               style={{
-                background: "var(--background)",
+                background: "rgba(0,0,0,0.95)",
                 border: `1px solid ${c.border}`,
-                boxShadow: "var(--shadow-md)",
+                boxShadow: `0 0 16px ${c.glow}`,
               }}
             >
-              <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: c.bg }}>
-                {c.icon}
-              </div>
-              <span className="text-[12px] flex-1" style={{ color: "var(--foreground)" }}>{toast.message}</span>
+              <span className="text-[10px] font-bold tracking-widest flex-shrink-0" style={{ color: c.color }}>{c.label}</span>
+              <span className="text-[11px] flex-1 tracking-wide" style={{ color: "#7fffcc" }}>{toast.message}</span>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="hover:opacity-100 transition-opacity ml-1 opacity-50"
-                style={{ color: "var(--text-muted)" }}
+                className="transition-opacity ml-1 opacity-50 hover:opacity-100"
+                style={{ color: "#2a6644" }}
               >
-                <X size={12} />
+                <X size={10} />
               </button>
             </motion.div>
           );
