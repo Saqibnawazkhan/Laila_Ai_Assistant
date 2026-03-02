@@ -115,7 +115,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), "Inter", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-mono), "JetBrains Mono", "Fira Code", "Courier New", monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
