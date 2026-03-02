@@ -180,7 +180,11 @@ export default function Avatar({ status }: AvatarProps) {
 
       {/* Name & Status */}
       <div className="text-center">
-        <h2 className="font-bold text-lg tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.5)" }}>Laila</h2>
+        <h2
+          className="font-bold text-lg tracking-widest uppercase animate-glitch"
+          data-text="LAILA"
+          style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.5)" }}
+        >LAILA</h2>
         <motion.p
           className="text-xs font-mono tracking-wider uppercase"
           style={{ color: status === "talking" ? "#00ff88" : status === "thinking" ? "#00e5ff" : "#4dbb88" }}
