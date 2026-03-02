@@ -57,7 +57,7 @@ export default function PermissionModal({ command, onAllow, onAlwaysAllow, onDen
     return (
       <AnimatePresence>
         <motion.div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" style={{ background: "var(--overlay-bg)" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <motion.div className="w-full max-w-md mx-4 rounded-2xl shadow-2xl overflow-hidden" style={{ background: "var(--background)", border: "1px solid var(--border)" }} initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} transition={{ type: "spring", damping: 20 }}>
+          <motion.div className="w-full max-w-md mx-4 rounded shadow-2xl overflow-hidden font-mono" style={{ background: "#000000", border: "1px solid rgba(0,255,136,0.30)", boxShadow: "0 0 40px rgba(0,255,136,0.10), 0 20px 60px rgba(0,0,0,0.8)" }} initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} transition={{ type: "spring", damping: 20 }}>
             <div className="flex items-center justify-between px-6 pt-5 pb-3">
               <div className="flex items-center gap-2.5">
                 <motion.div
