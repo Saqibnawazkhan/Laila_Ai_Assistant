@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Mic, ListTodo, Settings, History } from "lucide-react";
 
 export type DockView = "chat" | "voice" | "tasks" | "settings" | "history";
@@ -20,6 +21,8 @@ const dockItems = [
 ];
 
 export default function BottomDock({ activeView, onViewChange, pendingTaskCount = 0 }: BottomDockProps) {
+  const [hoveredItem, setHoveredItem] = useState<DockView | null>(null);
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center"
@@ -43,6 +46,8 @@ export default function BottomDock({ activeView, onViewChange, pendingTaskCount 
             <motion.button
               key={item.id}
               onClick={() => onViewChange(item.id)}
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
               className="relative flex flex-col items-center gap-1 px-4 py-2 rounded-xl font-mono text-[9px] tracking-widest transition-all"
               style={{
                 color: isActive ? "#00ff88" : "#2a6644",
@@ -57,6 +62,27 @@ export default function BottomDock({ activeView, onViewChange, pendingTaskCount 
               }}
               whileTap={{ scale: 0.9 }}
             >
+              {/* Tooltip */}
+              <AnimatePresence>
+                {hoveredItem === item.id && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded font-mono text-[9px] tracking-widest whitespace-nowrap pointer-events-none"
+                    style={{
+                      background: "rgba(0,0,0,0.95)",
+                      border: "1px solid rgba(0,255,136,0.4)",
+                      color: "#00ff88",
+                      boxShadow: "0 0 8px rgba(0,255,136,0.2)",
+                    }}
+                  >
+                    {item.label}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <Icon size={18} />
               <span>{item.label}</span>
 
