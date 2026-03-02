@@ -136,7 +136,12 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
         )}
 
         <div
-          className="relative"
+          className="relative transition-all duration-200"
+          style={{
+            borderLeft: hovered ? "2px solid #00ff88" : "2px solid transparent",
+            paddingLeft: "8px",
+            boxShadow: hovered ? "-2px 0 12px rgba(0,255,136,0.15)" : "none",
+          }}
           onDoubleClick={() => {
             navigator.clipboard.writeText(content);
             showToast("Copied!", "success");
