@@ -40,9 +40,9 @@ export default function ToastContainer() {
   }, [addToast]);
 
   const config = {
-    success: { label: "[OK]", color: "#00ff88", border: "rgba(0,255,136,0.3)", glow: "rgba(0,255,136,0.10)" },
-    error: { label: "[ERR]", color: "#ff2244", border: "rgba(255,34,68,0.3)", glow: "rgba(255,34,68,0.10)" },
-    info: { label: "[INFO]", color: "#00e5ff", border: "rgba(0,229,255,0.3)", glow: "rgba(0,229,255,0.10)" },
+    success: { label: "[OK]", color: "#ff8c00", border: "rgba(255,140,0,0.35)", glow: "rgba(255,140,0,0.08)" },
+    error: { label: "[ERR]", color: "#ff4455", border: "rgba(255,68,85,0.35)", glow: "rgba(255,68,85,0.08)" },
+    info: { label: "[INFO]", color: "rgba(255,255,255,0.80)", border: "rgba(255,255,255,0.20)", glow: "rgba(255,255,255,0.04)" },
   };
 
   return (
@@ -57,19 +57,20 @@ export default function ToastContainer() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 80, scale: 0.85 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded max-w-xs font-mono"
+              className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-xl max-w-xs font-mono"
               style={{
-                background: "rgba(0,0,0,0.95)",
+                background: "rgba(18,14,10,0.90)",
+                backdropFilter: "blur(24px)",
                 border: `1px solid ${c.border}`,
-                boxShadow: `0 0 16px ${c.glow}`,
+                boxShadow: `0 4px 20px rgba(0,0,0,0.50), 0 0 16px ${c.glow}`,
               }}
             >
               <span className="text-[10px] font-bold tracking-widest flex-shrink-0" style={{ color: c.color }}>{c.label}</span>
-              <span className="text-[11px] flex-1 tracking-wide" style={{ color: "#7fffcc" }}>{toast.message}</span>
+              <span className="text-[11px] flex-1 tracking-wide" style={{ color: "rgba(255,255,255,0.80)" }}>{toast.message}</span>
               <button
                 onClick={() => removeToast(toast.id)}
                 className="transition-opacity ml-1 opacity-50 hover:opacity-100"
-                style={{ color: "#2a6644" }}
+                style={{ color: "rgba(255,255,255,0.40)" }}
               >
                 <X size={10} />
               </button>

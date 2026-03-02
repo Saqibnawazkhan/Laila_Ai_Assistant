@@ -1,108 +1,108 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* ===== DARK THEME (default) — Neon Cyberpunk ===== */
+/* ===== DARK THEME (default) — Glassy Orange/White ===== */
 :root {
-  --background: #000000;
-  --background-secondary: #020208;
-  --foreground: #ccffee;
-  --surface: rgba(0, 255, 136, 0.03);
-  --surface-hover: rgba(0, 255, 136, 0.07);
-  --border: rgba(0, 255, 136, 0.12);
-  --border-light: rgba(0, 255, 136, 0.20);
-  --text-primary: #e0fff4;
-  --text-muted: #2a6644;
-  --text-secondary: #4dbb88;
-  --text-dim: #1a3d2e;
-  --accent: #00ff88;
-  --accent-hover: #00e5ff;
-  --accent-soft: rgba(0, 255, 136, 0.10);
-  --accent-glow: rgba(0, 255, 136, 0.30);
-  --accent-cyan: #00e5ff;
-  --accent-cyan-glow: rgba(0, 229, 255, 0.30);
-  --user-bubble: linear-gradient(135deg, #00ff88, #00cc6a);
-  --user-bubble-solid: #00ff88;
-  --assistant-text: #7fffcc;
-  --glass-bg: rgba(0, 255, 136, 0.02);
-  --glass-border: rgba(0, 255, 136, 0.10);
-  --overlay-bg: rgba(0, 0, 0, 0.85);
-  --scrollbar-thumb: rgba(0, 255, 136, 0.15);
-  --scrollbar-thumb-hover: rgba(0, 255, 136, 0.30);
-  --selection-bg: rgba(0, 255, 136, 0.25);
-  --selection-color: #000000;
-  --placeholder: #1a4d38;
-  --focus-ring: rgba(0, 255, 136, 0.5);
-  --caret: #00ff88;
-  --icon-default: #1a3d2e;
-  --icon-secondary: #2a6644;
-  --toggle-off: #0a1a12;
-  --logo-bg: linear-gradient(135deg, #00ff88, #00e5ff);
-  --logo-bg-solid: #00ff88;
-  --logo-icon: #000000;
-  --code-bg: rgba(0, 255, 136, 0.04);
-  --code-border: rgba(0, 255, 136, 0.12);
-  --badge-bg: #00ff88;
-  --success: #00ff88;
-  --warning: #ffdd00;
-  --error: #ff2244;
-  --gradient-subtle: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 255, 136, 0.06), transparent);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.9);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.95);
-  --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.20);
-  --shadow-glow-cyan: 0 0 20px rgba(0, 229, 255, 0.20);
+  --background: #0c0a09;
+  --background-secondary: #100d0a;
+  --foreground: #f5f0eb;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.09);
+  --border: rgba(255, 255, 255, 0.10);
+  --border-light: rgba(255, 255, 255, 0.18);
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-dim: rgba(255, 255, 255, 0.20);
+  --accent: #ff8c00;
+  --accent-hover: #ffaa33;
+  --accent-soft: rgba(255, 140, 0, 0.12);
+  --accent-glow: rgba(255, 140, 0, 0.30);
+  --accent-cyan: #ffffff;
+  --accent-cyan-glow: rgba(255, 255, 255, 0.20);
+  --user-bubble: linear-gradient(135deg, #ff8c00, #e67300);
+  --user-bubble-solid: #ff8c00;
+  --assistant-text: #f0ebe5;
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --overlay-bg: rgba(0, 0, 0, 0.75);
+  --scrollbar-thumb: rgba(255, 140, 0, 0.20);
+  --scrollbar-thumb-hover: rgba(255, 140, 0, 0.40);
+  --selection-bg: rgba(255, 140, 0, 0.25);
+  --selection-color: #ffffff;
+  --placeholder: rgba(255, 255, 255, 0.25);
+  --focus-ring: rgba(255, 140, 0, 0.50);
+  --caret: #ff8c00;
+  --icon-default: rgba(255, 255, 255, 0.30);
+  --icon-secondary: rgba(255, 255, 255, 0.50);
+  --toggle-off: rgba(255, 255, 255, 0.08);
+  --logo-bg: linear-gradient(135deg, #ff8c00, #ffcc44);
+  --logo-bg-solid: #ff8c00;
+  --logo-icon: #ffffff;
+  --code-bg: rgba(255, 255, 255, 0.04);
+  --code-border: rgba(255, 255, 255, 0.10);
+  --badge-bg: #ff8c00;
+  --success: #22c55e;
+  --warning: #ffaa00;
+  --error: #ff4455;
+  --gradient-subtle: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 140, 0, 0.06), transparent);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 20px rgba(255, 140, 0, 0.25);
+  --shadow-glow-cyan: 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
-/* ===== LIGHT THEME — Neon on White ===== */
+/* ===== LIGHT THEME — Warm Orange on Cream ===== */
 [data-theme="light"] {
-  --background: #f0fff8;
-  --background-secondary: #e0fff0;
-  --foreground: #002a18;
-  --surface: rgba(0, 180, 80, 0.04);
-  --surface-hover: rgba(0, 180, 80, 0.08);
-  --border: rgba(0, 180, 80, 0.15);
-  --border-light: rgba(0, 180, 80, 0.25);
-  --text-primary: #001a10;
-  --text-muted: #4d9966;
-  --text-secondary: #2d7a50;
-  --text-dim: #99ccb3;
-  --accent: #00aa55;
-  --accent-hover: #008844;
-  --accent-soft: rgba(0, 170, 85, 0.10);
-  --accent-glow: rgba(0, 170, 85, 0.20);
-  --accent-cyan: #0088aa;
-  --accent-cyan-glow: rgba(0, 136, 170, 0.20);
-  --user-bubble: linear-gradient(135deg, #00aa55, #007744);
-  --user-bubble-solid: #00aa55;
-  --assistant-text: #003322;
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(0, 170, 85, 0.15);
-  --overlay-bg: rgba(0, 0, 0, 0.3);
-  --scrollbar-thumb: rgba(0, 170, 85, 0.15);
-  --scrollbar-thumb-hover: rgba(0, 170, 85, 0.30);
-  --selection-bg: rgba(0, 170, 85, 0.20);
-  --selection-color: #001a10;
-  --placeholder: #99ccb3;
-  --focus-ring: rgba(0, 170, 85, 0.4);
-  --caret: #00aa55;
-  --icon-default: #99ccb3;
-  --icon-secondary: #4d9966;
-  --toggle-off: #cceedc;
-  --logo-bg: linear-gradient(135deg, #00aa55, #0088aa);
-  --logo-bg-solid: #00aa55;
+  --background: #faf8f5;
+  --background-secondary: #f5f0eb;
+  --foreground: #1a1208;
+  --surface: rgba(255, 140, 0, 0.04);
+  --surface-hover: rgba(255, 140, 0, 0.08);
+  --border: rgba(255, 140, 0, 0.15);
+  --border-light: rgba(255, 140, 0, 0.25);
+  --text-primary: #1a1208;
+  --text-muted: #7a5a30;
+  --text-secondary: #5a3d18;
+  --text-dim: #c4a882;
+  --accent: #e67300;
+  --accent-hover: #ff8c00;
+  --accent-soft: rgba(230, 115, 0, 0.10);
+  --accent-glow: rgba(230, 115, 0, 0.20);
+  --accent-cyan: #5a3d18;
+  --accent-cyan-glow: rgba(90, 61, 24, 0.15);
+  --user-bubble: linear-gradient(135deg, #e67300, #cc5a00);
+  --user-bubble-solid: #e67300;
+  --assistant-text: #2a1a08;
+  --glass-bg: rgba(255, 255, 255, 0.80);
+  --glass-border: rgba(230, 115, 0, 0.15);
+  --overlay-bg: rgba(0, 0, 0, 0.30);
+  --scrollbar-thumb: rgba(230, 115, 0, 0.15);
+  --scrollbar-thumb-hover: rgba(230, 115, 0, 0.30);
+  --selection-bg: rgba(230, 115, 0, 0.20);
+  --selection-color: #1a1208;
+  --placeholder: #c4a882;
+  --focus-ring: rgba(230, 115, 0, 0.40);
+  --caret: #e67300;
+  --icon-default: #c4a882;
+  --icon-secondary: #7a5a30;
+  --toggle-off: #eddfc5;
+  --logo-bg: linear-gradient(135deg, #e67300, #cc8800);
+  --logo-bg-solid: #e67300;
   --logo-icon: #ffffff;
   --code-bg: rgba(0, 0, 0, 0.03);
-  --code-border: rgba(0, 170, 85, 0.15);
-  --badge-bg: #00aa55;
-  --success: #00aa55;
-  --warning: #cc8800;
-  --error: #cc1133;
-  --gradient-subtle: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 170, 85, 0.05), transparent);
+  --code-border: rgba(230, 115, 0, 0.15);
+  --badge-bg: #e67300;
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --gradient-subtle: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(230, 115, 0, 0.05), transparent);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(0, 170, 85, 0.12);
-  --shadow-glow-cyan: 0 0 20px rgba(0, 136, 170, 0.12);
+  --shadow-glow: 0 0 20px rgba(230, 115, 0, 0.15);
+  --shadow-glow-cyan: 0 0 20px rgba(90, 61, 24, 0.10);
 }
 
 @theme inline {
@@ -125,7 +125,7 @@ code, pre, kbd, .font-mono {
   font-family: var(--font-mono), "JetBrains Mono", "Fira Code", monospace;
 }
 
-/* Custom scrollbar - neon cyberpunk */
+/* Custom scrollbar — glassy orange */
 ::-webkit-scrollbar {
   width: 3px;
 }
@@ -136,7 +136,7 @@ code, pre, kbd, .font-mono {
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 0;
+  border-radius: 99px;
   box-shadow: 0 0 6px var(--accent-glow);
 }
 
@@ -171,7 +171,7 @@ body,
   color: var(--selection-color);
 }
 
-/* Focus visible ring — only on buttons, not textareas/inputs inside containers */
+/* Focus visible ring */
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--focus-ring);
@@ -192,15 +192,15 @@ input::placeholder {
   color: var(--placeholder);
 }
 
-/* Neon green caret in all inputs */
+/* Orange caret in all inputs */
 textarea, input {
-  caret-color: #00ff88;
+  caret-color: #ff8c00;
 }
 
-/* Neon green text selection */
+/* Orange text selection */
 ::selection {
-  background: rgba(0, 255, 136, 0.20);
-  color: #ccffee;
+  background: rgba(255, 140, 0, 0.20);
+  color: #fff8f0;
 }
 
 /* Mobile safe areas */
@@ -229,7 +229,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ===== NEON GRID BACKGROUND ===== */
+/* ===== SOFT GLASS GRID BACKGROUND ===== */
 
 .cyber-grid {
   position: fixed;
@@ -237,22 +237,22 @@ body {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(0, 255, 136, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 136, 0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: grid-scroll 20s linear infinite;
+    linear-gradient(rgba(255, 140, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 140, 0, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: grid-scroll 30s linear infinite;
 }
 
 @keyframes grid-scroll {
   0% { background-position: 0 0; }
-  100% { background-position: 40px 40px; }
+  100% { background-position: 60px 60px; }
 }
 
 .cyber-grid::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(0,0,0,0.85) 100%);
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(0,0,0,0.70) 100%);
 }
 
 /* ===== CRT SCANLINE OVERLAY ===== */
@@ -266,8 +266,8 @@ body {
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.06) 2px,
-    rgba(0, 0, 0, 0.06) 4px
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
   );
   animation: scanline-move 8s linear infinite;
 }
@@ -390,61 +390,61 @@ body {
   animation: scale-in 0.2s ease-out forwards;
 }
 
-/* ===== NEON UTILITY CLASSES ===== */
+/* ===== GLASS GLOW UTILITY CLASSES ===== */
 
 .neon-glow {
-  box-shadow: 0 0 8px var(--accent-glow), 0 0 20px var(--accent-glow), 0 0 40px rgba(0,255,136,0.10);
+  box-shadow: 0 0 8px var(--accent-glow), 0 0 20px var(--accent-glow), 0 0 40px rgba(255,140,0,0.10);
 }
 
 .neon-glow-cyan {
-  box-shadow: 0 0 8px var(--accent-cyan-glow), 0 0 20px var(--accent-cyan-glow), 0 0 40px rgba(0,229,255,0.10);
+  box-shadow: 0 0 8px var(--accent-cyan-glow), 0 0 20px var(--accent-cyan-glow), 0 0 40px rgba(255,255,255,0.06);
 }
 
 .neon-border {
   border: 1px solid var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow), inset 0 0 8px rgba(0,255,136,0.04);
+  box-shadow: 0 0 8px var(--accent-glow), inset 0 0 8px rgba(255,140,0,0.04);
 }
 
 .neon-border-cyan {
-  border: 1px solid var(--accent-cyan);
-  box-shadow: 0 0 8px var(--accent-cyan-glow), inset 0 0 8px rgba(0,229,255,0.04);
+  border: 1px solid rgba(255,255,255,0.30);
+  box-shadow: 0 0 8px rgba(255,255,255,0.12), inset 0 0 8px rgba(255,255,255,0.04);
 }
 
 .neon-text {
   color: var(--accent);
-  text-shadow: 0 0 8px var(--accent-glow), 0 0 20px rgba(0,255,136,0.3);
+  text-shadow: 0 0 8px var(--accent-glow), 0 0 20px rgba(255,140,0,0.3);
 }
 
 .neon-text-cyan {
-  color: var(--accent-cyan);
-  text-shadow: 0 0 8px var(--accent-cyan-glow), 0 0 20px rgba(0,229,255,0.3);
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255,255,255,0.30), 0 0 20px rgba(255,255,255,0.15);
 }
 
 /* ===== GLASS EFFECTS ===== */
 
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(1.2);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-hover:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-light);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .glass-strong {
-  background: var(--glass-bg);
-  backdrop-filter: blur(40px) saturate(1.4);
-  -webkit-backdrop-filter: blur(40px) saturate(1.4);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(40px) saturate(1.6);
+  -webkit-backdrop-filter: blur(40px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 /* ===== UTILITY CLASSES ===== */
 
 .text-gradient {
-  background: linear-gradient(135deg, #00ff88, #00e5ff, #00ff88);
+  background: linear-gradient(135deg, #ff8c00, #ffffff, #ff8c00);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -471,13 +471,13 @@ body {
   background-origin: border-box;
 }
 
-/* Subtle noise texture for cyberpunk depth */
+/* Subtle noise texture for depth */
 .noise-bg::before {
   content: "";
   position: fixed;
   inset: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%2300ff88'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23ff8c00'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: overlay;
@@ -509,47 +509,47 @@ body {
   scroll-behavior: smooth;
 }
 
-/* Neon glass panels */
+/* Glass elevated panels */
 .glass-elevated {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(32px) saturate(1.3);
-  -webkit-backdrop-filter: blur(32px) saturate(1.3);
-  border: 1px solid rgba(0, 255, 136, 0.12);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.8), inset 0 1px 0 rgba(0, 255, 136, 0.04);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(32px) saturate(1.5);
+  -webkit-backdrop-filter: blur(32px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* Frosted neon panel for modals */
+/* Frosted glass panel for modals */
 .frosted-panel {
-  background: rgba(0, 0, 0, 0.92);
-  backdrop-filter: blur(48px) saturate(1.5);
-  -webkit-backdrop-filter: blur(48px) saturate(1.5);
-  border: 1px solid rgba(0, 255, 136, 0.20);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 30px rgba(0,255,136,0.06);
+  background: rgba(18, 14, 10, 0.88);
+  backdrop-filter: blur(48px) saturate(1.6);
+  -webkit-backdrop-filter: blur(48px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 30px rgba(255,140,0,0.05);
 }
 
-/* Neon input focus ring */
+/* Orange input focus ring */
 input:focus, textarea:focus, select:focus {
   outline: none;
-  box-shadow: 0 0 0 1px rgba(0,255,136,0.3);
+  box-shadow: 0 0 0 1px rgba(255,140,0,0.30);
 }
 
-/* Neon button press */
+/* Button press */
 button:active {
   filter: brightness(0.85);
 }
 
-/* Neon dividers */
+/* Dividers */
 hr {
-  border-color: rgba(0, 255, 136, 0.10);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Cyberpunk link style */
+/* Link style */
 a {
-  color: #00e5ff;
+  color: #ff8c00;
   text-decoration: none;
 }
 a:hover {
-  text-shadow: 0 0 8px rgba(0,229,255,0.4);
+  text-shadow: 0 0 8px rgba(255,140,0,0.40);
 }
 
 /* Interactive hover lift */
@@ -604,10 +604,10 @@ a:hover {
   animation: ring-pulse 1.5s ease-out infinite;
 }
 
-/* ===== NEON FLICKER ===== */
+/* ===== ORANGE GLOW FLICKER ===== */
 @keyframes neon-flicker {
   0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow: 0 0 4px #00ff88, 0 0 11px #00ff88, 0 0 19px #00ff88, 0 0 40px #00ff88;
+    text-shadow: 0 0 4px #ff8c00, 0 0 11px #ff8c00, 0 0 19px #ff8c00, 0 0 40px #ff8c00;
     opacity: 1;
   }
   20%, 24%, 55% {
@@ -622,7 +622,7 @@ a:hover {
 
 @keyframes neon-flicker-cyan {
   0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow: 0 0 4px #00e5ff, 0 0 11px #00e5ff, 0 0 19px #00e5ff, 0 0 40px #00e5ff;
+    text-shadow: 0 0 4px rgba(255,255,255,0.8), 0 0 11px rgba(255,255,255,0.5), 0 0 19px rgba(255,255,255,0.3);
     opacity: 1;
   }
   20%, 24%, 55% {
@@ -638,8 +638,8 @@ a:hover {
 /* ===== GLITCH TEXT ANIMATION ===== */
 @keyframes glitch {
   0% { transform: translate(0); clip-path: inset(0 0 100% 0); }
-  10% { transform: translate(-2px, 1px); clip-path: inset(20% 0 60% 0); color: #00e5ff; }
-  20% { transform: translate(2px, -1px); clip-path: inset(50% 0 30% 0); color: #00ff88; }
+  10% { transform: translate(-2px, 1px); clip-path: inset(20% 0 60% 0); color: rgba(255,255,255,0.8); }
+  20% { transform: translate(2px, -1px); clip-path: inset(50% 0 30% 0); color: #ff8c00; }
   30% { transform: translate(0); clip-path: inset(0 0 100% 0); }
   100% { transform: translate(0); }
 }
@@ -668,13 +668,13 @@ a:hover {
 }
 
 .animate-glitch::before {
-  color: #00e5ff;
+  color: rgba(255, 255, 255, 0.7);
   animation: glitch 4s ease-in-out infinite;
   animation-delay: 0.05s;
 }
 
 .animate-glitch::after {
-  color: #00ff88;
+  color: #ff8c00;
   animation: glitch 4s ease-in-out infinite;
   animation-delay: 0.1s;
 }

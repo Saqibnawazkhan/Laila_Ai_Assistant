@@ -97,27 +97,28 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
         <div
           className="relative rounded-2xl overflow-hidden transition-all duration-200"
           style={{
-            background: isFocused ? "rgba(0,255,136,0.03)" : "rgba(0,0,0,0.6)",
+            background: isFocused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
+            backdropFilter: "blur(24px)",
             border: isListening
-              ? "1px solid rgba(0, 229, 255, 0.5)"
+              ? "1px solid rgba(255, 255, 255, 0.35)"
               : input.length > MAX_CHARS
-                ? "1px solid rgba(255, 34, 68, 0.5)"
+                ? "1px solid rgba(255, 68, 85, 0.5)"
                 : isFocused
-                  ? "1px solid rgba(0, 255, 136, 0.6)"
-                  : "1px solid rgba(0, 255, 136, 0.12)",
+                  ? "1px solid rgba(255, 140, 0, 0.55)"
+                  : "1px solid rgba(255, 255, 255, 0.10)",
             boxShadow: canSend
-              ? "0 0 16px rgba(0,255,136,0.20), 0 0 0 1px rgba(0,255,136,0.10)"
+              ? "0 0 20px rgba(255,140,0,0.18), 0 4px 24px rgba(0,0,0,0.40)"
               : isFocused
-                ? "0 0 12px rgba(0,255,136,0.12), 0 0 0 2px rgba(0,255,136,0.06)"
-                : "none",
+                ? "0 0 14px rgba(255,140,0,0.10), 0 4px 20px rgba(0,0,0,0.30)"
+                : "0 4px 20px rgba(0,0,0,0.25)",
           }}
         >
           {/* Textarea / Listening */}
           <div className="px-4 pt-3 pb-1">
-            {/* Terminal prompt prefix */}
+            {/* Prompt prefix */}
             {!isListening && (
               <div className="flex items-start gap-2">
-                <span className="font-mono text-[14px] mt-0.5 select-none flex-shrink-0" style={{ color: "#00ff88", textShadow: "0 0 6px rgba(0,255,136,0.5)" }}>&gt;_</span>
+                <span className="font-mono text-[14px] mt-0.5 select-none flex-shrink-0" style={{ color: "#ff8c00", textShadow: "0 0 6px rgba(255,140,0,0.4)" }}>&gt;_</span>
                 <textarea
                   ref={textareaRef}
                   value={input}
@@ -147,7 +148,7 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                   <motion.div
                     key={i}
                     className="w-[2.5px] rounded-full"
-                    style={{ background: "#00e5ff", boxShadow: "0 0 4px rgba(0,229,255,0.5)" }}
+                    style={{ background: "#ff8c00", boxShadow: "0 0 4px rgba(255,140,0,0.5)" }}
                     animate={{ height: [3, Math.random() * 20 + 6, 3] }}
                     transition={{
                       duration: 0.35 + Math.random() * 0.35,
@@ -171,10 +172,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                 disabled={disabled}
                 className="w-8 h-8 rounded-xl flex items-center justify-center transition-all disabled:opacity-50"
                 style={{
-                  color: isListening ? "#00e5ff" : "#2a6644",
-                  background: isListening ? "rgba(0,229,255,0.08)" : "transparent",
-                  border: isListening ? "1px solid rgba(0,229,255,0.3)" : "1px solid transparent",
-                  boxShadow: isListening ? "0 0 12px rgba(0,229,255,0.2)" : "none",
+                  color: isListening ? "#ffffff" : "rgba(255,255,255,0.35)",
+                  background: isListening ? "rgba(255,255,255,0.08)" : "transparent",
+                  border: isListening ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
+                  boxShadow: isListening ? "0 0 12px rgba(255,255,255,0.10)" : "none",
                 }}
                 animate={isListening ? { scale: [1, 1.08, 1] } : {}}
                 transition={{ duration: 1, repeat: Infinity }}
@@ -197,10 +198,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
               disabled={!canSend}
               className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
               style={{
-                background: canSend ? "linear-gradient(135deg, #00ff88, #00e5ff)" : "rgba(0,255,136,0.05)",
-                color: canSend ? "#000000" : "#1a3d2e",
-                boxShadow: canSend ? "0 0 16px rgba(0,255,136,0.4), 0 2px 8px rgba(0,0,0,0.4)" : "none",
-                border: canSend ? "none" : "1px solid rgba(0,255,136,0.10)",
+                background: canSend ? "linear-gradient(135deg, #ff8c00, #ffaa33)" : "rgba(255,255,255,0.05)",
+                color: canSend ? "#ffffff" : "rgba(255,255,255,0.25)",
+                boxShadow: canSend ? "0 0 20px rgba(255,140,0,0.40), 0 2px 8px rgba(0,0,0,0.40)" : "none",
+                border: canSend ? "none" : "1px solid rgba(255,255,255,0.08)",
               }}
               whileTap={canSend ? { scale: 0.82 } : {}}
               whileHover={canSend ? { scale: 1.08 } : {}}

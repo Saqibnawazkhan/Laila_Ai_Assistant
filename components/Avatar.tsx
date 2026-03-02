@@ -8,21 +8,21 @@ interface AvatarProps {
 
 export default function Avatar({ status }: AvatarProps) {
   const statusColors = {
-    idle: "from-emerald-500 via-green-400 to-teal-500",
-    thinking: "from-cyan-400 via-sky-500 to-blue-600",
-    talking: "from-green-400 via-emerald-300 to-cyan-400",
+    idle: "from-orange-500 via-amber-400 to-yellow-400",
+    thinking: "from-white via-gray-200 to-orange-300",
+    talking: "from-orange-400 via-amber-300 to-white",
   };
 
   const statusGlow = {
-    idle: "bg-emerald-400/30",
-    thinking: "bg-cyan-400/30",
-    talking: "bg-green-300/40",
+    idle: "bg-orange-400/30",
+    thinking: "bg-white/20",
+    talking: "bg-amber-300/40",
   };
 
   const statusShadow = {
-    idle: "shadow-emerald-400/40",
-    thinking: "shadow-cyan-400/40",
-    talking: "shadow-green-300/50",
+    idle: "shadow-orange-400/40",
+    thinking: "shadow-white/30",
+    talking: "shadow-amber-300/50",
   };
 
   return (
@@ -43,11 +43,11 @@ export default function Avatar({ status }: AvatarProps) {
           }}
         />
 
-        {/* Hexagonal neon ring */}
+        {/* Hexagonal glass ring */}
         <motion.div
           className="absolute -inset-2"
           style={{
-            background: "conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.6), transparent, rgba(0, 229, 255, 0.5), transparent)",
+            background: "conic-gradient(from 0deg, transparent, rgba(255, 140, 0, 0.6), transparent, rgba(255, 255, 255, 0.4), transparent)",
             clipPath: "polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)",
           }}
           animate={{ rotate: 360 }}
@@ -172,7 +172,7 @@ export default function Avatar({ status }: AvatarProps) {
 
         {/* Online indicator */}
         <motion.div
-          className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-950"
+          className="absolute bottom-1 right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-gray-950"
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
@@ -183,11 +183,11 @@ export default function Avatar({ status }: AvatarProps) {
         <h2
           className="font-bold text-lg tracking-widest uppercase animate-glitch"
           data-text="LAILA"
-          style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.5)" }}
+          style={{ color: "#ff8c00", textShadow: "0 0 10px rgba(255,140,0,0.5)" }}
         >LAILA</h2>
         <motion.p
           className="text-xs font-mono tracking-wider uppercase"
-          style={{ color: status === "talking" ? "#00ff88" : status === "thinking" ? "#00e5ff" : "#4dbb88" }}
+          style={{ color: status === "talking" ? "#ff8c00" : status === "thinking" ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.45)" }}
           key={status}
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}

@@ -41,19 +41,19 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, 
 
           <motion.div
             className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col font-mono"
-            style={{ background: "#000000", borderLeft: "1px solid rgba(0,255,136,0.20)", boxShadow: "-4px 0 30px rgba(0,255,136,0.06)" }}
+            style={{ background: "rgba(14,11,8,0.96)", backdropFilter: "blur(32px)", borderLeft: "1px solid rgba(255,255,255,0.10)", boxShadow: "-4px 0 40px rgba(0,0,0,0.60)" }}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
             {/* Header — Terminal style */}
-            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(0,255,136,0.12)" }}>
+            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <div className="flex items-center gap-2">
-                <span className="text-[10px]" style={{ color: "#00ff88" }}>&#x25B6;</span>
-                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>[ TASKS ]</h2>
+                <span className="text-[10px]" style={{ color: "#ff8c00" }}>&#x25B6;</span>
+                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 8px rgba(255,140,0,0.4)" }}>[ TASKS ]</h2>
                 {pending.length > 0 && (
-                  <span className="text-black text-[9px] px-1.5 py-0.5 rounded font-bold font-mono" style={{ background: "#00ff88" }}>
+                  <span className="text-white text-[9px] px-1.5 py-0.5 rounded font-bold font-mono" style={{ background: "#ff8c00" }}>
                     {pending.length}
                   </span>
                 )}

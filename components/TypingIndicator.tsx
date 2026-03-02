@@ -35,13 +35,19 @@ export default function TypingIndicator() {
       className="flex gap-3 mt-5"
     >
       {/* Animated avatar */}
-      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse-glow" style={{ background: "var(--logo-bg-solid)" }}>
-        <Sparkles size={12} style={{ color: "var(--logo-icon)" }} />
+      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse-glow"
+        style={{
+          background: "rgba(255,140,0,0.12)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,140,0,0.22)",
+        }}
+      >
+        <Sparkles size={12} style={{ color: "#ff8c00" }} />
       </div>
 
       <div>
         <div className="flex items-center gap-2 mb-1.5 font-mono">
-          <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#00e5ff", textShadow: "0 0 6px rgba(0,229,255,0.4)" }}>LAILA &gt;</span>
+          <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 6px rgba(255,140,0,0.4)" }}>LAILA &gt;</span>
           {elapsed > 2 && (
             <motion.span
               initial={{ opacity: 0 }}
@@ -54,15 +60,15 @@ export default function TypingIndicator() {
             </motion.span>
           )}
         </div>
-        <div className="flex items-center gap-2 font-mono text-[13px]" style={{ color: "#4dbb88" }}>
+        <div className="flex items-center gap-2 font-mono text-[13px]" style={{ color: "rgba(255,255,255,0.45)" }}>
           <span>// processing</span>
           <motion.span
-            style={{ color: "#00ff88", textShadow: "0 0 6px rgba(0,255,136,0.6)" }}
+            style={{ color: "#ff8c00", textShadow: "0 0 6px rgba(255,140,0,0.5)" }}
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 0.8, repeat: Infinity }}
           >_</motion.span>
           {elapsed > 2 && (
-            <span className="text-[10px]" style={{ color: "#1a3d2e" }}>[{elapsed}s]</span>
+            <span className="text-[10px]" style={{ color: "rgba(255,140,0,0.40)" }}>[{elapsed}s]</span>
           )}
         </div>
       </div>

@@ -80,8 +80,11 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
 
           <div className="relative">
             <div
-              className="px-4 py-2.5 rounded-sm text-black text-[14px] leading-relaxed font-mono"
-              style={{ background: "var(--user-bubble)", boxShadow: "0 2px 16px rgba(0, 255, 136, 0.25), 0 0 0 1px rgba(0,255,136,0.15)" }}
+              className="px-4 py-2.5 rounded-2xl text-white text-[14px] leading-relaxed font-mono"
+              style={{
+                background: "linear-gradient(135deg, #ff8c00, #e67300)",
+                boxShadow: "0 4px 20px rgba(255,140,0,0.30), 0 1px 0 rgba(255,255,255,0.10) inset",
+              }}
               onDoubleClick={() => {
                 navigator.clipboard.writeText(content);
                 showToast("Copied!", "success");
@@ -96,9 +99,14 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={handleCopy}
                 className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg flex items-center justify-center transition-colors"
-                style={{ background: "var(--background)", border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  boxShadow: "var(--shadow-sm)",
+                }}
               >
-                {copied ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} style={{ color: "var(--text-muted)" }} />}
+                {copied ? <Check size={10} className="text-orange-400" /> : <Copy size={10} style={{ color: "var(--text-muted)" }} />}
               </motion.button>
             )}
           </div>
@@ -119,8 +127,15 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
     >
       {/* Avatar */}
       {!isGrouped ? (
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-sm)" }}>
-          <Sparkles size={12} style={{ color: "var(--logo-icon)" }} />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+          style={{
+            background: "rgba(255,140,0,0.12)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,140,0,0.22)",
+            boxShadow: "0 0 10px rgba(255,140,0,0.08)",
+          }}
+        >
+          <Sparkles size={12} style={{ color: "#ff8c00" }} />
         </div>
       ) : (
         <div className="w-7 flex-shrink-0" />
@@ -130,7 +145,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
       <div className="flex-1 min-w-0 max-w-[88%]">
         {!isGrouped && (
           <div className="flex items-center gap-2 mb-1.5 font-mono">
-            <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#00e5ff", textShadow: "0 0 6px rgba(0,229,255,0.4)" }}>LAILA &gt;</span>
+            <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 6px rgba(255,140,0,0.4)" }}>LAILA &gt;</span>
             {timeStr && <span className="text-[9px] tracking-wider" style={{ color: "var(--text-dim)" }}>{timeStr}</span>}
           </div>
         )}
@@ -138,9 +153,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
         <div
           className="relative transition-all duration-200"
           style={{
-            borderLeft: hovered ? "2px solid #00ff88" : "2px solid transparent",
+            borderLeft: hovered ? "2px solid rgba(255,140,0,0.50)" : "2px solid transparent",
             paddingLeft: "8px",
-            boxShadow: hovered ? "-2px 0 12px rgba(0,255,136,0.15)" : "none",
+            boxShadow: hovered ? "-2px 0 12px rgba(255,140,0,0.06)" : "none",
           }}
           onDoubleClick={() => {
             navigator.clipboard.writeText(content);
@@ -148,10 +163,10 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
           }}
         >
           <div
-            className={`text-[13px] leading-[1.7] font-mono prose prose-sm max-w-none prose-p:my-1.5 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-3 prose-pre:rounded-none prose-a:no-underline hover:prose-a:underline prose-blockquote:border-emerald-500/30 ${
+            className={`text-[13px] leading-[1.7] font-mono prose prose-sm max-w-none prose-p:my-1.5 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-3 prose-pre:rounded-none prose-a:no-underline hover:prose-a:underline prose-blockquote:border-orange-500/30 ${
               theme === "dark"
-                ? "prose-invert prose-code:text-emerald-300 prose-code:bg-emerald-950/40 prose-strong:text-emerald-200 prose-a:text-cyan-400 prose-blockquote:text-[#4dbb88]"
-                : "prose-code:text-emerald-700 prose-code:bg-emerald-50 prose-strong:text-emerald-900 prose-a:text-cyan-700 prose-blockquote:text-emerald-600"
+                ? "prose-invert prose-code:text-orange-300 prose-code:bg-orange-950/30 prose-strong:text-orange-200 prose-a:text-orange-400 prose-blockquote:text-orange-300/70"
+                : "prose-code:text-orange-700 prose-code:bg-orange-50 prose-strong:text-orange-900 prose-a:text-orange-700 prose-blockquote:text-orange-600"
             } prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[12px] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none`}
             style={{ color: "var(--assistant-text)" }}
           >
@@ -161,18 +176,17 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                 pre: (props) => {
                   const ref = React.useRef<HTMLPreElement>(null);
                   const [codeCopied, setCodeCopied] = React.useState(false);
-                  // Detect language from className
                   const codeEl = React.Children.toArray(props.children).find(
                     (child): child is React.ReactElement<{ className?: string }> => React.isValidElement(child) && child.type === "code"
                   );
                   const langClass = codeEl?.props?.className || "";
                   const lang = langClass.replace("language-", "") || "code";
                   return (
-                    <div className="relative group/code overflow-hidden" style={{ border: "1px solid rgba(0,255,136,0.20)", background: "rgba(0,255,136,0.02)", boxShadow: "0 0 16px rgba(0,255,136,0.04)" }}>
-                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "rgba(0,0,0,0.6)", borderBottom: "1px solid rgba(0,255,136,0.12)" }}>
+                    <div className="relative group/code overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)", boxShadow: "0 2px 16px rgba(0,0,0,0.30)" }}>
+                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "rgba(0,0,0,0.40)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2" style={{ background: "#00ff88", boxShadow: "0 0 6px #00ff88" }} />
-                          <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: "#00ff88" }}>{lang}</span>
+                          <span className="w-2 h-2 rounded-full" style={{ background: "#ff8c00", boxShadow: "0 0 6px rgba(255,140,0,0.6)" }} />
+                          <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: "#ff8c00" }}>{lang}</span>
                         </div>
                         <button
                           onClick={() => {
@@ -187,7 +201,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                           className="flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-md transition-all hover:bg-white/5"
                           style={{ color: "var(--text-muted)" }}
                         >
-                          {codeCopied ? <><Check size={10} className="text-emerald-400" /> Copied</> : <><Copy size={10} /> Copy</>}
+                          {codeCopied ? <><Check size={10} className="text-orange-400" /> Copied</> : <><Copy size={10} /> Copy</>}
                         </button>
                       </div>
                       <pre ref={ref} className="!my-0 !rounded-none" style={{ background: "var(--code-bg)" }}>{props.children}</pre>
@@ -201,7 +215,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
             {isTyping && (
               <motion.span
                 className="inline-block w-0.5 h-4 ml-0.5 align-middle rounded-full"
-                style={{ background: "var(--accent)" }}
+                style={{ background: "#ff8c00" }}
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               />
@@ -215,20 +229,24 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15 }}
               className="flex items-center gap-px mt-1.5 p-0.5 rounded-xl w-fit"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
             >
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1 px-2.5 py-1 text-[10px] rounded-lg transition-all hover:bg-[var(--surface-hover)]"
-                style={{ color: copied ? "var(--success)" : "var(--text-muted)" }}
+                style={{ color: copied ? "#ff8c00" : "var(--text-muted)" }}
                 title="Copy to clipboard"
               >
                 {copied ? <Check size={10} /> : <Copy size={10} />}
                 {copied ? "Copied" : "Copy"}
               </button>
-              <div className="w-px h-3" style={{ background: "var(--border)" }} />
+              <div className="w-px h-3" style={{ background: "rgba(255,255,255,0.10)" }} />
               <button
-                className="p-1.5 rounded-lg transition-all hover:bg-[var(--surface-hover)] hover:text-emerald-400"
+                className="p-1.5 rounded-lg transition-all hover:bg-[var(--surface-hover)] hover:text-orange-400"
                 style={{ color: "var(--text-dim)" }}
                 onClick={() => showToast("Thanks for the feedback!", "success")}
                 title="Good response"
