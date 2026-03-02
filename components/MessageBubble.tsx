@@ -129,9 +129,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
       {/* Content */}
       <div className="flex-1 min-w-0 max-w-[88%]">
         {!isGrouped && (
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>Laila</span>
-            {timeStr && <span className="text-[10px]" style={{ color: "var(--text-dim)" }}>{timeStr}</span>}
+          <div className="flex items-center gap-2 mb-1.5 font-mono">
+            <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: "#00e5ff", textShadow: "0 0 6px rgba(0,229,255,0.4)" }}>LAILA &gt;</span>
+            {timeStr && <span className="text-[9px] tracking-wider" style={{ color: "var(--text-dim)" }}>{timeStr}</span>}
           </div>
         )}
 
