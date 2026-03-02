@@ -99,17 +99,17 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
           style={{
             background: "var(--surface)",
             border: isListening
-              ? "1px solid rgba(239, 68, 68, 0.3)"
+              ? "1px solid rgba(0, 229, 255, 0.5)"
               : input.length > MAX_CHARS
-                ? "1px solid rgba(239, 68, 68, 0.3)"
+                ? "1px solid rgba(255, 34, 68, 0.5)"
                 : isFocused
-                  ? "1px solid var(--accent)"
-                  : "1px solid var(--border)",
+                  ? "1px solid rgba(0, 255, 136, 0.6)"
+                  : "1px solid rgba(0, 255, 136, 0.12)",
             boxShadow: canSend
-              ? "var(--shadow-glow)"
+              ? "0 0 16px rgba(0,255,136,0.20), 0 0 0 1px rgba(0,255,136,0.10)"
               : isFocused
-                ? "0 0 0 3px var(--accent-soft), var(--shadow-sm)"
-                : "var(--shadow-sm)",
+                ? "0 0 12px rgba(0,255,136,0.12), 0 0 0 2px rgba(0,255,136,0.06)"
+                : "none",
           }}
         >
           {/* Textarea / Listening */}
