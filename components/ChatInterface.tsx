@@ -575,18 +575,26 @@ export default function ChatInterface() {
           {/* Left: Logo + Name */}
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => setSidebarOpen((p) => !p)}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              title="Toggle sidebar (Ctrl+H)"
             >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
                 <Sparkles size={15} style={{ color: "var(--logo-icon)" }} />
               </div>
               <div className="hidden sm:flex flex-col">
-                <span className="text-[13px] font-semibold leading-none tracking-tight" style={{ color: "var(--text-primary)" }}>Laila</span>
-                <span className="text-[9px] leading-none mt-0.5" style={{ color: "var(--text-dim)" }}>AI Assistant</span>
+                <span className="text-[13px] font-bold leading-none tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>LAILA</span>
+                <span className="text-[9px] leading-none mt-0.5 tracking-widest" style={{ color: "#1a3d2e" }}>AI SYSTEM v2.0</span>
               </div>
             </button>
+            {/* Neon ONLINE indicator */}
+            <div className="hidden sm:flex items-center gap-1.5 ml-2">
+              <motion.span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: "#00ff88", boxShadow: "0 0 6px #00ff88" }}
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+              />
+              <span className="text-[9px] tracking-widest uppercase" style={{ color: "#00ff88" }}>ONLINE</span>
+            </div>
           </div>
 
           {/* Center status pill */}
