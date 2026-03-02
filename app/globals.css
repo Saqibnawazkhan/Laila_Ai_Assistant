@@ -559,3 +559,34 @@ body {
 .animate-ring-pulse {
   animation: ring-pulse 1.5s ease-out infinite;
 }
+
+/* ===== NEON FLICKER ===== */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow: 0 0 4px #00ff88, 0 0 11px #00ff88, 0 0 19px #00ff88, 0 0 40px #00ff88;
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    opacity: 0.85;
+  }
+}
+
+.animate-neon-flicker {
+  animation: neon-flicker 3s infinite;
+}
+
+@keyframes neon-flicker-cyan {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow: 0 0 4px #00e5ff, 0 0 11px #00e5ff, 0 0 19px #00e5ff, 0 0 40px #00e5ff;
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    opacity: 0.85;
+  }
+}
+
+.animate-neon-flicker-cyan {
+  animation: neon-flicker-cyan 4s infinite;
+}
