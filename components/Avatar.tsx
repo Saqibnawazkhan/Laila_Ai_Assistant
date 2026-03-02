@@ -14,9 +14,15 @@ export default function Avatar({ status }: AvatarProps) {
   };
 
   const statusGlow = {
-    idle: "bg-purple-500/30",
-    thinking: "bg-blue-500/30",
-    talking: "bg-fuchsia-500/30",
+    idle: "bg-emerald-400/30",
+    thinking: "bg-cyan-400/30",
+    talking: "bg-green-300/40",
+  };
+
+  const statusShadow = {
+    idle: "shadow-emerald-400/40",
+    thinking: "shadow-cyan-400/40",
+    talking: "shadow-green-300/50",
   };
 
   return (
@@ -41,7 +47,7 @@ export default function Avatar({ status }: AvatarProps) {
         <motion.div
           className="absolute -inset-1 rounded-full"
           style={{
-            background: "conic-gradient(from 0deg, transparent, rgba(168, 85, 247, 0.4), transparent, rgba(236, 72, 153, 0.3), transparent)",
+            background: "conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.5), transparent, rgba(0, 229, 255, 0.4), transparent)",
           }}
           animate={{ rotate: 360 }}
           transition={{ duration: status === "thinking" ? 2 : 8, repeat: Infinity, ease: "linear" }}
@@ -49,7 +55,7 @@ export default function Avatar({ status }: AvatarProps) {
 
         {/* Main avatar circle */}
         <motion.div
-          className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${statusColors[status]} flex items-center justify-center shadow-lg shadow-purple-500/25 transition-all duration-500`}
+          className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${statusColors[status]} flex items-center justify-center shadow-lg ${statusShadow[status]} transition-all duration-500`}
           animate={{
             y: status === "idle" ? [0, -6, 0] : 0,
             scale: status === "talking" ? [1, 1.06, 1] : 1,
