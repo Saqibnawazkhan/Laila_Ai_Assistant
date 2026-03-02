@@ -379,6 +379,36 @@ body {
   animation: scale-in 0.2s ease-out forwards;
 }
 
+/* ===== NEON UTILITY CLASSES ===== */
+
+.neon-glow {
+  box-shadow: 0 0 8px var(--accent-glow), 0 0 20px var(--accent-glow), 0 0 40px rgba(0,255,136,0.10);
+}
+
+.neon-glow-cyan {
+  box-shadow: 0 0 8px var(--accent-cyan-glow), 0 0 20px var(--accent-cyan-glow), 0 0 40px rgba(0,229,255,0.10);
+}
+
+.neon-border {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow), inset 0 0 8px rgba(0,255,136,0.04);
+}
+
+.neon-border-cyan {
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan-glow), inset 0 0 8px rgba(0,229,255,0.04);
+}
+
+.neon-text {
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent-glow), 0 0 20px rgba(0,255,136,0.3);
+}
+
+.neon-text-cyan {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 8px var(--accent-cyan-glow), 0 0 20px rgba(0,229,255,0.3);
+}
+
 /* ===== GLASS EFFECTS ===== */
 
 .glass {
