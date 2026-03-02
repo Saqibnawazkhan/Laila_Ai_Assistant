@@ -57,7 +57,7 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
   };
 
   const timeStr = timestamp
-    ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+    ? new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
     : "";
 
   // --- USER MESSAGE ---
