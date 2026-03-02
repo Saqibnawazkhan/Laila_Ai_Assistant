@@ -192,6 +192,17 @@ input::placeholder {
   color: var(--placeholder);
 }
 
+/* Neon green caret in all inputs */
+textarea, input {
+  caret-color: #00ff88;
+}
+
+/* Neon green text selection */
+::selection {
+  background: rgba(0, 255, 136, 0.20);
+  color: #ccffee;
+}
+
 /* Mobile safe areas */
 .safe-area-bottom {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
