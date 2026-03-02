@@ -97,20 +97,20 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
         <div
           className="relative rounded-2xl overflow-hidden transition-all duration-200"
           style={{
-            background: isFocused ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
+            background: isFocused ? "rgba(0,0,0,0.04)" : "rgba(0,0,0,0.02)",
             backdropFilter: "blur(24px)",
             border: isListening
-              ? "1px solid rgba(255, 255, 255, 0.35)"
+              ? "1px solid rgba(255, 140, 0, 0.45)"
               : input.length > MAX_CHARS
-                ? "1px solid rgba(255, 68, 85, 0.5)"
+                ? "1px solid rgba(220, 38, 38, 0.50)"
                 : isFocused
                   ? "1px solid rgba(255, 140, 0, 0.55)"
-                  : "1px solid rgba(255, 255, 255, 0.10)",
+                  : "1px solid rgba(0, 0, 0, 0.10)",
             boxShadow: canSend
-              ? "0 0 20px rgba(255,140,0,0.18), 0 4px 24px rgba(0,0,0,0.40)"
+              ? "0 0 20px rgba(255,140,0,0.14), 0 4px 16px rgba(0,0,0,0.08)"
               : isFocused
-                ? "0 0 14px rgba(255,140,0,0.10), 0 4px 20px rgba(0,0,0,0.30)"
-                : "0 4px 20px rgba(0,0,0,0.25)",
+                ? "0 0 14px rgba(255,140,0,0.08), 0 4px 12px rgba(0,0,0,0.06)"
+                : "0 2px 8px rgba(0,0,0,0.05)",
           }}
         >
           {/* Textarea / Listening */}
@@ -172,10 +172,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                 disabled={disabled}
                 className="w-8 h-8 rounded-xl flex items-center justify-center transition-all disabled:opacity-50"
                 style={{
-                  color: isListening ? "#ffffff" : "rgba(255,255,255,0.35)",
-                  background: isListening ? "rgba(255,255,255,0.08)" : "transparent",
-                  border: isListening ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
-                  boxShadow: isListening ? "0 0 12px rgba(255,255,255,0.10)" : "none",
+                  color: isListening ? "#ff8c00" : "rgba(0,0,0,0.35)",
+                  background: isListening ? "rgba(255,140,0,0.08)" : "transparent",
+                  border: isListening ? "1px solid rgba(255,140,0,0.30)" : "1px solid transparent",
+                  boxShadow: isListening ? "0 0 12px rgba(255,140,0,0.15)" : "none",
                 }}
                 animate={isListening ? { scale: [1, 1.08, 1] } : {}}
                 transition={{ duration: 1, repeat: Infinity }}
@@ -198,10 +198,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
               disabled={!canSend}
               className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
               style={{
-                background: canSend ? "linear-gradient(135deg, #ff8c00, #ffaa33)" : "rgba(255,255,255,0.05)",
-                color: canSend ? "#ffffff" : "rgba(255,255,255,0.25)",
-                boxShadow: canSend ? "0 0 20px rgba(255,140,0,0.40), 0 2px 8px rgba(0,0,0,0.40)" : "none",
-                border: canSend ? "none" : "1px solid rgba(255,255,255,0.08)",
+                background: canSend ? "linear-gradient(135deg, #ff8c00, #ffaa33)" : "rgba(0,0,0,0.05)",
+                color: canSend ? "#ffffff" : "rgba(0,0,0,0.25)",
+                boxShadow: canSend ? "0 0 20px rgba(255,140,0,0.30), 0 2px 8px rgba(0,0,0,0.10)" : "none",
+                border: canSend ? "none" : "1px solid rgba(0,0,0,0.08)",
               }}
               whileTap={canSend ? { scale: 0.82 } : {}}
               whileHover={canSend ? { scale: 1.08 } : {}}

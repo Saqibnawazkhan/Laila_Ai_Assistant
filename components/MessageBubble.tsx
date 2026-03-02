@@ -100,9 +100,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                 onClick={handleCopy}
                 className="absolute -bottom-1 -left-1 w-6 h-6 rounded-lg flex items-center justify-center transition-colors"
                 style={{
-                  background: "rgba(255,255,255,0.08)",
+                  background: "rgba(0,0,0,0.06)",
                   backdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(0,0,0,0.10)",
                   boxShadow: "var(--shadow-sm)",
                 }}
               >
@@ -182,8 +182,8 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
                   const langClass = codeEl?.props?.className || "";
                   const lang = langClass.replace("language-", "") || "code";
                   return (
-                    <div className="relative group/code overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)", boxShadow: "0 2px 16px rgba(0,0,0,0.30)" }}>
-                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "rgba(0,0,0,0.40)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                    <div className="relative group/code overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.02)", backdropFilter: "blur(12px)", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                      <div className="flex items-center justify-between px-4 py-1.5" style={{ background: "rgba(0,0,0,0.04)", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
                         <div className="flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full" style={{ background: "#ff8c00", boxShadow: "0 0 6px rgba(255,140,0,0.6)" }} />
                           <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: "#ff8c00" }}>{lang}</span>
@@ -230,9 +230,9 @@ export default function MessageBubble({ role, content, timestamp, isLatest, isGr
               transition={{ duration: 0.15 }}
               className="flex items-center gap-px mt-1.5 p-0.5 rounded-xl w-fit"
               style={{
-                background: "rgba(255,255,255,0.06)",
+                background: "rgba(0,0,0,0.04)",
                 backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255,255,255,0.10)",
+                border: "1px solid rgba(0,0,0,0.08)",
               }}
             >
               <button

@@ -561,17 +561,17 @@ export default function ChatInterface() {
         <div className="cyber-grid" />
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-20" style={{ background: "radial-gradient(circle, rgba(255, 140, 0, 0.06) 0%, transparent 60%)" }} />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-15" style={{ background: "radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.03) 0%, transparent 70%)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-15" style={{ background: "radial-gradient(ellipse at bottom, rgba(255, 140, 0, 0.04) 0%, transparent 70%)" }} />
         </div>
 
         {/* Glass Header */}
         <header
           className="flex items-center justify-between px-4 sm:px-6 h-12 flex-shrink-0 relative z-10 font-mono"
           style={{
-            background: "rgba(255,255,255,0.04)",
+            background: "rgba(255,255,255,0.88)",
             backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 2px 20px rgba(0,0,0,0.30)",
+            borderBottom: "1px solid rgba(0,0,0,0.08)",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
           }}
         >
           {/* Left: Logo + Name */}
@@ -584,7 +584,7 @@ export default function ChatInterface() {
               </div>
               <div className="hidden sm:flex flex-col">
                 <span className="text-[13px] font-bold leading-none tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 8px rgba(255,140,0,0.4)" }}>LAILA</span>
-                <span className="text-[9px] leading-none mt-0.5 tracking-widest" style={{ color: "rgba(255,255,255,0.30)" }}>AI SYSTEM v2.0</span>
+                <span className="text-[9px] leading-none mt-0.5 tracking-widest" style={{ color: "rgba(0,0,0,0.35)" }}>AI SYSTEM v2.0</span>
               </div>
             </button>
             {/* ONLINE indicator */}
@@ -604,11 +604,11 @@ export default function ChatInterface() {
             <motion.div
               className="flex items-center gap-2 px-3 py-1 font-mono text-[10px] tracking-widest"
               style={{
-                background: "rgba(255,255,255,0.05)",
+                background: "rgba(0,0,0,0.04)",
                 backdropFilter: "blur(12px)",
-                border: `1px solid ${avatarStatus !== "idle" ? "rgba(255,140,0,0.40)" : "rgba(255,255,255,0.10)"}`,
+                border: `1px solid ${avatarStatus !== "idle" ? "rgba(255,140,0,0.40)" : "rgba(0,0,0,0.08)"}`,
                 borderRadius: "6px",
-                color: "rgba(255,255,255,0.50)",
+                color: "rgba(0,0,0,0.45)",
                 boxShadow: avatarStatus !== "idle" ? "0 0 12px rgba(255,140,0,0.15)" : "none",
               }}
               animate={avatarStatus !== "idle" ? { scale: [1, 1.02, 1] } : {}}
@@ -616,13 +616,13 @@ export default function ChatInterface() {
             >
               <motion.span
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ background: avatarStatus !== "idle" ? "#ff8c00" : "rgba(255,255,255,0.20)" }}
+                style={{ background: avatarStatus !== "idle" ? "#ff8c00" : "rgba(0,0,0,0.15)" }}
                 animate={avatarStatus !== "idle" ? { opacity: [1, 0.3, 1] } : {}}
                 transition={{ duration: 0.8, repeat: Infinity }}
               />
               <span className="hidden sm:inline whitespace-nowrap uppercase">
                 {avatarStatus === "thinking" ? (
-                  <span style={{ color: "rgba(255,255,255,0.80)" }}>{"// PROCESSING..."}</span>
+                  <span style={{ color: "rgba(0,0,0,0.65)" }}>{"// PROCESSING..."}</span>
                 ) : avatarStatus === "talking" ? (
                   <span style={{ color: "#ff8c00" }}>{"// SPEAKING..."}</span>
                 ) : wakeWordListening ? <span style={{ color: "#ff8c00" }}>{"// LISTENING"}</span> : '// STANDBY'}

@@ -60,7 +60,7 @@ export default function TypingIndicator() {
             </motion.span>
           )}
         </div>
-        <div className="flex items-center gap-2 font-mono text-[13px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+        <div className="flex items-center gap-2 font-mono text-[13px]" style={{ color: "rgba(0,0,0,0.40)" }}>
           <span>// processing</span>
           <motion.span
             style={{ color: "#ff8c00", textShadow: "0 0 6px rgba(255,140,0,0.5)" }}
