@@ -195,9 +195,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
               disabled={!canSend}
               className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-30"
               style={{
-                background: canSend ? "linear-gradient(135deg, var(--accent), var(--accent-hover))" : "var(--surface-hover)",
-                color: canSend ? "#ffffff" : "var(--icon-default)",
-                boxShadow: canSend ? "0 2px 12px var(--accent-glow)" : "none",
+                background: canSend ? "linear-gradient(135deg, #00ff88, #00e5ff)" : "rgba(0,255,136,0.05)",
+                color: canSend ? "#000000" : "#1a3d2e",
+                boxShadow: canSend ? "0 0 16px rgba(0,255,136,0.4), 0 2px 8px rgba(0,0,0,0.4)" : "none",
+                border: canSend ? "none" : "1px solid rgba(0,255,136,0.10)",
               }}
               whileTap={canSend ? { scale: 0.82 } : {}}
               whileHover={canSend ? { scale: 1.08 } : {}}
