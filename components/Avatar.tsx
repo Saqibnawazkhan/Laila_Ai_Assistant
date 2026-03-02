@@ -8,7 +8,7 @@ interface AvatarProps {
 
 export default function Avatar({ status }: AvatarProps) {
   const statusColors = {
-    idle: "from-purple-500 via-violet-500 to-fuchsia-500",
+    idle: "from-emerald-500 via-green-400 to-teal-500",
     thinking: "from-blue-500 via-purple-500 to-violet-500",
     talking: "from-fuchsia-500 via-pink-500 to-purple-500",
   };
