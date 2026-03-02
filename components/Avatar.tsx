@@ -180,17 +180,18 @@ export default function Avatar({ status }: AvatarProps) {
 
       {/* Name & Status */}
       <div className="text-center">
-        <h2 className="text-white font-semibold text-lg tracking-wide">Laila</h2>
+        <h2 className="font-bold text-lg tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 10px rgba(0,255,136,0.5)" }}>Laila</h2>
         <motion.p
-          className={`text-xs ${status === "talking" ? "text-pink-400" : status === "thinking" ? "text-blue-400" : "text-gray-400"}`}
+          className="text-xs font-mono tracking-wider uppercase"
+          style={{ color: status === "talking" ? "#00ff88" : status === "thinking" ? "#00e5ff" : "#4dbb88" }}
           key={status}
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {status === "idle" && "Ready to help"}
-          {status === "thinking" && "Thinking..."}
-          {status === "talking" && "Speaking..."}
+          {status === "idle" && "> READY_"}
+          {status === "thinking" && "> PROCESSING..."}
+          {status === "talking" && "> SPEAKING..."}
         </motion.p>
       </div>
     </div>
