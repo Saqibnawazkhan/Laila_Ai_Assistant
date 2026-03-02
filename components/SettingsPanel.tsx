@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { X, Volume2, VolumeX, Shield, Trash2, Settings, MessageSquare, Ear, Download, Gauge, Sun, Moon, Palette, ChevronRight } from "lucide-react";
+import { X, Volume2, VolumeX, Shield, Trash2, MessageSquare, Ear, Download, Gauge, Sun, Moon, Palette, ChevronRight, Sparkles } from "lucide-react";
 import { showToast } from "./Toast";
 import { getSpeechRate, setSpeechRate } from "@/lib/speech";
 import { useTheme } from "@/lib/theme";
@@ -46,311 +46,229 @@ export default function SettingsPanel({
   };
 
   const exportChat = (format: "txt" | "json") => {
-    if (messages.length === 0) {
-      showToast("No messages to export", "info");
-      return;
-    }
-
+    if (messages.length === 0) { showToast("No messages to export", "info"); return; }
     let content: string;
     let filename: string;
     let mimeType: string;
-
     if (format === "json") {
       content = JSON.stringify(messages, null, 2);
       filename = `laila-chat-${Date.now()}.json`;
       mimeType = "application/json";
     } else {
-      content = messages
-        .map((m) => {
-          const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
-          const role = m.role === "assistant" ? "Laila" : "You";
-          return `[${time}] ${role}: ${m.content}`;
-        })
-        .join("\n\n");
+      content = messages.map((m) => {
+        const time = m.timestamp ? new Date(m.timestamp).toLocaleString() : "";
+        return `[${time}] ${m.role === "assistant" ? "Laila" : "You"}: ${m.content}`;
+      }).join("\n\n");
       filename = `laila-chat-${Date.now()}.txt`;
       mimeType = "text/plain";
     }
-
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
+    a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
-    showToast(`Chat exported as ${format.toUpperCase()}`, "success");
+    showToast(`Exported as ${format.toUpperCase()}`, "success");
   };
+
+  const Section = ({ label, icon: Icon }: { label: string; icon: React.ElementType }) => (
+    <div className="flex items-center gap-2 mb-3 px-1">
+      <Icon size={13} style={{ color: "rgba(0,0,0,0.30)" }} />
+      <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "rgba(0,0,0,0.35)" }}>{label}</span>
+    </div>
+  );
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-40 backdrop-blur-sm"
-            style={{ background: "var(--overlay-bg)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0,0,0,0.20)", backdropFilter: "blur(4px)" }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
           />
-
           <motion.div
-            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col font-mono"
-            style={{ background: "rgba(14,11,8,0.96)", backdropFilter: "blur(32px)", borderRight: "1px solid rgba(255,255,255,0.10)", boxShadow: "4px 0 40px rgba(0,0,0,0.60)" }}
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed left-0 top-0 bottom-0 z-50 w-full max-w-[320px] flex flex-col"
+            style={{
+              background: "#ffffff",
+              borderRight: "1px solid rgba(0,0,0,0.08)",
+              boxShadow: "8px 0 32px rgba(0,0,0,0.10)",
+            }}
+            initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 240 }}
           >
-            {/* Header — Terminal style */}
-            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] tracking-widest uppercase" style={{ color: "#ff8c00" }}>&#x25B6;</span>
-                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 8px rgba(255,140,0,0.4)" }}>[ CONFIG ]</h2>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,140,0,0.12)" }}>
+                  <Sparkles size={14} style={{ color: "#ff8c00" }} />
+                </div>
+                <span className="text-[15px] font-semibold" style={{ color: "#111827" }}>Settings</span>
               </div>
-              <button
-                onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center transition-colors rounded"
-                style={{ color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.12)" }}
-              >
-                <X size={14} />
+              <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100" style={{ color: "rgba(0,0,0,0.40)" }}>
+                <X size={16} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
-              {/* Theme Toggle */}
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-                <div className="flex items-center gap-2 mb-2.5 px-1">
-                  <Palette size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(255,140,0,0.6)" }}>Appearance</span>
-                </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+              {/* Appearance */}
+              <div>
+                <Section label="Appearance" icon={Palette} />
                 <button
                   onClick={toggleTheme}
-                  className="w-full flex items-center justify-between rounded-xl px-4 py-3 transition-all hover:bg-[var(--surface-hover)]"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                  className="w-full flex items-center justify-between rounded-2xl px-4 py-3 transition-all hover:bg-gray-50"
+                  style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: theme === "dark" ? "rgba(139,92,246,0.15)" : "rgba(245,158,11,0.15)" }}>
-                      {theme === "dark" ? <Moon size={15} className="text-violet-400" /> : <Sun size={15} className="text-amber-500" />}
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: theme === "dark" ? "#1f2937" : "#fef3c7" }}>
+                      {theme === "dark" ? <Moon size={15} className="text-blue-400" /> : <Sun size={15} className="text-amber-500" />}
                     </div>
                     <div className="text-left">
-                      <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>{theme === "dark" ? "Dark Mode" : "Light Mode"}</p>
-                      <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Tap to switch</p>
+                      <p className="text-[13px] font-medium" style={{ color: "#111827" }}>{theme === "dark" ? "Dark Mode" : "Light Mode"}</p>
+                      <p className="text-[11px]" style={{ color: "rgba(0,0,0,0.40)" }}>Click to switch</p>
                     </div>
                   </div>
-                  <div
-                    className="w-10 h-[22px] rounded-full flex items-center transition-colors"
-                    style={{
-                      background: theme === "light" ? "var(--accent)" : "var(--toggle-off)",
-                      justifyContent: theme === "light" ? "flex-end" : "flex-start",
-                    }}
-                  >
-                    <motion.div
-                      className="w-[18px] h-[18px] bg-white rounded-full mx-0.5"
-                      layout
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
+                  <div className="w-10 h-[22px] rounded-full flex items-center transition-all" style={{ background: theme === "light" ? "#ff8c00" : "rgba(0,0,0,0.15)", justifyContent: theme === "light" ? "flex-end" : "flex-start" }}>
+                    <motion.div className="w-[18px] h-[18px] bg-white rounded-full mx-0.5 shadow-sm" layout transition={{ type: "spring", stiffness: 500, damping: 30 }} />
                   </div>
                 </button>
-              </motion.div>
+              </div>
 
-              {/* Voice Section */}
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
-                <div className="flex items-center gap-2 mb-2.5 px-1">
-                  <Volume2 size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(255,140,0,0.6)" }}>Voice</span>
-                </div>
+              {/* Voice */}
+              <div>
+                <Section label="Voice" icon={Volume2} />
                 <div className="space-y-2">
                   <button
                     onClick={onToggleVoice}
-                    className="w-full flex items-center justify-between rounded-xl px-4 py-3 transition-all hover:bg-[var(--surface-hover)]"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                    className="w-full flex items-center justify-between rounded-2xl px-4 py-3 transition-all hover:bg-gray-50"
+                    style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: voiceEnabled ? "rgba(139,92,246,0.15)" : "var(--surface-hover)" }}>
-                        {voiceEnabled ? <Volume2 size={15} style={{ color: "var(--accent)" }} /> : <VolumeX size={15} style={{ color: "var(--text-muted)" }} />}
+                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: voiceEnabled ? "rgba(255,140,0,0.12)" : "rgba(0,0,0,0.05)" }}>
+                        {voiceEnabled ? <Volume2 size={15} style={{ color: "#ff8c00" }} /> : <VolumeX size={15} style={{ color: "rgba(0,0,0,0.35)" }} />}
                       </div>
                       <div className="text-left">
-                        <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>Voice Responses</p>
-                        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>{voiceEnabled ? "Enabled" : "Muted"}</p>
+                        <p className="text-[13px] font-medium" style={{ color: "#111827" }}>Voice Responses</p>
+                        <p className="text-[11px]" style={{ color: "rgba(0,0,0,0.40)" }}>{voiceEnabled ? "Enabled" : "Muted"}</p>
                       </div>
                     </div>
-                    <div
-                      className="w-10 h-[22px] rounded-full flex items-center transition-colors"
-                      style={{
-                        background: voiceEnabled ? "#ff8c00" : "rgba(255,255,255,0.08)",
-                        justifyContent: voiceEnabled ? "flex-end" : "flex-start",
-                      }}
-                    >
-                      <motion.div
-                        className="w-[18px] h-[18px] rounded-full mx-0.5"
-                        style={{ background: voiceEnabled ? "#ffffff" : "rgba(255,255,255,0.35)" }}
-                        layout
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
+                    <div className="w-10 h-[22px] rounded-full flex items-center transition-all" style={{ background: voiceEnabled ? "#ff8c00" : "rgba(0,0,0,0.12)", justifyContent: voiceEnabled ? "flex-end" : "flex-start" }}>
+                      <motion.div className="w-[18px] h-[18px] bg-white rounded-full mx-0.5 shadow-sm" layout transition={{ type: "spring", stiffness: 500, damping: 30 }} />
                     </div>
                   </button>
 
                   {voiceEnabled && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="rounded-xl px-4 py-3"
-                      style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                      className="rounded-2xl px-4 py-3" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <Gauge size={13} style={{ color: "var(--accent)" }} />
-                        <p className="text-[12px] font-medium" style={{ color: "var(--foreground)" }}>Speed</p>
-                        <span className="ml-auto text-[11px] font-mono" style={{ color: "var(--accent)" }}>{voiceSpeed.toFixed(1)}x</span>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <Gauge size={13} style={{ color: "#ff8c00" }} />
+                        <p className="text-[12px] font-medium" style={{ color: "#111827" }}>Speed</p>
+                        <span className="ml-auto text-[12px] font-semibold" style={{ color: "#ff8c00" }}>{voiceSpeed.toFixed(1)}x</span>
                       </div>
-                      <input
-                        type="range"
-                        min="0.5"
-                        max="2.0"
-                        step="0.1"
-                        value={voiceSpeed}
-                        onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
-                        className="w-full h-1 rounded-full appearance-none cursor-pointer accent-emerald-400"
-                        style={{ background: "var(--border)" }}
-                      />
-                      <div className="flex justify-between text-[9px] mt-1" style={{ color: "var(--text-dim)" }}>
-                        <span>Slow</span>
-                        <span>Fast</span>
+                      <input type="range" min="0.5" max="2.0" step="0.1" value={voiceSpeed} onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
+                        className="w-full h-1 rounded-full appearance-none cursor-pointer" style={{ accentColor: "#ff8c00" }} />
+                      <div className="flex justify-between text-[10px] mt-1" style={{ color: "rgba(0,0,0,0.30)" }}>
+                        <span>0.5x Slow</span><span>2.0x Fast</span>
                       </div>
                     </motion.div>
                   )}
 
-                  <div
-                    className="rounded-xl px-4 py-3"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  >
+                  <div className="rounded-2xl px-4 py-3" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(139,92,246,0.15)" }}>
-                        <Ear size={15} style={{ color: "var(--accent)" }} />
+                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,140,0,0.10)" }}>
+                        <Ear size={15} style={{ color: "#ff8c00" }} />
                       </div>
                       <div>
-                        <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>Wake Word</p>
-                        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>Say &quot;Laila&quot; to activate</p>
+                        <p className="text-[13px] font-medium" style={{ color: "#111827" }}>Wake Word</p>
+                        <p className="text-[11px]" style={{ color: "rgba(0,0,0,0.40)" }}>Say &quot;Laila&quot; to activate</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Permissions */}
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                <div className="flex items-center gap-2 mb-2.5 px-1">
-                  <Shield size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(255,140,0,0.6)" }}>Permissions</span>
-                </div>
+              <div>
+                <Section label="Permissions" icon={Shield} />
                 <div className="space-y-1.5">
                   {allowedTypes.size === 0 ? (
-                    <div className="rounded-xl px-4 py-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                      <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>No permissions granted yet</p>
+                    <div className="rounded-2xl px-4 py-3" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
+                      <p className="text-[12px]" style={{ color: "rgba(0,0,0,0.40)" }}>No permissions granted yet</p>
                     </div>
                   ) : (
                     <>
                       {Array.from(allowedTypes).map((type) => (
-                        <div
-                          key={type}
-                          className="flex items-center gap-3 rounded-xl px-4 py-2.5"
-                          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                        >
-                          <Shield size={13} className="text-emerald-400" />
-                          <p className="text-[12px] flex-1" style={{ color: "var(--foreground)" }}>{typeLabels[type] || type}</p>
-                          <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">Active</span>
+                        <div key={type} className="flex items-center gap-3 rounded-2xl px-4 py-2.5" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          <p className="text-[12px] flex-1" style={{ color: "#111827" }}>{typeLabels[type] || type}</p>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">Active</span>
                         </div>
                       ))}
-                      <button
-                        onClick={onResetPermissions}
-                        className="w-full flex items-center justify-center gap-2 text-red-400 text-[12px] py-2 hover:text-red-300 transition-colors"
-                      >
-                        <Shield size={12} />
-                        Reset Permissions
+                      <button onClick={onResetPermissions} className="w-full text-[12px] py-2 text-red-500 hover:text-red-600 transition-colors flex items-center justify-center gap-1.5">
+                        <Shield size={12} /> Reset Permissions
                       </button>
                     </>
                   )}
                 </div>
-              </motion.div>
+              </div>
 
               {/* Data */}
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                <div className="flex items-center gap-2 mb-2.5 px-1">
-                  <Download size={12} style={{ color: "var(--text-dim)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(255,140,0,0.6)" }}>Data</span>
-                </div>
+              <div>
+                <Section label="Data" icon={Download} />
                 <div className="space-y-1.5">
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => exportChat("txt")}
-                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[12px] transition-all hover:bg-[var(--surface-hover)]"
-                      style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-                    >
-                      <Download size={12} />
-                      .txt
-                    </button>
-                    <button
-                      onClick={() => exportChat("json")}
-                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[12px] transition-all hover:bg-[var(--surface-hover)]"
-                      style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
-                    >
-                      <Download size={12} />
-                      .json
-                    </button>
+                    {(["txt", "json"] as const).map((fmt) => (
+                      <button key={fmt} onClick={() => exportChat(fmt)}
+                        className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-[12px] font-medium transition-all hover:bg-gray-100"
+                        style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)", color: "rgba(0,0,0,0.60)" }}
+                      >
+                        <Download size={12} /> .{fmt}
+                      </button>
+                    ))}
                   </div>
-                  <button
-                    onClick={onClearChats}
-                    className="w-full flex items-center gap-3 rounded-xl px-4 py-2.5 hover:bg-red-500/5 transition-colors group"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                  <button onClick={onClearChats}
+                    className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all hover:bg-red-50 group"
+                    style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}
                   >
-                    <Trash2 size={14} style={{ color: "var(--text-muted)" }} className="group-hover:text-red-400" />
+                    <Trash2 size={14} className="text-red-400 group-hover:text-red-500 transition-colors" />
                     <div className="text-left">
-                      <p className="text-[12px] group-hover:text-red-300 transition-colors" style={{ color: "var(--foreground)" }}>Clear History</p>
-                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Delete all conversations</p>
+                      <p className="text-[13px] font-medium group-hover:text-red-600 transition-colors" style={{ color: "#111827" }}>Clear History</p>
+                      <p className="text-[11px]" style={{ color: "rgba(0,0,0,0.40)" }}>Delete all conversations</p>
                     </div>
-                    <ChevronRight size={14} className="ml-auto" style={{ color: "var(--text-dim)" }} />
+                    <ChevronRight size={14} className="ml-auto" style={{ color: "rgba(0,0,0,0.25)" }} />
                   </button>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Stats */}
               {messages.length > 0 && (
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                  <div className="flex items-center gap-2 mb-2.5 px-1">
-                    <MessageSquare size={12} style={{ color: "var(--text-dim)" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-widest font-mono" style={{ color: "rgba(255,140,0,0.6)" }}>Stats</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <Section label="Stats" icon={MessageSquare} />
+                  <div className="grid grid-cols-2 gap-2">
                     {[
                       { label: "Messages", value: messages.length },
                       { label: "You", value: messages.filter((m) => m.role === "user").length },
                       { label: "Laila", value: messages.filter((m) => m.role === "assistant").length },
-                      { label: "Words", value: messages.reduce((acc, m) => acc + m.content.split(/\s+/).length, 0) },
-                    ].map((stat) => (
-                      <div
-                        key={stat.label}
-                        className="rounded-xl px-3 py-2.5 text-center"
-                        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                      >
-                        <p className="text-lg font-bold" style={{ color: "var(--accent)" }}>{stat.value}</p>
-                        <p className="text-[9px]" style={{ color: "var(--text-muted)" }}>{stat.label}</p>
+                      { label: "Words", value: messages.reduce((a, m) => a + m.content.split(/\s+/).length, 0) },
+                    ].map((s) => (
+                      <div key={s.label} className="rounded-2xl px-3 py-3 text-center" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
+                        <p className="text-xl font-bold" style={{ color: "#ff8c00" }}>{s.value}</p>
+                        <p className="text-[10px] font-medium mt-0.5" style={{ color: "rgba(0,0,0,0.40)" }}>{s.label}</p>
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {/* About */}
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="rounded-xl px-4 py-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>Laila AI</p>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>v2.0</span>
+              <div className="rounded-2xl px-4 py-3" style={{ background: "rgba(255,140,0,0.06)", border: "1px solid rgba(255,140,0,0.15)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-[13px] font-semibold" style={{ color: "#111827" }}>Laila AI</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "rgba(255,140,0,0.15)", color: "#ff8c00" }}>v2.0</span>
                 </div>
-                <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                  Powered by Groq &middot; Built by Saqib Nawaz Khan
-                </p>
-              </motion.div>
+                <p className="text-[11px]" style={{ color: "rgba(0,0,0,0.45)" }}>Powered by Groq · Built by Saqib Nawaz Khan</p>
+              </div>
             </div>
           </motion.div>
         </>

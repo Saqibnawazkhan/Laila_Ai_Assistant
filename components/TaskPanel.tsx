@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { X, Check, Trash2, ListTodo, Plus, Target } from "lucide-react";
+import { X, Check, Trash2, Plus, Target, Sparkles } from "lucide-react";
 import { Task } from "@/lib/tasks";
 
 interface TaskPanelProps {
@@ -20,185 +20,138 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, 
   const completed = tasks.filter((t) => t.completed);
   const progress = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
 
-  const priorityConfig = {
-    high: { color: "text-red-400", label: "High", dot: "bg-red-400" },
-    medium: { color: "text-amber-400", label: "Med", dot: "bg-amber-400" },
-    low: { color: "text-emerald-400", label: "Low", dot: "bg-emerald-400" },
-  };
+  const priorityDot = { high: "#ef4444", medium: "#f59e0b", low: "#10b981" };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-40 backdrop-blur-sm"
-            style={{ background: "var(--overlay-bg)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0,0,0,0.20)", backdropFilter: "blur(4px)" }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
           />
-
           <motion.div
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col font-mono"
-            style={{ background: "rgba(14,11,8,0.96)", backdropFilter: "blur(32px)", borderLeft: "1px solid rgba(255,255,255,0.10)", boxShadow: "-4px 0 40px rgba(0,0,0,0.60)" }}
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-[320px] flex flex-col"
+            style={{
+              background: "#ffffff",
+              borderLeft: "1px solid rgba(0,0,0,0.08)",
+              boxShadow: "-8px 0 32px rgba(0,0,0,0.10)",
+            }}
+            initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 240 }}
           >
-            {/* Header — Terminal style */}
-            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px]" style={{ color: "#ff8c00" }}>&#x25B6;</span>
-                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 8px rgba(255,140,0,0.4)" }}>[ TASKS ]</h2>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,140,0,0.12)" }}>
+                  <Sparkles size={14} style={{ color: "#ff8c00" }} />
+                </div>
+                <span className="text-[15px] font-semibold" style={{ color: "#111827" }}>Tasks</span>
                 {pending.length > 0 && (
-                  <span className="text-white text-[9px] px-1.5 py-0.5 rounded font-bold font-mono" style={{ background: "#ff8c00" }}>
+                  <span className="text-white text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: "#ff8c00" }}>
                     {pending.length}
                   </span>
                 )}
               </div>
-              <button
-                onClick={onClose}
-                className="hover:bg-[var(--surface-hover)] w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                style={{ color: "var(--text-muted)" }}
-              >
+              <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100" style={{ color: "rgba(0,0,0,0.40)" }}>
                 <X size={16} />
               </button>
             </div>
 
-            {/* Progress ring */}
+            {/* Progress */}
             {tasks.length > 0 && (
-              <div className="px-5 pt-4 pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10">
-                    <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
-                      <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--surface)" strokeWidth="3" />
-                      <motion.circle
-                        cx="18" cy="18" r="15.5" fill="none"
-                        stroke="var(--accent)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray={`${progress * 0.97} 100`}
-                        initial={{ strokeDasharray: "0 100" }}
-                        animate={{ strokeDasharray: `${progress * 0.97} 100` }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                      />
-                    </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold" style={{ color: "var(--accent)" }}>{progress}%</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>{completed.length} of {tasks.length} done</p>
-                    <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                      {progress === 100 ? "All tasks completed!" : progress >= 50 ? "Keep going, almost there!" : `${pending.length} remaining`}
-                    </p>
-                  </div>
-                  {progress === 100 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="text-lg"
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      🎉
-                    </motion.span>
-                  )}
+              <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[12px] font-medium" style={{ color: "#111827" }}>{completed.length} of {tasks.length} completed</span>
+                  <span className="text-[12px] font-semibold" style={{ color: "#ff8c00" }}>{progress}%</span>
                 </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.06)" }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: "linear-gradient(90deg, #ff8c00, #ffaa33)" }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
+                </div>
+                {progress === 100 && (
+                  <p className="text-[11px] mt-1.5 text-emerald-600 font-medium">🎉 All done!</p>
+                )}
               </div>
             )}
 
-            {/* Quick add */}
+            {/* Add task */}
             {onAdd && (
-              <div className="px-5 pt-2 pb-1">
+              <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={newTaskTitle}
                     onChange={(e) => setNewTaskTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && newTaskTitle.trim()) {
-                        onAdd(newTaskTitle.trim());
-                        setNewTaskTitle("");
-                      }
-                    }}
-                    placeholder="Add a task..."
-                    className="flex-1 text-[13px] rounded-xl px-3 py-2 focus:outline-none"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                    onKeyDown={(e) => { if (e.key === "Enter" && newTaskTitle.trim()) { onAdd(newTaskTitle.trim()); setNewTaskTitle(""); } }}
+                    placeholder="Add a new task..."
+                    className="flex-1 text-[13px] rounded-xl px-3 py-2 focus:outline-none transition-all"
+                    style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.08)", color: "#111827" }}
                   />
-                  <button
-                    onClick={() => {
-                      if (newTaskTitle.trim()) {
-                        onAdd(newTaskTitle.trim());
-                        setNewTaskTitle("");
-                      }
-                    }}
+                  <motion.button
+                    onClick={() => { if (newTaskTitle.trim()) { onAdd(newTaskTitle.trim()); setNewTaskTitle(""); } }}
                     disabled={!newTaskTitle.trim()}
                     className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-all disabled:opacity-30"
-                    style={{ background: !newTaskTitle.trim() ? "var(--toggle-off)" : "var(--accent)" }}
+                    style={{ background: "#ff8c00" }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <Plus size={15} />
-                  </button>
+                    <Plus size={16} />
+                  </motion.button>
                 </div>
               </div>
             )}
 
-            {/* Task List */}
-            <div className="flex-1 overflow-y-auto px-5 py-3">
+            {/* Tasks */}
+            <div className="flex-1 overflow-y-auto px-4 py-4">
               {tasks.length === 0 ? (
                 <div className="text-center mt-16">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "var(--surface)" }}>
-                    <Target size={24} style={{ color: "var(--text-dim)" }} />
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: "#f3f4f6" }}>
+                    <Target size={22} style={{ color: "rgba(0,0,0,0.25)" }} />
                   </div>
-                  <p className="text-[13px] font-medium" style={{ color: "var(--text-muted)" }}>No tasks yet</p>
-                  <p className="text-[11px] mt-1" style={{ color: "var(--text-dim)" }}>Ask Laila to add one!</p>
+                  <p className="text-[13px] font-medium" style={{ color: "rgba(0,0,0,0.45)" }}>No tasks yet</p>
+                  <p className="text-[11px] mt-1" style={{ color: "rgba(0,0,0,0.30)" }}>Ask Laila to add one!</p>
                 </div>
               ) : (
                 <>
                   {pending.length > 0 && (
                     <div className="mb-5">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>
-                        Pending
-                      </p>
-                      <div className="space-y-1.5">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 px-1" style={{ color: "rgba(0,0,0,0.35)" }}>Pending · {pending.length}</p>
+                      <div className="space-y-2">
                         <AnimatePresence>
-                          {pending.map((task) => {
-                            const pConfig = priorityConfig[task.priority];
-                            return (
-                              <motion.div
-                                key={task.id}
-                                initial={{ opacity: 0, y: -8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
-                                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 group"
-                                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                              >
-                                <button
-                                  onClick={() => onToggle(task.id)}
-                                  className="flex-shrink-0 w-[18px] h-[18px] rounded-full border-[1.5px] hover:border-violet-400 transition-colors flex items-center justify-center"
-                                  style={{ borderColor: "var(--text-dim)" }}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-[12px] truncate" style={{ color: "var(--foreground)" }}>{task.title}</p>
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                    <span className={`flex items-center gap-1 text-[9px] ${pConfig.color}`}>
-                                      <span className={`w-1 h-1 rounded-full ${pConfig.dot}`} />
-                                      {pConfig.label}
-                                    </span>
-                                    {task.dueDate && (
-                                      <span className="text-[9px]" style={{ color: "var(--text-dim)" }}>{task.dueDate}</span>
-                                    )}
-                                  </div>
+                          {pending.map((task) => (
+                            <motion.div
+                              key={task.id}
+                              initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -40 }}
+                              className="flex items-center gap-3 rounded-2xl px-3.5 py-3 group transition-colors hover:bg-gray-50"
+                              style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}
+                            >
+                              <button
+                                onClick={() => onToggle(task.id)}
+                                className="flex-shrink-0 w-5 h-5 rounded-full border-2 hover:border-orange-400 transition-colors flex items-center justify-center"
+                                style={{ borderColor: "rgba(0,0,0,0.20)" }}
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] truncate font-medium" style={{ color: "#111827" }}>{task.title}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="flex items-center gap-1 text-[10px]">
+                                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: priorityDot[task.priority] }} />
+                                    <span style={{ color: "rgba(0,0,0,0.40)" }}>{task.priority}</span>
+                                  </span>
+                                  {task.dueDate && <span className="text-[10px]" style={{ color: "rgba(0,0,0,0.35)" }}>{task.dueDate}</span>}
                                 </div>
-                                <button
-                                  onClick={() => onDelete(task.id)}
-                                  className="flex-shrink-0 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
-                                  style={{ color: "var(--text-dim)" }}
-                                >
-                                  <Trash2 size={12} />
-                                </button>
-                              </motion.div>
-                            );
-                          })}
+                              </div>
+                              <button onClick={() => onDelete(task.id)} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-500">
+                                <Trash2 size={13} />
+                              </button>
+                            </motion.div>
+                          ))}
                         </AnimatePresence>
                       </div>
                     </div>
@@ -206,31 +159,16 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, 
 
                   {completed.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-dim)" }}>
-                        Done ({completed.length})
-                      </p>
-                      <div className="space-y-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 px-1" style={{ color: "rgba(0,0,0,0.35)" }}>Completed · {completed.length}</p>
+                      <div className="space-y-1.5">
                         {completed.map((task) => (
-                          <motion.div
-                            key={task.id}
-                            className="flex items-center gap-2.5 rounded-xl px-3 py-2 opacity-50 group"
-                            style={{ background: "var(--surface)" }}
-                          >
-                            <button
-                              onClick={() => onToggle(task.id)}
-                              className="flex-shrink-0 w-[18px] h-[18px] rounded-full bg-emerald-500 flex items-center justify-center"
-                            >
-                              <Check size={10} className="text-white" />
+                          <motion.div key={task.id} className="flex items-center gap-3 rounded-2xl px-3.5 py-2.5 group" style={{ background: "#f9fafb", opacity: 0.6 }}>
+                            <button onClick={() => onToggle(task.id)} className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "#10b981" }}>
+                              <Check size={11} className="text-white" />
                             </button>
-                            <p className="flex-1 text-[12px] line-through truncate" style={{ color: "var(--text-muted)" }}>
-                              {task.title}
-                            </p>
-                            <button
-                              onClick={() => onDelete(task.id)}
-                              className="flex-shrink-0 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
-                              style={{ color: "var(--text-dim)" }}
-                            >
-                              <Trash2 size={12} />
+                            <p className="flex-1 text-[13px] line-through truncate" style={{ color: "rgba(0,0,0,0.45)" }}>{task.title}</p>
+                            <button onClick={() => onDelete(task.id)} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-red-400">
+                              <Trash2 size={13} />
                             </button>
                           </motion.div>
                         ))}

@@ -564,96 +564,55 @@ export default function ChatInterface() {
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-15" style={{ background: "radial-gradient(ellipse at bottom, rgba(255, 140, 0, 0.04) 0%, transparent 70%)" }} />
         </div>
 
-        {/* Glass Header */}
+        {/* Header */}
         <header
-          className="flex items-center justify-between px-4 sm:px-6 h-12 flex-shrink-0 relative z-10 font-mono"
+          className="flex items-center justify-between px-4 sm:px-6 h-13 flex-shrink-0 relative z-10"
           style={{
-            background: "rgba(255,255,255,0.88)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(0,0,0,0.08)",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+            background: "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(16px)",
+            borderBottom: "1px solid rgba(0,0,0,0.07)",
+            boxShadow: "0 1px 0 rgba(0,0,0,0.05)",
+            height: "52px",
           }}
         >
-          {/* Left: Logo + Name */}
+          {/* Left: Logo */}
           <div className="flex items-center gap-2.5">
-            <button
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-            >
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--logo-bg-solid)", boxShadow: "var(--shadow-glow)" }}>
-                <Sparkles size={15} style={{ color: "var(--logo-icon)" }} />
-              </div>
-              <div className="hidden sm:flex flex-col">
-                <span className="text-[13px] font-bold leading-none tracking-widest uppercase" style={{ color: "#ff8c00", textShadow: "0 0 8px rgba(255,140,0,0.4)" }}>LAILA</span>
-                <span className="text-[9px] leading-none mt-0.5 tracking-widest" style={{ color: "rgba(0,0,0,0.35)" }}>AI SYSTEM v2.0</span>
-              </div>
-            </button>
-            {/* ONLINE indicator */}
-            <div className="hidden sm:flex items-center gap-1.5 ml-2">
-              <motion.span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ background: "#ff8c00", boxShadow: "0 0 6px rgba(255,140,0,0.8)" }}
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
-              />
-              <span className="text-[9px] tracking-widest uppercase" style={{ color: "#ff8c00" }}>ONLINE</span>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#ff8c00" }}>
+              <Sparkles size={15} style={{ color: "#ffffff" }} />
+            </div>
+            <div className="hidden sm:flex flex-col">
+              <span className="text-[14px] font-bold leading-none" style={{ color: "#111827" }}>Laila</span>
+              <span className="text-[10px] leading-none mt-0.5 font-medium" style={{ color: "rgba(0,0,0,0.35)" }}>AI Assistant</span>
+            </div>
+            <div className="hidden sm:flex items-center gap-1 ml-1">
+              <motion.span className="w-1.5 h-1.5 rounded-full bg-emerald-500" animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+              <span className="text-[10px] font-medium text-emerald-600">Online</span>
             </div>
           </div>
 
-          {/* Center — status indicator */}
+          {/* Center — status */}
           <div className="absolute left-1/2 -translate-x-1/2">
-            <motion.div
-              className="flex items-center gap-2 px-3 py-1 font-mono text-[10px] tracking-widest"
-              style={{
-                background: "rgba(0,0,0,0.04)",
-                backdropFilter: "blur(12px)",
-                border: `1px solid ${avatarStatus !== "idle" ? "rgba(255,140,0,0.40)" : "rgba(0,0,0,0.08)"}`,
-                borderRadius: "6px",
-                color: "rgba(0,0,0,0.45)",
-                boxShadow: avatarStatus !== "idle" ? "0 0 12px rgba(255,140,0,0.15)" : "none",
-              }}
-              animate={avatarStatus !== "idle" ? { scale: [1, 1.02, 1] } : {}}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <motion.span
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ background: avatarStatus !== "idle" ? "#ff8c00" : "rgba(0,0,0,0.15)" }}
-                animate={avatarStatus !== "idle" ? { opacity: [1, 0.3, 1] } : {}}
-                transition={{ duration: 0.8, repeat: Infinity }}
-              />
-              <span className="hidden sm:inline whitespace-nowrap uppercase">
-                {avatarStatus === "thinking" ? (
-                  <span style={{ color: "rgba(0,0,0,0.65)" }}>{"// PROCESSING..."}</span>
-                ) : avatarStatus === "talking" ? (
-                  <span style={{ color: "#ff8c00" }}>{"// SPEAKING..."}</span>
-                ) : wakeWordListening ? <span style={{ color: "#ff8c00" }}>{"// LISTENING"}</span> : '// STANDBY'}
-              </span>
-            </motion.div>
+            {avatarStatus !== "idle" && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium"
+                style={{ background: "rgba(255,140,0,0.10)", border: "1px solid rgba(255,140,0,0.20)", color: "#ff8c00" }}
+              >
+                <motion.span className="w-1.5 h-1.5 rounded-full bg-orange-400" animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 0.8, repeat: Infinity }} />
+                {avatarStatus === "thinking" ? "Thinking…" : avatarStatus === "talking" ? "Speaking…" : wakeWordListening ? "Listening…" : ""}
+              </motion.div>
+            )}
           </div>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-0.5">
-            <button
-              onClick={toggleTheme}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
-              style={{ color: "var(--icon-secondary)" }}
-              title={theme === "dark" ? "Light mode" : "Dark mode"}
-            >
+            <button onClick={toggleTheme} className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-gray-100" style={{ color: "rgba(0,0,0,0.45)" }} title={theme === "dark" ? "Light mode" : "Dark mode"}>
               {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            <button
-              onClick={handleToggleVoice}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
-              style={{ color: voiceEnabled ? "var(--accent)" : "var(--icon-default)" }}
-              title={voiceEnabled ? "Mute" : "Unmute"}
-            >
+            <button onClick={handleToggleVoice} className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-gray-100" style={{ color: voiceEnabled ? "#ff8c00" : "rgba(0,0,0,0.35)" }} title={voiceEnabled ? "Mute" : "Unmute"}>
               {voiceEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
             </button>
-            <button
-              onClick={() => setShowCommandPalette(true)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:bg-[var(--surface-hover)]"
-              style={{ color: "var(--icon-secondary)" }}
-              title="Commands (Ctrl+P)"
-            >
+            <button onClick={() => setShowCommandPalette(true)} className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-gray-100" style={{ color: "rgba(0,0,0,0.45)" }} title="Commands (Ctrl+P)">
               <LayoutGrid size={15} />
             </button>
           </div>
