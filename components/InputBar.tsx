@@ -147,7 +147,7 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                   <motion.div
                     key={i}
                     className="w-[2.5px] rounded-full"
-                    style={{ background: "var(--error)" }}
+                    style={{ background: "#00e5ff", boxShadow: "0 0 4px rgba(0,229,255,0.5)" }}
                     animate={{ height: [3, Math.random() * 20 + 6, 3] }}
                     transition={{
                       duration: 0.35 + Math.random() * 0.35,
@@ -171,8 +171,10 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                 disabled={disabled}
                 className="w-8 h-8 rounded-xl flex items-center justify-center transition-all disabled:opacity-50"
                 style={{
-                  color: isListening ? "var(--error)" : "var(--icon-secondary)",
-                  background: isListening ? "rgba(239, 68, 68, 0.1)" : "transparent",
+                  color: isListening ? "#00e5ff" : "#2a6644",
+                  background: isListening ? "rgba(0,229,255,0.08)" : "transparent",
+                  border: isListening ? "1px solid rgba(0,229,255,0.3)" : "1px solid transparent",
+                  boxShadow: isListening ? "0 0 12px rgba(0,229,255,0.2)" : "none",
                 }}
                 animate={isListening ? { scale: [1, 1.08, 1] } : {}}
                 transition={{ duration: 1, repeat: Infinity }}
