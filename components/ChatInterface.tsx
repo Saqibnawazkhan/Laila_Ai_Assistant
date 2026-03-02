@@ -10,7 +10,7 @@ import PermissionModal from "./PermissionModal";
 import TaskPanel from "./TaskPanel";
 import OnboardingScreen from "./OnboardingScreen";
 import SettingsPanel from "./SettingsPanel";
-import Sidebar from "./Sidebar";
+import BottomDock from "./BottomDock";
 import ConfirmDialog from "./ConfirmDialog";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import CommandPalette, { type CommandItem } from "./CommandPalette";
@@ -517,24 +517,21 @@ export default function ChatInterface() {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "var(--background)" }}>
+    <div className="flex h-screen overflow-hidden flex-col" style={{ background: "var(--background)" }}>
       <ToastContainer />
 
-      {/* Sidebar */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((p) => !p)}
+      {/* Bottom Dock */}
+      <BottomDock
+        activeView="chat"
+        onViewChange={(view) => {
+          if (view === "tasks") setIsTaskPanelOpen(true);
+          else if (view === "settings") setIsSettingsOpen(true);
+        }}
+        pendingTaskCount={pendingTaskCount}
         sessions={chatSessions}
         activeSessionId={activeSessionId}
-        onSelectSession={handleSelectSession}
-        onDeleteSession={handleDeleteSession}
-        onRenameSession={handleRenameSession}
+        onSelectSession={(id) => { const s = chatSessions.find((s) => s.id === id); if (s) handleSelectSession(s); }}
         onNewChat={handleNewChat}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenTasks={() => setIsTaskPanelOpen(true)}
-        onOpenCommandPalette={() => setShowCommandPalette(true)}
-        activeView="chat"
-        pendingTaskCount={pendingTaskCount}
       />
 
       {/* Modals */}
