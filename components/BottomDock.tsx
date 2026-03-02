@@ -47,11 +47,27 @@ export default function BottomDock({ activeView, onViewChange, pendingTaskCount 
               style={{
                 color: isActive ? "#00ff88" : "#2a6644",
                 background: isActive ? "rgba(0,255,136,0.08)" : "transparent",
+                boxShadow: isActive ? "0 0 12px rgba(0,255,136,0.15)" : "none",
               }}
               whileTap={{ scale: 0.9 }}
             >
               <Icon size={18} />
               <span>{item.label}</span>
+
+              {/* Active neon underline indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="dock-active"
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
+                  style={{
+                    width: "24px",
+                    height: "2px",
+                    background: "#00ff88",
+                    boxShadow: "0 0 8px #00ff88, 0 0 16px rgba(0,255,136,0.5)",
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
 
               {/* Badge */}
               {hasBadge && (
