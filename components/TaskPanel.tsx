@@ -40,22 +40,20 @@ export default function TaskPanel({ isOpen, onClose, tasks, onToggle, onDelete, 
           />
 
           <motion.div
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col"
-            style={{ background: "var(--background)", borderLeft: "1px solid var(--border)" }}
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm shadow-2xl flex flex-col font-mono"
+            style={{ background: "#000000", borderLeft: "1px solid rgba(0,255,136,0.20)", boxShadow: "-4px 0 30px rgba(0,255,136,0.06)" }}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "var(--accent-soft)" }}>
-                  <ListTodo size={14} style={{ color: "var(--accent)" }} />
-                </div>
-                <h2 className="text-[15px] font-semibold" style={{ color: "var(--text-primary)" }}>Tasks</h2>
+            {/* Header — Terminal style */}
+            <div className="flex items-center justify-between px-5 h-14 flex-shrink-0" style={{ borderBottom: "1px solid rgba(0,255,136,0.12)" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px]" style={{ color: "#00ff88" }}>&#x25B6;</span>
+                <h2 className="text-[13px] font-bold tracking-widest uppercase" style={{ color: "#00ff88", textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>[ TASKS ]</h2>
                 {pending.length > 0 && (
-                  <span className="text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: "var(--accent)" }}>
+                  <span className="text-black text-[9px] px-1.5 py-0.5 rounded font-bold font-mono" style={{ background: "#00ff88" }}>
                     {pending.length}
                   </span>
                 )}
