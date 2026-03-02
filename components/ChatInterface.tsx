@@ -563,8 +563,15 @@ export default function ChatInterface() {
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20" style={{ background: "radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.06) 0%, transparent 70%)" }} />
         </div>
 
-        {/* Floating Glass Header */}
-        <header className="flex items-center justify-between mx-3 sm:mx-4 mt-2 px-4 sm:px-5 h-12 flex-shrink-0 relative z-10 rounded-2xl glass-strong" style={{ boxShadow: "var(--shadow-sm)" }}>
+        {/* Cyberpunk Header */}
+        <header
+          className="flex items-center justify-between px-4 sm:px-6 h-12 flex-shrink-0 relative z-10 font-mono"
+          style={{
+            background: "rgba(0,0,0,0.95)",
+            borderBottom: "1px solid rgba(0,255,136,0.15)",
+            boxShadow: "0 2px 20px rgba(0,255,136,0.06)",
+          }}
+        >
           {/* Left: Logo + Name */}
           <div className="flex items-center gap-2.5">
             <button
