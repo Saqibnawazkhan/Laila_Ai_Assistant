@@ -597,26 +597,32 @@ export default function ChatInterface() {
             </div>
           </div>
 
-          {/* Center status pill */}
+          {/* Center — compact avatar status in header */}
           <div className="absolute left-1/2 -translate-x-1/2">
             <motion.div
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px]"
+              className="flex items-center gap-2 px-3 py-1 font-mono text-[10px] tracking-widest"
               style={{
-                background: "var(--surface)",
-                border: avatarStatus !== "idle" ? "1px solid var(--accent)" : "1px solid var(--border)",
-                color: "var(--text-muted)",
-                boxShadow: avatarStatus !== "idle" ? "0 0 12px var(--accent-glow)" : "none",
+                background: "rgba(0,255,136,0.04)",
+                border: `1px solid ${avatarStatus !== "idle" ? "rgba(0,255,136,0.4)" : "rgba(0,255,136,0.12)"}`,
+                borderRadius: "6px",
+                color: "#4dbb88",
+                boxShadow: avatarStatus !== "idle" ? "0 0 12px rgba(0,255,136,0.15)" : "none",
               }}
               animate={avatarStatus !== "idle" ? { scale: [1, 1.02, 1] } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wakeWordListening ? "bg-emerald-400 animate-pulse" : ""}`} style={wakeWordListening ? {} : avatarStatus !== "idle" ? { background: "var(--accent)" } : { background: "var(--text-dim)" }} />
-              <span className="hidden sm:inline whitespace-nowrap">
+              <motion.span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ background: avatarStatus !== "idle" ? "#00ff88" : "#1a3d2e" }}
+                animate={avatarStatus !== "idle" ? { opacity: [1, 0.3, 1] } : {}}
+                transition={{ duration: 0.8, repeat: Infinity }}
+              />
+              <span className="hidden sm:inline whitespace-nowrap uppercase">
                 {avatarStatus === "thinking" ? (
-                  <span style={{ color: "var(--accent)" }} className="flex items-center gap-1"><span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "var(--accent)" }} />Thinking...</span>
+                  <span style={{ color: "#00e5ff" }}>{"// PROCESSING..."}</span>
                 ) : avatarStatus === "talking" ? (
-                  <span style={{ color: "var(--accent)" }} className="flex items-center gap-1"><span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "var(--accent)" }} />Speaking...</span>
-                ) : wakeWordListening ? 'Listening...' : 'Say "Laila"'}
+                  <span style={{ color: "#00ff88" }}>{"// SPEAKING..."}</span>
+                ) : wakeWordListening ? <span style={{ color: "#00ff88" }}>{"// LISTENING"}</span> : '// STANDBY'}
               </span>
             </motion.div>
           </div>
