@@ -125,9 +125,9 @@ code, pre, kbd, .font-mono {
   font-family: var(--font-mono), "JetBrains Mono", "Fira Code", monospace;
 }
 
-/* Custom scrollbar - minimal */
+/* Custom scrollbar - neon cyberpunk */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
@@ -136,11 +136,13 @@ code, pre, kbd, .font-mono {
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 10px;
+  border-radius: 0;
+  box-shadow: 0 0 6px var(--accent-glow);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* Smooth theme transitions on key containers only */
