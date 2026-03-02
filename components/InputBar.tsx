@@ -114,6 +114,33 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
         >
           {/* Textarea / Listening */}
           <div className="px-4 pt-3 pb-1">
+            {/* Terminal prompt prefix */}
+            {!isListening && (
+              <div className="flex items-start gap-2">
+                <span className="font-mono text-[14px] mt-0.5 select-none flex-shrink-0" style={{ color: "#00ff88", textShadow: "0 0 6px rgba(0,255,136,0.5)" }}>&gt;_</span>
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  placeholder="enter command..."
+                  disabled={disabled}
+                  rows={1}
+                  className="w-full bg-transparent text-[14px] resize-none disabled:opacity-50 leading-relaxed font-mono"
+                  style={{
+                    minHeight: "40px",
+                    maxHeight: "140px",
+                    outline: "none",
+                    border: "none",
+                    boxShadow: "none",
+                    color: "var(--foreground)",
+                    caretColor: "var(--caret)",
+                  }}
+                />
+              </div>
+            )}
             {isListening ? (
               <div className="flex items-center justify-center gap-[3px] h-[40px]">
                 {Array.from({ length: 20 }).map((_, i) => (
@@ -132,29 +159,7 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
                 ))}
                 <span className="ml-3 text-xs animate-pulse" style={{ color: "var(--error)" }}>Listening...</span>
               </div>
-            ) : (
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                placeholder="Message Laila..."
-                disabled={disabled}
-                rows={1}
-                className="w-full bg-transparent text-[14px] resize-none disabled:opacity-50 leading-relaxed font-[420]"
-                style={{
-                  minHeight: "40px",
-                  maxHeight: "140px",
-                  outline: "none",
-                  border: "none",
-                  boxShadow: "none",
-                  color: "var(--foreground)",
-                  caretColor: "var(--caret)",
-                }}
-              />
-            )}
+            ) : null}
           </div>
 
           {/* Bottom action row */}
