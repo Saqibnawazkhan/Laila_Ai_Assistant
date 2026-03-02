@@ -178,12 +178,13 @@ export default function SettingsPanel({
                     <div
                       className="w-10 h-[22px] rounded-full flex items-center transition-colors"
                       style={{
-                        background: voiceEnabled ? "var(--accent)" : "var(--toggle-off)",
+                        background: voiceEnabled ? "#00ff88" : "#0a1a12",
                         justifyContent: voiceEnabled ? "flex-end" : "flex-start",
                       }}
                     >
                       <motion.div
-                        className="w-[18px] h-[18px] bg-white rounded-full mx-0.5"
+                        className="w-[18px] h-[18px] rounded-full mx-0.5"
+                        style={{ background: voiceEnabled ? "#000" : "#1a3d2e" }}
                         layout
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
@@ -210,7 +211,7 @@ export default function SettingsPanel({
                         step="0.1"
                         value={voiceSpeed}
                         onChange={(e) => handleSpeedChange(parseFloat(e.target.value))}
-                        className="w-full h-1 rounded-full appearance-none cursor-pointer accent-violet-500"
+                        className="w-full h-1 rounded-full appearance-none cursor-pointer accent-emerald-400"
                         style={{ background: "var(--border)" }}
                       />
                       <div className="flex justify-between text-[9px] mt-1" style={{ color: "var(--text-dim)" }}>
