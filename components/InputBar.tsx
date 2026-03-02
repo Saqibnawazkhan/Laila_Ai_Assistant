@@ -97,7 +97,7 @@ export default function InputBar({ onSend, disabled, onMicStart, onMicStop }: In
         <div
           className="relative rounded-2xl overflow-hidden transition-all duration-200"
           style={{
-            background: "var(--surface)",
+            background: isFocused ? "rgba(0,255,136,0.03)" : "rgba(0,0,0,0.6)",
             border: isListening
               ? "1px solid rgba(0, 229, 255, 0.5)"
               : input.length > MAX_CHARS
