@@ -25,7 +25,15 @@ export default function BottomDock({ activeView, onViewChange, pendingTaskCount 
       className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center"
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="flex items-center gap-1 px-3 py-2 rounded-2xl">
+      <div
+        className="flex items-center gap-1 px-3 py-2 rounded-2xl"
+        style={{
+          background: "rgba(0,0,0,0.92)",
+          border: "1px solid rgba(0,255,136,0.20)",
+          backdropFilter: "blur(24px)",
+          boxShadow: "0 -2px 30px rgba(0,255,136,0.08), 0 4px 30px rgba(0,0,0,0.8)",
+        }}
+      >
         {dockItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.id;
