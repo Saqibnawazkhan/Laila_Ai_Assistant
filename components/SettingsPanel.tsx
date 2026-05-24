@@ -1,10 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { X, Volume2, VolumeX, Shield, Trash2, MessageSquare, Ear, Download, Gauge, Sun, Moon, Palette, ChevronRight, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Volume2, VolumeX, Shield, Trash2, MessageSquare, Ear, Download, Gauge, Sun, Moon, Palette, ChevronRight, Sparkles, Mic, Play } from "lucide-react";
 import { showToast } from "./Toast";
-import { getSpeechRate, setSpeechRate } from "@/lib/speech";
+import { getSpeechRate, setSpeechRate, getAvailableVoices, getSelectedVoiceURI, setSelectedVoiceURI, speakText, stopSpeaking } from "@/lib/speech";
 import { useTheme } from "@/lib/theme";
 
 interface SettingsPanelProps {
@@ -39,10 +39,56 @@ export default function SettingsPanel({
 }: SettingsPanelProps) {
   const { theme, toggleTheme } = useTheme();
   const [voiceSpeed, setVoiceSpeed] = useState(getSpeechRate());
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURIState] = useState<string | null>(null);
+  const [previewingURI, setPreviewingURI] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const refresh = () => {
+      setVoices(getAvailableVoices());
+      setSelectedVoiceURIState(getSelectedVoiceURI());
+    };
+    refresh();
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = refresh;
+    }
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, [isOpen]);
 
   const handleSpeedChange = (val: number) => {
     setVoiceSpeed(val);
     setSpeechRate(val);
+  };
+
+  const handlePickVoice = (uri: string) => {
+    setSelectedVoiceURI(uri);
+    setSelectedVoiceURIState(uri);
+    showToast("Voice updated", "success");
+  };
+
+  const handlePreviewVoice = (uri: string) => {
+    if (previewingURI === uri) {
+      stopSpeaking();
+      setPreviewingURI(null);
+      return;
+    }
+    const prev = getSelectedVoiceURI();
+    setSelectedVoiceURI(uri);
+    setPreviewingURI(uri);
+    speakText(
+      "Hi, I'm Laila. This is how I sound.",
+      undefined,
+      () => {
+        setPreviewingURI(null);
+        // Restore previous selection if user was just sampling
+        if (prev !== uri) setSelectedVoiceURI(prev);
+      }
+    );
   };
 
   const exportChat = (format: "txt" | "json") => {
@@ -185,6 +231,48 @@ export default function SettingsPanel({
                       </div>
                     </div>
                   </div>
+
+                  {voiceEnabled && voices.length > 0 && (
+                    <div className="rounded-2xl px-4 py-3" style={{ background: "#f9fafb", border: "1px solid rgba(0,0,0,0.07)" }}>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <Mic size={13} style={{ color: "#ff8c00" }} />
+                        <p className="text-[12px] font-medium" style={{ color: "#111827" }}>Laila&apos;s Voice</p>
+                        <span className="ml-auto text-[11px]" style={{ color: "rgba(0,0,0,0.40)" }}>{voices.length} available</span>
+                      </div>
+                      <div className="space-y-1 max-h-[220px] overflow-y-auto pr-1">
+                        {voices.map((v) => {
+                          const isSelected = selectedVoiceURI === v.voiceURI || (selectedVoiceURI === null && v === voices[0]);
+                          const isPreviewing = previewingURI === v.voiceURI;
+                          return (
+                            <div key={v.voiceURI}
+                              className="flex items-center gap-2 rounded-xl px-2.5 py-2 transition-colors hover:bg-white"
+                              style={{
+                                background: isSelected ? "rgba(255,140,0,0.08)" : "transparent",
+                                border: isSelected ? "1px solid rgba(255,140,0,0.30)" : "1px solid transparent",
+                              }}
+                            >
+                              <button onClick={() => handlePreviewVoice(v.voiceURI)}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
+                                style={{ background: isPreviewing ? "#ff8c00" : "rgba(0,0,0,0.05)", color: isPreviewing ? "#fff" : "#ff8c00" }}
+                                title="Preview"
+                              >
+                                <Play size={11} fill={isPreviewing ? "#fff" : "#ff8c00"} />
+                              </button>
+                              <button onClick={() => handlePickVoice(v.voiceURI)} className="flex-1 text-left min-w-0">
+                                <p className="text-[12px] font-medium truncate" style={{ color: isSelected ? "#ff8c00" : "#111827" }}>
+                                  {v.name}
+                                </p>
+                                <p className="text-[10px]" style={{ color: "rgba(0,0,0,0.40)" }}>{v.lang}{v.localService ? "" : " · network"}</p>
+                              </button>
+                              {isSelected && (
+                                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#ff8c00" }} />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

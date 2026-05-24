@@ -133,12 +133,41 @@ let voicesLoaded = false;
 let cachedVoice: SpeechSynthesisVoice | null = null;
 let speechRate = 1.0;
 
+const VOICE_URI_KEY = "laila_voice_uri";
+
 export function setSpeechRate(rate: number): void {
   speechRate = Math.max(0.5, Math.min(2.0, rate));
 }
 
 export function getSpeechRate(): number {
   return speechRate;
+}
+
+// Returns all installed English voices. Used to render the voice picker.
+export function getAvailableVoices(): SpeechSynthesisVoice[] {
+  if (typeof window === "undefined" || !window.speechSynthesis) return [];
+  return window.speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
+}
+
+export function getSelectedVoiceURI(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(VOICE_URI_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setSelectedVoiceURI(uri: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (uri) localStorage.setItem(VOICE_URI_KEY, uri);
+    else localStorage.removeItem(VOICE_URI_KEY);
+  } catch { /* ignore */ }
+  // Refresh cache so the next speakText uses the new selection
+  cachedVoice = null;
+  voicesLoaded = false;
+  loadPreferredVoice();
 }
 
 function loadPreferredVoice(): SpeechSynthesisVoice | null {
@@ -149,6 +178,18 @@ function loadPreferredVoice(): SpeechSynthesisVoice | null {
 
   voicesLoaded = true;
 
+  // 1. User's saved choice takes priority
+  const savedURI = getSelectedVoiceURI();
+  if (savedURI) {
+    const saved = voices.find((v) => v.voiceURI === savedURI);
+    if (saved) {
+      cachedVoice = saved;
+      return cachedVoice;
+    }
+    // Saved voice no longer exists (e.g. system update) — fall through to defaults
+  }
+
+  // 2. Curated female-sounding English voices we know exist on macOS / Windows
   const preferred = voices.find(
     (v) =>
       v.lang.startsWith("en") &&
