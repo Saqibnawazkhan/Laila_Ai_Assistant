@@ -289,8 +289,10 @@ export function createWakeWordListener(
       ? window.SpeechRecognition || window.webkitSpeechRecognition
       : null;
 
-  // Word-boundary regex patterns for wake word detection
-  const wakeRegex = /\b(laila|layla|leila|leyla|lila|lyla)\b/i;
+  // Word-boundary regex patterns for wake word detection.
+  // Includes common Chrome mishearings (leela, lighter, lyla, etc.).
+  const wakeRegex = /\b(laila|layla|leila|leyla|lila|lyla|lela|leela|lighter|liana|liara)\b/i;
+  const WAKE_DEBUG = typeof window !== "undefined" && window.localStorage?.getItem("laila_wake_debug") === "1";
 
   function startListening() {
     if (!SpeechRecognitionAPI || isRunning || isPaused || !isActive) return;
@@ -318,18 +320,25 @@ export function createWakeWordListener(
 
           // Check all alternatives for the wake word
           for (let alt = 0; alt < event.results[i].length; alt++) {
-            const transcript = event.results[i][alt].transcript.toLowerCase().trim();
+            const rawTranscript = event.results[i][alt].transcript.trim();
             const confidence = event.results[i][alt].confidence;
 
-            if (confidence < 0.3) continue;
+            // Chrome often returns 0 confidence for continuous-mode finals.
+            // Trust isFinal but keep a very low floor to drop obvious noise.
+            if (confidence > 0 && confidence < 0.1) continue;
 
-            const match = transcript.match(wakeRegex);
+            // Apply name corrections first so "leela come here" → "Laila come here"
+            const corrected = correctTranscript(rawTranscript).toLowerCase();
+
+            if (WAKE_DEBUG) {
+              console.debug("[wake]", { raw: rawTranscript, corrected, confidence, alt });
+            }
+
+            const match = corrected.match(wakeRegex);
 
             if (match) {
               const matchEnd = match.index! + match[0].length;
-              const rawRemaining = transcript.slice(matchEnd).trim();
-              // Apply corrections to the remaining text after wake word
-              const remaining = correctTranscript(rawRemaining);
+              const remaining = corrected.slice(matchEnd).trim();
 
               // Stop recognition but keep isActive true so we can restart
               if (recognition) {
