@@ -106,14 +106,20 @@ export default function ChatInterface() {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
 
   const wakeWordRef = useRef<{ start: () => void; stop: () => void; pause: () => void; resume: () => void } | null>(null);
+  const voiceEnabledRef = useRef(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sendMessageRef = useRef<(content: string) => void>(undefined);
+  useEffect(() => { voiceEnabledRef.current = voiceEnabled; }, [voiceEnabled]);
 
   // Load everything on mount
   useEffect(() => {
     setAllowedTypes(loadPermissions());
     loadTasks().then(setTasks);
+    try {
+      const savedVoice = localStorage.getItem("laila_voice_enabled");
+      if (savedVoice === "0") setVoiceEnabled(false);
+    } catch { /* ignore */ }
 
     const loadChats = async () => {
       const sessions = await loadSessionsFromDb();
@@ -206,23 +212,36 @@ export default function ChatInterface() {
   }, []);
 
   const handleToggleVoice = useCallback(() => {
-    setVoiceEnabled((prev) => { if (prev) stopSpeaking(); return !prev; });
+    setVoiceEnabled((prev) => {
+      const next = !prev;
+      if (prev) {
+        stopSpeaking();
+        wakeWordRef.current?.pause();
+      } else {
+        wakeWordRef.current?.resume();
+      }
+      try { localStorage.setItem("laila_voice_enabled", next ? "1" : "0"); } catch { /* ignore */ }
+      return next;
+    });
   }, []);
 
   const speakAndAnimate = useCallback(
     (text: string) => {
       if (wakeWordRef.current) wakeWordRef.current.pause();
+      const resumeIfVoiceOn = () => {
+        if (voiceEnabledRef.current && wakeWordRef.current) wakeWordRef.current.resume();
+      };
       if (voiceEnabled) {
         setAvatarStatus("talking");
         speakText(text, () => setAvatarStatus("talking"), () => {
           setAvatarStatus("idle");
-          if (wakeWordRef.current) wakeWordRef.current.resume();
+          resumeIfVoiceOn();
         });
       } else {
         setAvatarStatus("talking");
         setTimeout(() => {
           setAvatarStatus("idle");
-          if (wakeWordRef.current) wakeWordRef.current.resume();
+          resumeIfVoiceOn();
         }, 2000);
       }
     },
@@ -277,6 +296,8 @@ export default function ChatInterface() {
       const listener = createWakeWordListener(onWake, setWakeWordListening);
       wakeWordRef.current = listener;
       listener.start();
+      // Honor current voice setting; pause immediately if muted so resume() works later
+      if (!voiceEnabledRef.current) listener.pause();
       document.removeEventListener("click", initWakeWord);
       document.removeEventListener("touchstart", initWakeWord);
       document.removeEventListener("keydown", initWakeWord);
