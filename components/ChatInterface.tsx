@@ -113,7 +113,7 @@ export default function ChatInterface() {
   // Load everything on mount
   useEffect(() => {
     setAllowedTypes(loadPermissions());
-    setTasks(loadTasks());
+    loadTasks().then(setTasks);
 
     const loadChats = async () => {
       const sessions = await loadSessionsFromDb();
@@ -381,25 +381,25 @@ export default function ChatInterface() {
     setPendingCommand(null);
   };
 
-  const handleTaskAction = useCallback((response: string) => {
+  const handleTaskAction = useCallback(async (response: string) => {
     const taskCommand = parseTaskFromResponse(response);
     if (!taskCommand) return;
     switch (taskCommand.action) {
       case "add":
-        if (taskCommand.title) setTasks(addTask(tasks, taskCommand.title, taskCommand.priority, taskCommand.dueDate));
+        if (taskCommand.title) setTasks(await addTask(taskCommand.title, taskCommand.priority, taskCommand.dueDate));
         break;
       case "complete":
-        if (taskCommand.title) { const m = tasks.find((t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase() && !t.completed); if (m) setTasks(toggleTask(tasks, m.id)); }
+        if (taskCommand.title) { const m = tasks.find((t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase() && !t.completed); if (m) setTasks(await toggleTask(m.id)); }
         break;
       case "delete":
-        if (taskCommand.title) { const m = tasks.find((t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase()); if (m) setTasks(deleteTask(tasks, m.id)); }
+        if (taskCommand.title) { const m = tasks.find((t) => t.title.toLowerCase() === taskCommand.title!.toLowerCase()); if (m) setTasks(await deleteTask(m.id)); }
         break;
       case "list": setIsTaskPanelOpen(true); break;
     }
   }, [tasks]);
 
-  const handleToggleTask = useCallback((id: string) => setTasks(toggleTask(tasks, id)), [tasks]);
-  const handleDeleteTask = useCallback((id: string) => setTasks(deleteTask(tasks, id)), [tasks]);
+  const handleToggleTask = useCallback(async (id: string) => setTasks(await toggleTask(id)), []);
+  const handleDeleteTask = useCallback(async (id: string) => setTasks(await deleteTask(id)), []);
 
   const handleNewChat = useCallback(() => {
     const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
@@ -552,7 +552,7 @@ export default function ChatInterface() {
         ] as CommandItem[]}
       />
       <ConfirmDialog isOpen={!!confirmAction} title={confirmAction?.title || ""} message={confirmAction?.message || ""} onConfirm={() => confirmAction?.onConfirm()} onCancel={() => setConfirmAction(null)} />
-      <TaskPanel isOpen={isTaskPanelOpen} onClose={() => setIsTaskPanelOpen(false)} tasks={tasks} onToggle={handleToggleTask} onDelete={handleDeleteTask} onAdd={(title: string) => setTasks(addTask(tasks, title))} />
+      <TaskPanel isOpen={isTaskPanelOpen} onClose={() => setIsTaskPanelOpen(false)} tasks={tasks} onToggle={handleToggleTask} onDelete={handleDeleteTask} onAdd={async (title: string) => setTasks(await addTask(title))} />
       <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} voiceEnabled={voiceEnabled} onToggleVoice={handleToggleVoice} allowedTypes={allowedTypes} onResetPermissions={handleResetPermissions} onClearChats={handleClearChats} messages={messages} />
 
       {/* Main Content */}

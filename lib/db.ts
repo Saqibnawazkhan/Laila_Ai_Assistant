@@ -37,6 +37,17 @@ function initSchema() {
     );
 
     CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
+
+    CREATE TABLE IF NOT EXISTS tasks (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      completed INTEGER NOT NULL DEFAULT 0,
+      priority TEXT NOT NULL CHECK(priority IN ('low', 'medium', 'high')) DEFAULT 'medium',
+      due_date TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_tasks_completed ON tasks(completed);
   `);
 }
 
@@ -139,4 +150,55 @@ export function getSessionMessageCount(sessionId: string): number {
     "SELECT COUNT(*) as count FROM messages WHERE session_id = ?"
   ).get(sessionId) as { count: number };
   return result.count;
+}
+
+// --- Task Queries ---
+
+export interface DbTask {
+  id: string;
+  title: string;
+  completed: number;
+  priority: "low" | "medium" | "high";
+  due_date: string | null;
+  created_at: string;
+}
+
+export function getAllTasks(): DbTask[] {
+  const database = getDb();
+  return database.prepare(
+    "SELECT id, title, completed, priority, due_date, created_at FROM tasks ORDER BY completed ASC, created_at DESC"
+  ).all() as DbTask[];
+}
+
+export function createTask(
+  id: string,
+  title: string,
+  priority: "low" | "medium" | "high" = "medium",
+  dueDate: string | null = null
+): DbTask {
+  const database = getDb();
+  const createdAt = new Date().toISOString();
+
+  database.prepare(
+    "INSERT INTO tasks (id, title, completed, priority, due_date, created_at) VALUES (?, ?, 0, ?, ?, ?)"
+  ).run(id, title, priority, dueDate, createdAt);
+
+  return { id, title, completed: 0, priority, due_date: dueDate, created_at: createdAt };
+}
+
+export function toggleTaskDb(id: string): void {
+  const database = getDb();
+  database.prepare(
+    "UPDATE tasks SET completed = CASE completed WHEN 0 THEN 1 ELSE 0 END WHERE id = ?"
+  ).run(id);
+}
+
+export function deleteTaskDb(id: string): void {
+  const database = getDb();
+  database.prepare("DELETE FROM tasks WHERE id = ?").run(id);
+}
+
+export function clearAllTasks(): void {
+  const database = getDb();
+  database.exec("DELETE FROM tasks;");
 }

@@ -7,49 +7,107 @@ export interface Task {
   dueDate?: string;
 }
 
-const STORAGE_KEY = "laila_tasks";
+interface DbTaskShape {
+  id: string;
+  title: string;
+  completed: number;
+  priority: Task["priority"];
+  due_date: string | null;
+  created_at: string;
+}
 
-export function loadTasks(): Task[] {
-  if (typeof window === "undefined") return [];
+function fromDb(t: DbTaskShape): Task {
+  return {
+    id: t.id,
+    title: t.title,
+    completed: t.completed === 1,
+    priority: t.priority,
+    createdAt: t.created_at,
+    dueDate: t.due_date ?? undefined,
+  };
+}
+
+const LEGACY_STORAGE_KEY = "laila_tasks";
+const MIGRATION_FLAG = "laila_tasks_migrated_v1";
+
+async function migrateLegacyTasks(): Promise<void> {
+  if (typeof window === "undefined") return;
+  if (localStorage.getItem(MIGRATION_FLAG)) return;
+
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const legacy: Task[] = saved ? JSON.parse(saved) : [];
+    for (const t of legacy) {
+      await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: t.id,
+          title: t.title,
+          priority: t.priority,
+          dueDate: t.dueDate ?? null,
+        }),
+      });
+      if (t.completed) {
+        await fetch(`/api/tasks/${t.id}`, { method: "PATCH" });
+      }
+    }
+    localStorage.setItem(MIGRATION_FLAG, "1");
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    // Migration failed — leave flag unset to retry next load
+  }
+}
+
+export async function loadTasks(): Promise<Task[]> {
+  try {
+    await migrateLegacyTasks();
+    const res = await fetch("/api/tasks");
+    const data = await res.json();
+    return (data.tasks || []).map(fromDb);
   } catch {
     return [];
   }
 }
 
-export function saveTasks(tasks: Task[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+export async function addTask(
+  title: string,
+  priority: Task["priority"] = "medium",
+  dueDate?: string,
+): Promise<Task[]> {
+  try {
+    await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: Date.now().toString(),
+        title,
+        priority,
+        dueDate: dueDate ?? null,
+      }),
+    });
+  } catch {
+    // Silently fail — next loadTasks will reflect actual state
+  }
+  return loadTasks();
 }
 
-export function addTask(tasks: Task[], title: string, priority: Task["priority"] = "medium", dueDate?: string): Task[] {
-  const newTask: Task = {
-    id: Date.now().toString(),
-    title,
-    completed: false,
-    priority,
-    createdAt: new Date().toISOString(),
-    dueDate,
-  };
-  const updated = [newTask, ...tasks];
-  saveTasks(updated);
-  return updated;
+export async function toggleTask(id: string): Promise<Task[]> {
+  try {
+    await fetch(`/api/tasks/${id}`, { method: "PATCH" });
+  } catch {
+    // Silently fail
+  }
+  return loadTasks();
 }
 
-export function toggleTask(tasks: Task[], id: string): Task[] {
-  const updated = tasks.map((t) =>
-    t.id === id ? { ...t, completed: !t.completed } : t
-  );
-  saveTasks(updated);
-  return updated;
-}
-
-export function deleteTask(tasks: Task[], id: string): Task[] {
-  const updated = tasks.filter((t) => t.id !== id);
-  saveTasks(updated);
-  return updated;
+export async function deleteTask(id: string): Promise<Task[]> {
+  try {
+    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+  } catch {
+    // Silently fail
+  }
+  return loadTasks();
 }
 
 export function getPendingTasks(tasks: Task[]): Task[] {
